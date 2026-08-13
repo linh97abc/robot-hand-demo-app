@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <title>Debug Model — Tay Robot 3 Ngón</title>
+  <script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three.module.js",
+    "three/addons/controls/OrbitControls.js": "./vendor/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "./vendor/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "./vendor/GLTFExporter.js"
+  }
+}
+</script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #121417;
+      color: #e9e7e2;
+    }
+
+    .debug-container {
+      display: grid;
+      grid-template-columns: 360px 1fr 320px;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Left Panel: Reference Image & Spec */
+    .ref-panel {
+      background: #181a1e;
+      border-right: 1px solid #2a2d32;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .ref-panel h2 {
+      font-size: 14px;
+      margin: 0;
+      color: #c9a35c;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .ref-panel img {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #33373e;
+      background: #000;
+      display: block;
+    }
+
+    .ref-info {
+      font-size: 12px;
+      line-height: 1.6;
+      color: #a0a5ad;
+      background: #202328;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .ref-info ul {
+      margin: 6px 0 0;
+      padding-left: 18px;
+    }
+
+    /* Center Viewport: 3D Stage */
+    .stage-viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #0c0d0e;
+    }
+
+    three-d-stage {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Right Panel: Controls */
+    .ctrl-panel {
+      background: #181a1e;
+      border-left: 1px solid #2a2d32;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .ctrl-panel h2 {
+      font-size: 14px;
+      margin: 0;
+      color: #e9e7e2;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preset-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .preset-btn {
+      font: inherit;
+      font-size: 11px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid #3a3e44;
+      background: #24272b;
+      color: #e9e7e2;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .preset-btn:hover {
+      background: #32363c;
+      border-color: #55595f;
+    }
+
+    .preset-btn.active {
+      background: #c9a35c;
+      border-color: #c9a35c;
+      color: #121417;
+      font-weight: bold;
+    }
+
+    .joint-sec {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .joint-sec h3 {
+      font-size: 11px;
+      color: #c9a35c;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .slider-row {
+      display: grid;
+      grid-template-columns: 75px 1fr 40px;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: #a0a5ad;
+    }
+
+    .slider-row output {
+      text-align: right;
+      color: #fff;
+      font-family: monospace;
+    }
+
+    input[type=range] {
+      width: 100%;
+      height: 4px;
+      accent-color: #c9a35c;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="debug-container">
+    <!-- Left: Reference Photo & Description -->
+
+    <!-- Center: 3D Stage -->
+    <main class="stage-viewport">
+      <three-d-stage name="debug-hand3" background="#0e1013"></three-d-stage>
+    </main>
+
+    <!-- Right: Rigging & Joint Controls -->
+    <aside class="ctrl-panel">
+      <div>
+        <h2>Thế tay có sẵn (Presets)</h2>
+        <div class="preset-group" id="presetContainer"></div>
+      </div>
+
+      <div id="sliderContainer" style="display:flex; flex-direction:column; gap:16px;"></div>
+    </aside>
+  </div>
+
+  <script src="./three-d-stage.js"></script>
+  <script type="module">
+    import { buildHandModel3 } from './models/robot-hand3-model.js';
+
+    const stage = document.querySelector('three-d-stage');
+    const { THREE } = await stage.ready;
+    const { model, RIG } = buildHandModel3(THREE);
+    stage.setObject(model);
+
+    const DEG = Math.PI / 180;
+
+    const state = {
+      'thumb.yaw': 25,
+      'thumb.0': 112,
+      'thumb.1': 115,
+      'index.0': 110,
+      'index.1': 112,
+      'middle.0': 110,
+      'middle.1': 112,
+    };
+
+    const JOINTS = [
+      {
+        group: 'Ngón cái (Thumb)',
+        controls: [
+          { key: 'thumb.yaw', label: 'Xoay đế (Y)', min: 0, max: 180 },
+          { key: 'thumb.0', label: 'Khớp gốc (MCP)', min: 0, max: 180 },
+          { key: 'thumb.1', label: 'Khớp ngọn (IP)', min: 0, max: 180 },
+        ]
+      },
+      {
+        group: 'Ngón trỏ (Index)',
+        controls: [
+          { key: 'index.0', label: 'Khớp gốc (MCP)', min: 0, max: 180 },
+          { key: 'index.1', label: 'Khớp giữa (PIP)', min: 0, max: 180 },
+        ]
+      },
+      {
+        group: 'Ngón giữa (Middle)',
+        controls: [
+          { key: 'middle.0', label: 'Khớp gốc (MCP)', min: 0, max: 180 },
+          { key: 'middle.1', label: 'Khớp giữa (PIP)', min: 0, max: 180 },
+        ]
+      }
+    ];
+
+    const PRESETS = {
+      'Thẳng đứng (90°)': { 'thumb.yaw': 0, 'thumb.0': 90, 'thumb.1': 90, 'index.0': 90, 'index.1': 90, 'middle.0': 90, 'middle.1': 90 },
+      'Nghỉ': { 'thumb.yaw': 25, 'thumb.0': 112, 'thumb.1': 115, 'index.0': 110, 'index.1': 112, 'middle.0': 110, 'middle.1': 112 },
+      'Mở (Xoay xòe)': { 'thumb.yaw': 40, 'thumb.0': 100, 'thumb.1': 105, 'index.0': 100, 'index.1': 105, 'middle.0': 100, 'middle.1': 105 },
+      'Nắm (Grasp)': { 'thumb.yaw': 170, 'thumb.0': 145, 'thumb.1': 160, 'index.0': 160, 'index.1': 180, 'middle.0': 162, 'middle.1': 180 },
+      'Kẹp (Pinch)': { 'thumb.yaw': 180, 'thumb.0': 125, 'thumb.1': 132, 'index.0': 130, 'index.1': 140, 'middle.0': 160, 'middle.1': 178 },
+    };
+
+
+
+
+    const sliderOutputs = {};
+    const sliderInputs = {};
+
+    function applyState() {
+      // Apply thumb yaw (vertical rotation around Y, inverted direction)
+      RIG.thumbYaw.rotation.y = -state['thumb.yaw'] * DEG;
+
+      // Apply finger flex angles (horizontal rotation around X, 90° is straight vertical)
+      RIG.thumb.userData.joints[0].rotation.x = (state['thumb.0'] - 90) * DEG;
+      RIG.thumb.userData.joints[1].rotation.x = (state['thumb.1'] - 90) * DEG;
+
+      RIG.index.userData.joints[0].rotation.x = (state['index.0'] - 90) * DEG;
+      RIG.index.userData.joints[1].rotation.x = (state['index.1'] - 90) * DEG;
+
+      RIG.middle.userData.joints[0].rotation.x = (state['middle.0'] - 90) * DEG;
+      RIG.middle.userData.joints[1].rotation.x = (state['middle.1'] - 90) * DEG;
+
+      // Update UI outputs
+      for (const k in state) {
+        if (sliderOutputs[k]) sliderOutputs[k].textContent = Math.round(state[k]) + '°';
+        if (sliderInputs[k] && document.activeElement !== sliderInputs[k]) {
+          sliderInputs[k].value = Math.round(state[k]);
+        }
+      }
+    }
+
+    // Render Controls UI
+    const sliderContainer = document.getElementById('sliderContainer');
+    JOINTS.forEach((sec) => {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'joint-sec';
+      groupDiv.innerHTML = `<h3>${sec.group}</h3>`;
+
+      sec.controls.forEach((ctrl) => {
+        const row = document.createElement('div');
+        row.className = 'slider-row';
+
+        const label = document.createElement('span');
+        label.textContent = ctrl.label;
+
+        const input = document.createElement('input');
+        input.type = 'range';
+        input.min = ctrl.min;
+        input.max = ctrl.max;
+        input.value = state[ctrl.key];
+        sliderInputs[ctrl.key] = input;
+
+        input.addEventListener('input', (e) => {
+          state[ctrl.key] = parseFloat(e.target.value);
+          applyState();
+        });
+
+        const out = document.createElement('output');
+        out.textContent = state[ctrl.key] + '°';
+        sliderOutputs[ctrl.key] = out;
+
+        row.appendChild(label);
+        row.appendChild(input);
+        row.appendChild(out);
+        groupDiv.appendChild(row);
+      });
+
+      sliderContainer.appendChild(groupDiv);
+    });
+
+    // Render Presets UI
+    const presetContainer = document.getElementById('presetContainer');
+    for (const pName in PRESETS) {
+      const btn = document.createElement('button');
+      btn.className = 'preset-btn';
+      btn.textContent = pName;
+      btn.addEventListener('click', () => {
+        Object.assign(state, PRESETS[pName]);
+        applyState();
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+      presetContainer.appendChild(btn);
+    }
+
+    // Initial state
+    applyState();
+  </script>
+
+</body>
+
+</html>
