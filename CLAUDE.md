@@ -6,14 +6,14 @@ Bàn tay robot (three.js) — 2 model song song nạp từ file `.glb` (5 ngón 
 - `src/App.vue` — layout chính Vue 3 + quản lý trạng thái khớp.
 - `src/components/ThreeStage.vue` — Vue component quản lý Three.js viewer (camera, ánh sáng, export OBJ/GLB).
 - `src/components/ControlPanel.vue` — Vue component bảng điều khiển khớp & presets.
-- `src/assets/robot-hand5.glb` — file 3D GLB bàn tay 5 ngón.
-- `src/assets/robot-hand3.glb` — file 3D GLB bàn tay 3 ngón (gripper).
+- `public/assets/robot-hand5.glb` — file 3D GLB bàn tay 5 ngón.
+- `public/assets/robot-hand3.glb` — file 3D GLB bàn tay 3 ngón (gripper).
 - `src/models/hand-loader.js` — hàm nạp & rig mô hình 3D tổng quát từ GLB và JSON `loadHandModelFromConfig(THREE, config, overrideGlbUrl)`.
 - `src/models/configs/` — tệp cấu hình JSON mô tả danh sách node khớp 3D (`robot-hand5.json`, `robot-hand3.json`).
 - `src-tauri/` — cấu hình Tauri chuẩn (Cargo.toml, tauri.conf.json, icons).
 
 ## Nạp & Điều khiển GLB Model
-- Các file loader (`robot-hand5-model.js` & `robot-hand3-model.js`) sử dụng `GLTFLoader` để nạp file `.glb` từ `src/assets/`.
+- `src/models/hand-loader.js` dùng `GLTFLoader` nạp file `.glb` bằng URL runtime (`./assets/${config.name}.glb`, fallback `/assets/...`) — trỏ tới `public/assets/`, không phải `src/assets/`.
 - Tự động map node name trong GLB thành `RIG` (`index`, `middle`, `ring`, `pinky`, `thumb`, `thumbMount`/`thumbYaw`) và trích xuất `userData.joints` cho từng ngón tay để thanh trượt trong `index.html` điều khiển góc xoay.
 - Giữ nguyên cấu trúc node name khi xuất/đổi file GLB mới để bộ khớp trong UI hoạt động bình thường.
 
