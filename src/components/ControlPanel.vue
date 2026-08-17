@@ -26,16 +26,24 @@ function onSliderInput(key, value) {
       <p class="sub" id="panelSub">{{ currentProfile.subtitle }}</p>
     </div>
 
-    <!-- Model Switcher Bar -->
-    <div class="presets" id="modelSwitch">
-      <button
-        v-for="(profile, key) in profiles"
-        :key="key"
-        @click="emit('switch-profile', key)"
-        :class="{ on: currentProfileKey === key }"
-      >
-        {{ profile.switchLabel }}
-      </button>
+    <!-- Model Switcher Dropdown -->
+    <div class="model-select-container" id="modelSwitch">
+      <label class="model-select-label">MÔ HÌNH ROBOT</label>
+      <div class="select-wrapper">
+        <select
+          :value="currentProfileKey"
+          @change="emit('switch-profile', $event.target.value)"
+        >
+          <option
+            v-for="(profile, key) in profiles"
+            :key="key"
+            :value="key"
+          >
+            {{ profile.switchLabel || profile.title }}
+          </option>
+        </select>
+        <span class="select-chevron">▾</span>
+      </div>
     </div>
 
     <!-- Presets Bar -->
@@ -163,6 +171,61 @@ function onSliderInput(key, value) {
   line-height: 1.4;
   color: #9a9ea4;
   margin: 4px 0 0;
+}
+
+.model-select-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.model-select-label {
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #c9a35c;
+  font-weight: 700;
+}
+
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.select-wrapper select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  background: #24272b;
+  color: #e9e7e2;
+  border: 1px solid #3a3e44;
+  border-radius: 6px;
+  padding: 8px 30px 8px 12px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.select-wrapper select:hover {
+  background: #2f3338;
+  border-color: #55595f;
+}
+
+.select-wrapper select:focus {
+  border-color: #c9a35c;
+}
+
+.select-chevron {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #c9a35c;
+  font-size: 11px;
+  pointer-events: none;
 }
 
 .presets {
