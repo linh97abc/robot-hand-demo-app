@@ -9,74 +9,31 @@ import hand3Config from './models/configs/robot-hand3.json';
 
 const DEG = Math.PI / 180;
 
-const PROFILES = {
-  five: {
-    switchLabel: 'Tay 5 ngón',
-    title: 'Bàn tay robot · 5 ngón',
-    subtitle: 'Điều khiển từng khớp bằng thanh trượt, hoặc chọn một thế tay có sẵn. Kéo chuột trên khung 3D để quay góc nhìn.',
-    hint: 'Góc tính theo độ. MCP = khớp bàn–ngón, PIP = khớp giữa, DIP = khớp đầu ngón. Bản xuất OBJ/GLB giữ đúng thế tay hiện tại.',
-    buildModel: (THREE, url) => loadHandModelFromConfig(THREE, hand5Config, url),
-    fingers: [
-      { key: 'thumb', label: 'Ngón cái', joints: ['MCP', 'IP'], max: [70, 80] },
-      { key: 'index', label: 'Ngón trỏ', joints: ['MCP', 'PIP', 'DIP'], max: [90, 100, 80] },
-      { key: 'middle', label: 'Ngón giữa', joints: ['MCP', 'PIP', 'DIP'], max: [90, 100, 80] },
-      { key: 'ring', label: 'Ngón áp út', joints: ['MCP', 'PIP', 'DIP'], max: [90, 100, 80] },
-      { key: 'pinky', label: 'Ngón nhỏ', joints: ['MCP', 'PIP', 'DIP'], max: [90, 100, 80] },
-    ],
-    thumbExtra: {
-      finger: 'thumb', key: 'thumb.spread', label: 'Xoay', min: 25, max: 85,
-      read: (RIG) => RIG.thumbMount ? RIG.thumbMount.rotation.z / DEG : 0,
-      apply: (RIG, wrist, v) => { if (RIG.thumbMount) RIG.thumbMount.rotation.z = v * DEG; },
-    },
-    hasWrist: true,
-    wristRanges: { pitch: [-35, 35], yaw: [-45, 45] },
-    poses: {
-      'Nghỉ': {},
-      'Mở': { 'index.0': 0, 'index.1': 0, 'index.2': 0, 'middle.0': 0, 'middle.1': 0, 'middle.2': 0,
-              'ring.0': 0, 'ring.1': 0, 'ring.2': 0, 'pinky.0': 0, 'pinky.1': 0, 'pinky.2': 0,
-              'thumb.0': 0, 'thumb.1': 0, 'thumb.spread': 78 },
-      'Nắm': { 'index.0': 82, 'index.1': 95, 'index.2': 68, 'middle.0': 84, 'middle.1': 97, 'middle.2': 70,
-               'ring.0': 82, 'ring.1': 95, 'ring.2': 68, 'pinky.0': 80, 'pinky.1': 92, 'pinky.2': 66,
-               'thumb.0': 45, 'thumb.1': 58, 'thumb.spread': 38 },
-      'Kẹp': { 'index.0': 52, 'index.1': 42, 'index.2': 22, 'middle.0': 78, 'middle.1': 90, 'middle.2': 62,
-               'ring.0': 80, 'ring.1': 92, 'ring.2': 64, 'pinky.0': 78, 'pinky.1': 90, 'pinky.2': 62,
-               'thumb.0': 38, 'thumb.1': 44, 'thumb.spread': 47 },
-      'Chỉ': { 'index.0': 0, 'index.1': 0, 'index.2': 0, 'middle.0': 84, 'middle.1': 97, 'middle.2': 70,
-               'ring.0': 82, 'ring.1': 95, 'ring.2': 68, 'pinky.0': 80, 'pinky.1': 92, 'pinky.2': 66,
-               'thumb.0': 34, 'thumb.1': 50, 'thumb.spread': 40 },
-      'Chữ V': { 'index.0': 0, 'index.1': 0, 'index.2': 0, 'middle.0': 0, 'middle.1': 0, 'middle.2': 0,
-                 'ring.0': 82, 'ring.1': 95, 'ring.2': 68, 'pinky.0': 80, 'pinky.1': 92, 'pinky.2': 66,
-                 'thumb.0': 40, 'thumb.1': 52, 'thumb.spread': 36 },
-    },
-  },
+function createProfile(config) {
+  return {
+    ...config,
+    buildModel: (THREE, url) => loadHandModelFromConfig(THREE, config, url),
+    thumbExtra: config.thumbExtra ? {
+      ...config.thumbExtra,
+      read: (RIG) => {
+        const node = RIG[config.thumbExtra.targetKey];
+        if (!node) return 0;
+        const mult = config.thumbExtra.multiplier || 1;
+        return (mult * node.rotation[config.thumbExtra.axis]) / DEG;
+      },
+      apply: (RIG, wrist, v) => {
+        const node = RIG[config.thumbExtra.targetKey];
+        if (!node) return;
+        const mult = config.thumbExtra.multiplier || 1;
+        node.rotation[config.thumbExtra.axis] = mult * v * DEG;
+      },
+    } : null,
+  };
+}
 
-  three: {
-    switchLabel: 'Tay 3 ngón',
-    title: 'Bàn tay robot · 3 ngón (gripper)',
-    subtitle: 'Gripper công nghiệp 3 ngón, 7 khớp — mỗi khớp có motor riêng, quay được tối đa 180°. Ngón cái xoay quanh trục đứng để khép sát vào 2 ngón kia.',
-    hint: 'Góc tính theo độ, mỗi khớp hành trình 0–180°. Với cả 3 ngón (cái, trỏ, giữa), 90° là vị trí thẳng đứng. MCP/PIP/IP là các khớp có trục nằm ngang; "Xoay đế" là khớp trục đứng ở gốc ngón cái.',
-    buildModel: (THREE, url) => loadHandModelFromConfig(THREE, hand3Config, url),
-    fingers: [
-      { key: 'thumb', label: 'Ngón cái', joints: ['MCP', 'IP'], max: [180, 180] },
-      { key: 'index', label: 'Ngón trỏ', joints: ['MCP', 'PIP'], max: [180, 180] },
-      { key: 'middle', label: 'Ngón giữa', joints: ['MCP', 'PIP'], max: [180, 180] },
-    ],
-    thumbExtra: {
-      finger: 'thumb', key: 'thumb.yaw', label: 'Xoay đế', min: 0, max: 180,
-      read: (RIG) => RIG.thumbYaw ? -RIG.thumbYaw.rotation.y / DEG : 0,
-      apply: (RIG, wrist, v) => { if (RIG.thumbYaw) RIG.thumbYaw.rotation.y = -v * DEG; },
-    },
-    hasWrist: false,
-    poses: {
-      'Nghỉ': { 'index.0': 110, 'index.1': 112, 'middle.0': 110, 'middle.1': 112, 'thumb.0': 112, 'thumb.1': 115, 'thumb.yaw': 25 },
-      'Thẳng đứng': { 'index.0': 90, 'index.1': 90, 'middle.0': 90, 'middle.1': 90, 'thumb.0': 90, 'thumb.1': 90, 'thumb.yaw': 0 },
-      'Mở': { 'index.0': 100, 'index.1': 105, 'middle.0': 100, 'middle.1': 105, 'thumb.0': 100, 'thumb.1': 105, 'thumb.yaw': 40 },
-      'Nắm': { 'index.0': 160, 'index.1': 180, 'middle.0': 162, 'middle.1': 180, 'thumb.0': 145, 'thumb.1': 160, 'thumb.yaw': 170 },
-      'Kẹp': { 'index.0': 130, 'index.1': 140, 'middle.0': 160, 'middle.1': 178, 'thumb.0': 125, 'thumb.1': 132, 'thumb.yaw': 120 },
-      'Chỉ': { 'index.0': 90, 'index.1': 90, 'middle.0': 162, 'middle.1': 180, 'thumb.0': 140, 'thumb.1': 154, 'thumb.yaw': 150 },
-      'Chữ V': { 'index.0': 90, 'index.1': 90, 'middle.0': 90, 'middle.1': 90, 'thumb.0': 140, 'thumb.1': 154, 'thumb.yaw': 150 },
-    },
-  },
+const PROFILES = {
+  five: createProfile(hand5Config),
+  three: createProfile(hand3Config),
 };
 
 const stageRef = ref(null);
@@ -90,7 +47,6 @@ let wrist = null;
 
 const state = reactive({});
 const target = reactive({});
-let REST = {};
 let animating = false;
 
 function applyModelRotations() {
@@ -108,8 +64,9 @@ function applyModelRotations() {
     }
   });
 
-  if (profile.thumbExtra) {
-    profile.thumbExtra.apply(RIG, wrist, state[profile.thumbExtra.key] ?? 0);
+  if (profile.thumbExtra && profile.thumbExtra.apply) {
+    const val = state[profile.thumbExtra.key] ?? 0;
+    profile.thumbExtra.apply(RIG, wrist, val);
   }
 
   if (profile.hasWrist && wrist) {
@@ -140,6 +97,22 @@ function animateStep() {
 }
 
 function goToPose(pose) {
+  const profile = PROFILES[currentProfileKey.value];
+  // Calculate REST defaults for current profile
+  const REST = {};
+  profile.fingers.forEach((f) => {
+    f.joints.forEach((_, i) => {
+      REST[`${f.key}.${i}`] = currentProfileKey.value === 'three' ? 90 : 0;
+    });
+  });
+  if (profile.thumbExtra) {
+    REST[profile.thumbExtra.key] = currentProfileKey.value === 'three' ? 0 : 78;
+  }
+  if (profile.hasWrist) {
+    REST['wrist.pitch'] = 0;
+    REST['wrist.yaw'] = 0;
+  }
+
   Object.assign(target, REST, pose);
   if (!animating) {
     animating = true;
@@ -156,57 +129,77 @@ function handleJointUpdate(key, value) {
 }
 
 function handlePresetSelect(presetName) {
-  activePreset.value = presetName;
   const profile = PROFILES[currentProfileKey.value];
-  const pose = profile.poses[presetName] || {};
-  goToPose(pose);
+  const pose = profile.poses[presetName];
+  if (pose) {
+    activePreset.value = presetName;
+    goToPose(pose);
+  }
 }
 
 async function loadProfile(profileKey) {
+  const profile = PROFILES[profileKey];
+  if (!profile) return;
+
   loading.value = true;
   currentProfileKey.value = profileKey;
-  const profile = PROFILES[profileKey];
 
   try {
-    const built = await profile.buildModel(THREE);
-    RIG = built.RIG;
-    wrist = built.wrist;
+    const stage = stageRef.value;
+    const THREE_INST = stage ? stage.getTHREE() : THREE;
+    const result = await profile.buildModel(THREE_INST);
+
+    activeModel.value = result.model;
+    RIG = result.RIG;
+    wrist = result.wrist;
 
     // Reset state & target
-    for (const key in state) delete state[key];
-    for (const key in target) delete target[key];
+    Object.keys(state).forEach((k) => delete state[k]);
+    Object.keys(target).forEach((k) => delete target[k]);
 
+    // Read initial joint angles
+    const isOffset90 = profileKey === 'three';
     profile.fingers.forEach((f) => {
-      const isOffset90 = profileKey === 'three';
       const fingerRoot = RIG[f.key];
       if (fingerRoot && fingerRoot.userData && fingerRoot.userData.joints) {
-        fingerRoot.userData.joints.forEach((g, i) => {
-          const k = `${f.key}.${i}`;
-          const deg = g.rotation.x / DEG;
-          state[k] = target[k] = isOffset90 ? deg + 90 : deg;
+        fingerRoot.userData.joints.forEach((jointNode, i) => {
+          const rx = jointNode ? jointNode.rotation.x / DEG : 0;
+          const val = Math.round(isOffset90 ? rx + 90 : rx);
+          state[`${f.key}.${i}`] = val;
+          target[`${f.key}.${i}`] = val;
         });
       }
     });
 
-    if (profile.thumbExtra) {
-      const v = profile.thumbExtra.read(RIG);
-      state[profile.thumbExtra.key] = target[profile.thumbExtra.key] = v;
+    if (profile.thumbExtra && profile.thumbExtra.read) {
+      const val = Math.round(profile.thumbExtra.read(RIG));
+      state[profile.thumbExtra.key] = val;
+      target[profile.thumbExtra.key] = val;
     }
 
     if (profile.hasWrist) {
-      state['wrist.pitch'] = target['wrist.pitch'] = 0;
-      state['wrist.yaw'] = target['wrist.yaw'] = 0;
+      state['wrist.pitch'] = 0;
+      target['wrist.pitch'] = 0;
+      state['wrist.yaw'] = 0;
+      target['wrist.yaw'] = 0;
     }
 
-    REST = { ...state };
-    activeModel.value = built.model;
-    activePreset.value = 'Nghỉ';
-    applyModelRotations();
+    // Default to 'Nghỉ' pose if available
+    if (profile.poses && profile.poses['Nghỉ']) {
+      handlePresetSelect('Nghỉ');
+    } else {
+      applyModelRotations();
+    }
   } catch (err) {
-    console.error('Error building model:', err);
+    console.error(`Failed to load profile ${profileKey}:`, err);
   } finally {
     loading.value = false;
   }
+}
+
+function handleProfileSwitch(profileKey) {
+  if (profileKey === currentProfileKey.value) return;
+  loadProfile(profileKey);
 }
 
 onMounted(() => {
@@ -215,25 +208,25 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex h-screen w-screen overflow-hidden bg-[#0e1013] font-sans antialiased">
-    <!-- Main 3D Viewport Stage -->
-    <main class="flex-1 min-w-0 h-full relative">
+  <div class="flex w-screen h-screen overflow-hidden bg-[#efece6]">
+    <!-- 3D Stage Viewport (Left) -->
+    <main class="flex-1 h-full relative">
       <ThreeStage
         ref="stageRef"
         :model="activeModel"
         background="#efece6"
-        :model-name="currentProfileKey === 'five' ? 'robot-hand5' : 'robot-hand3'"
+        :model-name="currentProfileKey === 'three' ? 'robot-hand3' : 'robot-hand5'"
       />
     </main>
 
-    <!-- Sidebar Control Panel -->
+    <!-- Joint Controls & Presets Panel (Right) -->
     <ControlPanel
       :profiles="PROFILES"
       :current-profile-key="currentProfileKey"
       :state="state"
       :active-preset="activePreset"
       :loading="loading"
-      @switch-profile="loadProfile"
+      @switch-profile="handleProfileSwitch"
       @update-joint="handleJointUpdate"
       @select-preset="handlePresetSelect"
     />

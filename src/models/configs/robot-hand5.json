@@ -1,35 +1,112 @@
 {
   "id": "five",
   "name": "robot-hand5",
+  "switchLabel": "Tay 5 ngón",
+  "title": "Bàn tay robot · 5 ngón",
+  "subtitle": "Điều khiển từng khớp bằng thanh trượt, hoặc chọn một thế tay có sẵn. Kéo chuột trên khung 3D để quay góc nhìn.",
+  "hint": "Góc tính theo độ. MCP = khớp bàn–ngón, PIP = khớp giữa, DIP = khớp đầu ngón. Bản xuất OBJ/GLB giữ đúng thế tay hiện tại.",
   "glbUrl": "./assets/robot-hand5.glb",
   "fallbackGlbUrl": "/assets/robot-hand5.glb",
-  "fingers": {
-    "thumb": {
+  "fingers": [
+    {
+      "key": "thumb",
+      "label": "Ngón cái",
       "rootNode": "thumb",
-      "joints": ["thumb_joint1", "thumb_joint2"]
+      "joints": ["thumb_joint1", "thumb_joint2"],
+      "jointLabels": ["MCP", "IP"],
+      "max": [70, 80]
     },
-    "index": {
+    {
+      "key": "index",
+      "label": "Ngón trỏ",
       "rootNode": "index",
-      "joints": ["index_joint1", "index_joint2", "index_joint3"]
+      "joints": ["index_joint1", "index_joint2", "index_joint3"],
+      "jointLabels": ["MCP", "PIP", "DIP"],
+      "max": [90, 100, 80]
     },
-    "middle": {
+    {
+      "key": "middle",
+      "label": "Ngón giữa",
       "rootNode": "middle",
-      "joints": ["middle_joint1", "middle_joint2", "middle_joint3"]
+      "joints": ["middle_joint1", "middle_joint2", "middle_joint3"],
+      "jointLabels": ["MCP", "PIP", "DIP"],
+      "max": [90, 100, 80]
     },
-    "ring": {
+    {
+      "key": "ring",
+      "label": "Ngón áp út",
       "rootNode": "ring",
-      "joints": ["ring_joint1", "ring_joint2", "ring_joint3"]
+      "joints": ["ring_joint1", "ring_joint2", "ring_joint3"],
+      "jointLabels": ["MCP", "PIP", "DIP"],
+      "max": [90, 100, 80]
     },
-    "pinky": {
+    {
+      "key": "pinky",
+      "label": "Ngón nhỏ",
       "rootNode": "pinky",
-      "joints": ["pinky_joint1", "pinky_joint2", "pinky_joint3"]
+      "joints": ["pinky_joint1", "pinky_joint2", "pinky_joint3"],
+      "jointLabels": ["MCP", "PIP", "DIP"],
+      "max": [90, 100, 80]
     }
-  },
+  ],
   "thumbMount": {
     "key": "thumbMount",
     "nodeName": "thumb_cmc_mount"
   },
+  "thumbExtra": {
+    "finger": "thumb",
+    "key": "thumb.spread",
+    "label": "Xoay",
+    "min": 25,
+    "max": 85,
+    "targetKey": "thumbMount",
+    "axis": "z",
+    "multiplier": 1
+  },
+  "hasWrist": true,
   "wrist": {
     "nodeName": "wrist_pivot"
+  },
+  "wristRanges": {
+    "pitch": [-35, 35],
+    "yaw": [-45, 45]
+  },
+  "poses": {
+    "Nghỉ": {},
+    "Mở": {
+      "index.0": 0, "index.1": 0, "index.2": 0,
+      "middle.0": 0, "middle.1": 0, "middle.2": 0,
+      "ring.0": 0, "ring.1": 0, "ring.2": 0,
+      "pinky.0": 0, "pinky.1": 0, "pinky.2": 0,
+      "thumb.0": 0, "thumb.1": 0, "thumb.spread": 78
+    },
+    "Nắm": {
+      "index.0": 82, "index.1": 95, "index.2": 68,
+      "middle.0": 84, "middle.1": 97, "middle.2": 70,
+      "ring.0": 82, "ring.1": 95, "ring.2": 68,
+      "pinky.0": 80, "pinky.1": 92, "pinky.2": 66,
+      "thumb.0": 45, "thumb.1": 58, "thumb.spread": 38
+    },
+    "Kẹp": {
+      "index.0": 52, "index.1": 42, "index.2": 22,
+      "middle.0": 78, "middle.1": 90, "middle.2": 62,
+      "ring.0": 80, "ring.1": 92, "ring.2": 64,
+      "pinky.0": 78, "pinky.1": 90, "pinky.2": 62,
+      "thumb.0": 38, "thumb.1": 44, "thumb.spread": 47
+    },
+    "Chỉ": {
+      "index.0": 0, "index.1": 0, "index.2": 0,
+      "middle.0": 84, "middle.1": 97, "middle.2": 70,
+      "ring.0": 82, "ring.1": 95, "ring.2": 68,
+      "pinky.0": 80, "pinky.1": 92, "pinky.2": 66,
+      "thumb.0": 34, "thumb.1": 50, "thumb.spread": 40
+    },
+    "Chữ V": {
+      "index.0": 0, "index.1": 0, "index.2": 0,
+      "middle.0": 0, "middle.1": 0, "middle.2": 0,
+      "ring.0": 82, "ring.1": 95, "ring.2": 68,
+      "pinky.0": 80, "pinky.1": 92, "pinky.2": 66,
+      "thumb.0": 40, "thumb.1": 52, "thumb.spread": 36
+    }
   }
 }
