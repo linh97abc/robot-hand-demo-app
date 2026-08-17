@@ -42,7 +42,7 @@ const PROFILES = {
 const stageRef = ref(null);
 const currentProfileKey = ref('five');
 const loading = ref(false);
-const activePreset = ref('Nghỉ');
+const activePreset = ref(null);
 
 const activeModel = shallowRef(null);
 let RIG = null;
@@ -187,10 +187,12 @@ async function loadProfile(profileKey) {
       target['wrist.yaw'] = 0;
     }
 
-    // Default to 'Nghỉ' pose if available
-    if (profile.poses && profile.poses['Nghỉ']) {
-      handlePresetSelect('Nghỉ');
+    // Select default pose from JSON config or pick first available pose
+    const initialPoseKey = profile.defaultPose || (profile.poses ? Object.keys(profile.poses)[0] : null);
+    if (initialPoseKey && profile.poses && profile.poses[initialPoseKey]) {
+      handlePresetSelect(initialPoseKey);
     } else {
+      activePreset.value = null;
       applyModelRotations();
     }
   } catch (err) {
