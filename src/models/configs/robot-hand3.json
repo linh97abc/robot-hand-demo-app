@@ -1,0 +1,14 @@
+{
+  "id": "three",
+  "name": "robot-hand3",
+  "glbUrl": "./assets/robot-hand3.glb",
+  "fallbackGlbUrl": "/assets/robot-hand3.glb",
+  "fingerNames": ["index", "middle", "thumb"],
+  "thumbMount": {
+    "nodeName": "thumb_yaw_mount",
+    "key": "thumbYaw"
+  },
+  "wrist": {
+    "nodeName": "wrist_pivot_inert"
+  }
+}

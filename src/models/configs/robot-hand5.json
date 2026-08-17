@@ -1,0 +1,14 @@
+{
+  "id": "five",
+  "name": "robot-hand5",
+  "glbUrl": "./assets/robot-hand5.glb",
+  "fallbackGlbUrl": "/assets/robot-hand5.glb",
+  "fingerNames": ["index", "middle", "ring", "pinky", "thumb"],
+  "thumbMount": {
+    "nodeName": "thumb_cmc_mount",
+    "key": "thumbMount"
+  },
+  "wrist": {
+    "nodeName": "wrist_pivot"
+  }
+}
