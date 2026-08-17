@@ -9,14 +9,16 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
  */
 export async function loadHandModelFromConfig(THREE, config, overrideGlbUrl) {
   const loader = new GLTFLoader();
-  const url = overrideGlbUrl || config.glbUrl;
+  const defaultUrl = `./assets/${config.name}.glb`;
+  const fallbackUrl = `/assets/${config.name}.glb`;
+  const url = overrideGlbUrl || config.glbUrl || defaultUrl;
   let gltf;
 
   try {
     gltf = await loader.loadAsync(url);
   } catch (err) {
-    console.warn(`Failed to load ${url}, attempting fallback ${config.fallbackGlbUrl}`, err);
-    gltf = await loader.loadAsync(config.fallbackGlbUrl);
+    console.warn(`Failed to load ${url}, attempting fallback ${fallbackUrl}`, err);
+    gltf = await loader.loadAsync(fallbackUrl);
   }
 
   const model = gltf.scene;

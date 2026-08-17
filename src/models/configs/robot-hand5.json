@@ -1,13 +1,10 @@
 {
-  "id": "five",
   "name": "robot-hand5",
   "switchLabel": "Tay 5 ngón",
   "title": "Bàn tay robot · 5 ngón",
   "subtitle": "Điều khiển từng khớp bằng thanh trượt, hoặc chọn một thế tay có sẵn. Kéo chuột trên khung 3D để quay góc nhìn.",
   "hint": "Góc tính theo độ. MCP = khớp bàn–ngón, PIP = khớp giữa, DIP = khớp đầu ngón. Bản xuất OBJ/GLB giữ đúng thế tay hiện tại.",
   "defaultPose": "Nghỉ",
-  "glbUrl": "./assets/robot-hand5.glb",
-  "fallbackGlbUrl": "/assets/robot-hand5.glb",
   "fingers": [
     {
       "key": "thumb",
