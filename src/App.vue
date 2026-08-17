@@ -6,12 +6,15 @@ import ControlPanel from './components/ControlPanel.vue';
 import { loadHandModelFromConfig } from './models/hand-loader.js';
 import hand5Config from './models/configs/robot-hand5.json';
 import hand3Config from './models/configs/robot-hand3.json';
+import hand5Poses from './models/poses/robot-hand5-poses.json';
+import hand3Poses from './models/poses/robot-hand3-poses.json';
 
 const DEG = Math.PI / 180;
 
-function createProfile(config) {
+function createProfile(config, poses) {
   return {
     ...config,
+    poses: poses || config.poses || {},
     buildModel: (THREE, url) => loadHandModelFromConfig(THREE, config, url),
     thumbExtra: config.thumbExtra ? {
       ...config.thumbExtra,
@@ -32,8 +35,8 @@ function createProfile(config) {
 }
 
 const PROFILES = {
-  five: createProfile(hand5Config),
-  three: createProfile(hand3Config),
+  five: createProfile(hand5Config, hand5Poses),
+  three: createProfile(hand3Config, hand3Poses),
 };
 
 const stageRef = ref(null);

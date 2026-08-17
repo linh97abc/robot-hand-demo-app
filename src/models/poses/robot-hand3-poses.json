@@ -1,0 +1,37 @@
+{
+  "Nghỉ": {
+    "index.0": 110, "index.1": 112,
+    "middle.0": 110, "middle.1": 112,
+    "thumb.0": 112, "thumb.1": 115, "thumb.yaw": 25
+  },
+  "Thẳng đứng": {
+    "index.0": 90, "index.1": 90,
+    "middle.0": 90, "middle.1": 90,
+    "thumb.0": 90, "thumb.1": 90, "thumb.yaw": 0
+  },
+  "Mở": {
+    "index.0": 100, "index.1": 105,
+    "middle.0": 100, "middle.1": 105,
+    "thumb.0": 100, "thumb.1": 105, "thumb.yaw": 40
+  },
+  "Nắm": {
+    "index.0": 160, "index.1": 180,
+    "middle.0": 162, "middle.1": 180,
+    "thumb.0": 145, "thumb.1": 160, "thumb.yaw": 170
+  },
+  "Kẹp": {
+    "index.0": 130, "index.1": 140,
+    "middle.0": 160, "middle.1": 178,
+    "thumb.0": 125, "thumb.1": 132, "thumb.yaw": 120
+  },
+  "Chỉ": {
+    "index.0": 90, "index.1": 90,
+    "middle.0": 162, "middle.1": 180,
+    "thumb.0": 140, "thumb.1": 154, "thumb.yaw": 150
+  },
+  "Chữ V": {
+    "index.0": 90, "index.1": 90,
+    "middle.0": 90, "middle.1": 90,
+    "thumb.0": 140, "thumb.1": 154, "thumb.yaw": 150
+  }
+}
