@@ -2,12 +2,11 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 /**
  * Universal Loader Function that builds a hand model rig from GLB file and JSON config.
- * @param {Object} THREE - Three.js instance
  * @param {Object} config - Hand model JSON configuration
  * @param {String} [overrideGlbUrl] - Optional GLB URL override
  * @returns {Promise<{model: Object, RIG: Object, wrist: Object}>}
  */
-export async function loadHandModelFromConfig(THREE, config, overrideGlbUrl) {
+export async function loadHandModelFromConfig(config, overrideGlbUrl) {
   const loader = new GLTFLoader();
   const defaultUrl = `./assets/${config.name}.glb`;
   const fallbackUrl = `/assets/${config.name}.glb`;

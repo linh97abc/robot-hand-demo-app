@@ -15,7 +15,7 @@ function createProfile(config, poses) {
   return {
     ...config,
     poses: poses || config.poses || {},
-    buildModel: (THREE, url) => loadHandModelFromConfig(THREE, config, url),
+    buildModel: (url) => loadHandModelFromConfig(config, url),
     thumbExtra: config.thumbExtra ? {
       ...config.thumbExtra,
       read: (RIG) => {
@@ -55,14 +55,14 @@ let animating = false;
 function applyModelRotations() {
   if (!RIG) return;
   const profile = PROFILES[currentProfileKey.value];
-  const isOffset90 = currentProfileKey.value === 'three';
+  const offset = profile.jointAngleOffset || 0;
 
   profile.fingers.forEach((f) => {
     const fingerRoot = RIG[f.key];
     if (fingerRoot && fingerRoot.userData && fingerRoot.userData.joints) {
       fingerRoot.userData.joints.forEach((jointNode, i) => {
         const val = state[`${f.key}.${i}`] ?? 0;
-        jointNode.rotation.x = (isOffset90 ? val - 90 : val) * DEG;
+        jointNode.rotation.x = (val + offset) * DEG;
       });
     }
   });
@@ -101,11 +101,11 @@ function animateStep() {
 
 function goToPose(pose) {
   const profile = PROFILES[currentProfileKey.value];
-  // Calculate REST defaults for current profile
+  const offset = profile.jointAngleOffset || 0;
   const REST = {};
   profile.fingers.forEach((f) => {
     f.joints.forEach((_, i) => {
-      REST[`${f.key}.${i}`] = currentProfileKey.value === 'three' ? 90 : 0;
+      REST[`${f.key}.${i}`] = -offset;
     });
   });
   if (profile.thumbExtra) {
@@ -148,9 +148,7 @@ async function loadProfile(profileKey) {
   currentProfileKey.value = profileKey;
 
   try {
-    const stage = stageRef.value;
-    const THREE_INST = stage ? stage.getTHREE() : THREE;
-    const result = await profile.buildModel(THREE_INST);
+    const result = await profile.buildModel();
 
     activeModel.value = result.model;
     RIG = result.RIG;
@@ -160,14 +158,14 @@ async function loadProfile(profileKey) {
     Object.keys(state).forEach((k) => delete state[k]);
     Object.keys(target).forEach((k) => delete target[k]);
 
-    // Read initial joint angles
-    const isOffset90 = profileKey === 'three';
+    // Read initial joint angles from model using jointAngleOffset config
+    const offset = profile.jointAngleOffset || 0;
     profile.fingers.forEach((f) => {
       const fingerRoot = RIG[f.key];
       if (fingerRoot && fingerRoot.userData && fingerRoot.userData.joints) {
         fingerRoot.userData.joints.forEach((jointNode, i) => {
           const rx = jointNode ? jointNode.rotation.x / DEG : 0;
-          const val = Math.round(isOffset90 ? rx + 90 : rx);
+          const val = Math.round(rx - offset);
           state[`${f.key}.${i}`] = val;
           target[`${f.key}.${i}`] = val;
         });
