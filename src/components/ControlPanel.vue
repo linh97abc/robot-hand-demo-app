@@ -33,7 +33,7 @@ function onSliderInput(key, value) {
             :key="key"
             :value="key"
           >
-            {{ profile.switchLabel || profile.title }}
+            {{ profile.displayName || profile.label || profile.title }}
           </option>
         </select>
         <span class="select-chevron">▾</span>
