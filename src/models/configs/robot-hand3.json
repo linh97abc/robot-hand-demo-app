@@ -6,11 +6,11 @@
   "fingers": {
     "index": {
       "rootNode": "index",
-      "joints": ["index_joint1", "index_joint2", "index_joint3"]
+      "joints": ["index_joint1", "index_joint2"]
     },
     "middle": {
       "rootNode": "middle",
-      "joints": ["middle_joint1", "middle_joint2", "middle_joint3"]
+      "joints": ["middle_joint1", "middle_joint2"]
     },
     "thumb": {
       "rootNode": "thumb",
