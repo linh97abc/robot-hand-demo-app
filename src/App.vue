@@ -41,15 +41,19 @@ function applyModelRotations() {
     profile.thumbExtra.apply(RIG, wrist, val);
   }
 
-  if (profile.hasWrist && wrist) {
-    const pitchRanges = profile.wristRanges?.pitch || [-35, 35];
-    const yawRanges = profile.wristRanges?.yaw || [-45, 45];
-    const pitchPermille = state['wrist.pitch'] ?? 500;
-    const yawPermille = state['wrist.yaw'] ?? 500;
-    const pitchDeg = pitchRanges[0] + (pitchPermille / 1000) * (pitchRanges[1] - pitchRanges[0]);
-    const yawDeg = yawRanges[0] + (yawPermille / 1000) * (yawRanges[1] - yawRanges[0]);
-    wrist.rotation.x = pitchDeg * DEG;
-    wrist.rotation.y = yawDeg * DEG;
+  if (profile.wrist && wrist) {
+    if (profile.wrist.pitchRange) {
+      const pitchRanges = profile.wrist.pitchRange;
+      const pitchPermille = state['wrist.pitch'] ?? 500;
+      const pitchDeg = pitchRanges[0] + (pitchPermille / 1000) * (pitchRanges[1] - pitchRanges[0]);
+      wrist.rotation.x = pitchDeg * DEG;
+    }
+    if (profile.wrist.yawRange) {
+      const yawRanges = profile.wrist.yawRange;
+      const yawPermille = state['wrist.yaw'] ?? 500;
+      const yawDeg = yawRanges[0] + (yawPermille / 1000) * (yawRanges[1] - yawRanges[0]);
+      wrist.rotation.y = yawDeg * DEG;
+    }
   }
 
   stageRef.value?.requestRender();
@@ -85,9 +89,9 @@ function goToPose(pose) {
   if (profile.thumbExtra) {
     REST[profile.thumbExtra.key] = 0;
   }
-  if (profile.hasWrist) {
-    REST['wrist.pitch'] = 500; // 0 degrees
-    REST['wrist.yaw'] = 500;   // 0 degrees
+  if (profile.wrist) {
+    if (profile.wrist.pitchRange) REST['wrist.pitch'] = 500;
+    if (profile.wrist.yawRange) REST['wrist.yaw'] = 500;
   }
 
   Object.assign(target, REST, pose);
@@ -154,11 +158,15 @@ async function loadProfile(profileKey) {
       target[profile.thumbExtra.key] = permilleVal;
     }
 
-    if (profile.hasWrist) {
-      state['wrist.pitch'] = 500;
-      target['wrist.pitch'] = 500;
-      state['wrist.yaw'] = 500;
-      target['wrist.yaw'] = 500;
+    if (profile.wrist) {
+      if (profile.wrist.pitchRange) {
+        state['wrist.pitch'] = 500;
+        target['wrist.pitch'] = 500;
+      }
+      if (profile.wrist.yawRange) {
+        state['wrist.yaw'] = 500;
+        target['wrist.yaw'] = 500;
+      }
     }
 
     // Select default pose from JSON config or pick first available pose

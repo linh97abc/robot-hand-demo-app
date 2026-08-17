@@ -61,12 +61,9 @@
     "axis": "z",
     "multiplier": 1
   },
-  "hasWrist": true,
   "wrist": {
-    "nodeName": "wrist_pivot"
-  },
-  "wristRanges": {
-    "pitch": [-35, 35],
-    "yaw": [-45, 45]
+    "nodeName": "wrist_pivot",
+    "pitchRange": [-35, 35],
+    "yawRange": [-45, 45]
   }
 }

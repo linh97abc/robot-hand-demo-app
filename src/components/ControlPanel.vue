@@ -107,7 +107,7 @@ function onSliderInput(key, value) {
         </div>
 
         <!-- Wrist Group -->
-        <div v-if="currentProfile.hasWrist" class="group">
+        <div v-if="currentProfile.wrist" class="group">
           <h2>Cổ tay</h2>
 
           <label class="row">
