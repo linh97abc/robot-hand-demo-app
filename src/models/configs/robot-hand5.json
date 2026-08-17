@@ -3,10 +3,31 @@
   "name": "robot-hand5",
   "glbUrl": "./assets/robot-hand5.glb",
   "fallbackGlbUrl": "/assets/robot-hand5.glb",
-  "fingerNames": ["index", "middle", "ring", "pinky", "thumb"],
+  "fingers": {
+    "thumb": {
+      "rootNode": "thumb",
+      "joints": ["thumb_joint1", "thumb_joint2"]
+    },
+    "index": {
+      "rootNode": "index",
+      "joints": ["index_joint1", "index_joint2", "index_joint3"]
+    },
+    "middle": {
+      "rootNode": "middle",
+      "joints": ["middle_joint1", "middle_joint2", "middle_joint3"]
+    },
+    "ring": {
+      "rootNode": "ring",
+      "joints": ["ring_joint1", "ring_joint2", "ring_joint3"]
+    },
+    "pinky": {
+      "rootNode": "pinky",
+      "joints": ["pinky_joint1", "pinky_joint2", "pinky_joint3"]
+    }
+  },
   "thumbMount": {
-    "nodeName": "thumb_cmc_mount",
-    "key": "thumbMount"
+    "key": "thumbMount",
+    "nodeName": "thumb_cmc_mount"
   },
   "wrist": {
     "nodeName": "wrist_pivot"

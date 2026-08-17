@@ -3,10 +3,23 @@
   "name": "robot-hand3",
   "glbUrl": "./assets/robot-hand3.glb",
   "fallbackGlbUrl": "/assets/robot-hand3.glb",
-  "fingerNames": ["index", "middle", "thumb"],
+  "fingers": {
+    "index": {
+      "rootNode": "index",
+      "joints": ["index_joint1", "index_joint2", "index_joint3"]
+    },
+    "middle": {
+      "rootNode": "middle",
+      "joints": ["middle_joint1", "middle_joint2", "middle_joint3"]
+    },
+    "thumb": {
+      "rootNode": "thumb",
+      "joints": ["thumb_joint1", "thumb_joint2"]
+    }
+  },
   "thumbMount": {
-    "nodeName": "thumb_yaw_mount",
-    "key": "thumbYaw"
+    "key": "thumbYaw",
+    "nodeName": "thumb_yaw_mount"
   },
   "wrist": {
     "nodeName": "wrist_pivot_inert"

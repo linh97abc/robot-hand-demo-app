@@ -22,21 +22,19 @@ export async function loadHandModelFromConfig(THREE, config, overrideGlbUrl) {
   const model = gltf.scene;
   const RIG = {};
 
-  // Build finger joint rig
-  if (Array.isArray(config.fingerNames)) {
-    config.fingerNames.forEach((name) => {
-      const root = model.getObjectByName(name);
-      if (!root) return;
-      root.userData.joints = [];
-      let j = 1;
-      while (true) {
-        const joint = model.getObjectByName(`${name}_joint${j}`);
-        if (!joint) break;
-        root.userData.joints.push(joint);
-        j++;
-      }
-      RIG[name] = root;
-    });
+  // Build finger joint rig from JSON configuration (no hardcoded naming assumption)
+  if (config.fingers && typeof config.fingers === 'object') {
+    for (const [fingerKey, fingerConfig] of Object.entries(config.fingers)) {
+      const rootNodeName = fingerConfig.rootNode || fingerKey;
+      const root = model.getObjectByName(rootNodeName);
+      if (!root) continue;
+
+      root.userData.joints = Array.isArray(fingerConfig.joints)
+        ? fingerConfig.joints.map((jName) => model.getObjectByName(jName)).filter(Boolean)
+        : [];
+
+      RIG[fingerKey] = root;
+    }
   }
 
   // Parse thumb mount
