@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { loadHandModelFromConfig } from './hand-loader.js';
 import hand5Config from './configs/robot-hand5.json';
 import hand3Config from './configs/robot-hand3.json';
@@ -39,10 +40,54 @@ function createProfile(config, poses) {
  * Calculates joint offset angle using per-joint config fallback to model profile default.
  */
 export function getJointOffset(profile, fingerConfig, jointIndex) {
+  const jointDef = fingerConfig?.joints?.[jointIndex];
+  if (typeof jointDef === 'object' && jointDef.jointOffset !== undefined) {
+    return jointDef.jointOffset;
+  }
   if (fingerConfig && fingerConfig.jointOffsets && fingerConfig.jointOffsets[jointIndex] !== undefined) {
     return fingerConfig.jointOffsets[jointIndex];
   }
   return profile.jointAngleOffset || 0;
+}
+
+/**
+ * Gets joint limits { lower, upper } from URDF joint definition or finger max config.
+ */
+export function getJointLimits(jointNode, fingerConfig, jointIndex) {
+  const urdfLimits = jointNode?.userData?.urdfDef?.limits;
+  if (urdfLimits && urdfLimits.upper !== undefined) {
+    return {
+      lower: urdfLimits.lower ?? 0,
+      upper: urdfLimits.upper,
+    };
+  }
+  const maxVal = (fingerConfig && fingerConfig.max && fingerConfig.max[jointIndex] !== undefined)
+    ? fingerConfig.max[jointIndex]
+    : 180;
+  return { lower: 0, upper: maxVal };
+}
+
+/**
+ * Gets normalized Three.js 3D vector for joint rotation axis (supports arbitrary [x,y,z] vectors & 'x','y','z').
+ */
+export function getJointAxisVector(jointNode, fingerConfig, jointIndex) {
+  const urdfAxis = jointNode?.userData?.urdfDef?.axis;
+  if (urdfAxis) {
+    if (Array.isArray(urdfAxis)) {
+      return new THREE.Vector3(...urdfAxis).normalize();
+    }
+    if (urdfAxis === 'y') return new THREE.Vector3(0, 1, 0);
+    if (urdfAxis === 'z') return new THREE.Vector3(0, 0, 1);
+    return new THREE.Vector3(1, 0, 0);
+  }
+
+  const axisChar = (fingerConfig && fingerConfig.jointAxes && fingerConfig.jointAxes[jointIndex])
+    ? fingerConfig.jointAxes[jointIndex]
+    : 'x';
+
+  if (axisChar === 'y') return new THREE.Vector3(0, 1, 0);
+  if (axisChar === 'z') return new THREE.Vector3(0, 0, 1);
+  return new THREE.Vector3(1, 0, 0);
 }
 
 /**

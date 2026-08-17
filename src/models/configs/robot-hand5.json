@@ -10,41 +10,134 @@
       "key": "thumb",
       "label": "Ngón cái",
       "rootNode": "thumb",
-      "joints": ["thumb_joint1", "thumb_joint2"],
-      "jointLabels": ["MCP", "IP"],
-      "max": [70, 80]
+      "joints": [
+        {
+          "name": "thumb_joint1",
+          "label": "MCP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 70 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        },
+        {
+          "name": "thumb_joint2",
+          "label": "IP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 80 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        }
+      ]
     },
     {
       "key": "index",
       "label": "Ngón trỏ",
       "rootNode": "index",
-      "joints": ["index_joint1", "index_joint2", "index_joint3"],
-      "jointLabels": ["MCP", "PIP", "DIP"],
-      "max": [90, 100, 80]
+      "joints": [
+        {
+          "name": "index_joint1",
+          "label": "MCP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 90 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        },
+        {
+          "name": "index_joint2",
+          "label": "PIP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 100 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        },
+        {
+          "name": "index_joint3",
+          "label": "DIP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 80 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        }
+      ]
     },
     {
       "key": "middle",
       "label": "Ngón giữa",
       "rootNode": "middle",
-      "joints": ["middle_joint1", "middle_joint2", "middle_joint3"],
-      "jointLabels": ["MCP", "PIP", "DIP"],
-      "max": [90, 100, 80]
+      "joints": [
+        {
+          "name": "middle_joint1",
+          "label": "MCP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 90 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        },
+        {
+          "name": "middle_joint2",
+          "label": "PIP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 100 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        },
+        {
+          "name": "middle_joint3",
+          "label": "DIP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 80 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        }
+      ]
     },
     {
       "key": "ring",
       "label": "Ngón áp út",
       "rootNode": "ring",
-      "joints": ["ring_joint1", "ring_joint2", "ring_joint3"],
-      "jointLabels": ["MCP", "PIP", "DIP"],
-      "max": [90, 100, 80]
+      "joints": [
+        {
+          "name": "ring_joint1",
+          "label": "MCP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 90 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        },
+        {
+          "name": "ring_joint2",
+          "label": "PIP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 100 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        },
+        {
+          "name": "ring_joint3",
+          "label": "DIP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 80 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        }
+      ]
     },
     {
       "key": "pinky",
       "label": "Ngón nhỏ",
       "rootNode": "pinky",
-      "joints": ["pinky_joint1", "pinky_joint2", "pinky_joint3"],
-      "jointLabels": ["MCP", "PIP", "DIP"],
-      "max": [90, 100, 80]
+      "joints": [
+        {
+          "name": "pinky_joint1",
+          "label": "MCP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 90 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        },
+        {
+          "name": "pinky_joint2",
+          "label": "PIP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 100 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        },
+        {
+          "name": "pinky_joint3",
+          "label": "DIP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 80 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] }
+        }
+      ]
     }
   ],
   "thumbMount": {

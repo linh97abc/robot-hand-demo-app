@@ -78,7 +78,7 @@ function onSliderInput(key, value) {
             :key="index"
             class="row"
           >
-            <span>{{ finger.jointLabels ? finger.jointLabels[index] : jointLabel }}</span>
+            <span>{{ typeof jointLabel === 'object' ? jointLabel.label : (finger.jointLabels ? finger.jointLabels[index] : jointLabel) }}</span>
             <input
               type="range"
               :min="0"

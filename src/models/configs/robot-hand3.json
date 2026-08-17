@@ -11,28 +11,64 @@
       "key": "thumb",
       "label": "Ngón cái",
       "rootNode": "thumb",
-      "joints": ["thumb_joint1", "thumb_joint2"],
-      "jointLabels": ["MCP", "IP"],
-      "max": [180, 180],
-      "jointOffsets": [-90, -90]
+      "joints": [
+        {
+          "name": "thumb_joint1",
+          "label": "MCP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 180 },
+          "jointOffset": -90
+        },
+        {
+          "name": "thumb_joint2",
+          "label": "IP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 180 },
+          "jointOffset": -90
+        }
+      ]
     },
     {
       "key": "index",
       "label": "Ngón trỏ",
       "rootNode": "index",
-      "joints": ["index_joint1", "index_joint2"],
-      "jointLabels": ["MCP", "PIP"],
-      "max": [180, 180],
-      "jointOffsets": [-90, -90]
+      "joints": [
+        {
+          "name": "index_joint1",
+          "label": "MCP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 180 },
+          "jointOffset": -90
+        },
+        {
+          "name": "index_joint2",
+          "label": "PIP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 180 },
+          "jointOffset": -90
+        }
+      ]
     },
     {
       "key": "middle",
       "label": "Ngón giữa",
       "rootNode": "middle",
-      "joints": ["middle_joint1", "middle_joint2"],
-      "jointLabels": ["MCP", "PIP"],
-      "max": [180, 180],
-      "jointOffsets": [-90, -90]
+      "joints": [
+        {
+          "name": "middle_joint1",
+          "label": "MCP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 180 },
+          "jointOffset": -90
+        },
+        {
+          "name": "middle_joint2",
+          "label": "PIP",
+          "axis": [1, 0, 0],
+          "limits": { "lower": 0, "upper": 180 },
+          "jointOffset": -90
+        }
+      ]
     }
   ],
   "thumbMount": {
@@ -48,6 +84,5 @@
     "targetKey": "thumbYaw",
     "axis": "y",
     "multiplier": -1
-  },
-  "hasWrist": false
+  }
 }

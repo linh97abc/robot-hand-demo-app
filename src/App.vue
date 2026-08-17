@@ -3,7 +3,7 @@ import { ref, reactive, onMounted, shallowRef } from 'vue';
 import * as THREE from 'three';
 import ThreeStage from './components/ThreeStage.vue';
 import ControlPanel from './components/ControlPanel.vue';
-import { PROFILES, getJointOffset, DEG } from './models/profiles.js';
+import { PROFILES, getJointOffset, getJointLimits, getJointAxisVector, DEG } from './models/profiles.js';
 
 const defaultProfileKey = Object.keys(PROFILES)[0] || '';
 const stageRef = ref(null);
@@ -29,9 +29,10 @@ function applyModelRotations() {
       fingerRoot.userData.joints.forEach((jointNode, i) => {
         const offset = getJointOffset(profile, f, i);
         const permilleVal = state[`${f.key}.${i}`] ?? 0;
-        const maxAngle = (f.max && f.max[i] !== undefined) ? f.max[i] : 180;
-        const actualDeg = (permilleVal / 1000) * maxAngle;
-        jointNode.rotation.x = (actualDeg + offset) * DEG;
+        const limits = getJointLimits(jointNode, f, i);
+        const actualDeg = limits.lower + (permilleVal / 1000) * (limits.upper - limits.lower);
+        const axisVec = getJointAxisVector(jointNode, f, i);
+        jointNode.quaternion.setFromAxisAngle(axisVec, (actualDeg + offset) * DEG);
       });
     }
   });
@@ -142,10 +143,13 @@ async function loadProfile(profileKey) {
       if (fingerRoot && fingerRoot.userData && fingerRoot.userData.joints) {
         fingerRoot.userData.joints.forEach((jointNode, i) => {
           const offset = getJointOffset(profile, f, i);
+          const limits = getJointLimits(jointNode, f, i);
           const rx = jointNode ? jointNode.rotation.x / DEG : 0;
           const actualDeg = rx - offset;
-          const maxAngle = (f.max && f.max[i] !== undefined) ? f.max[i] : 180;
-          const permilleVal = Math.round(Math.max(0, Math.min(1000, (actualDeg / maxAngle) * 1000)));
+          const span = limits.upper - limits.lower;
+          const permilleVal = span > 0
+            ? Math.round(Math.max(0, Math.min(1000, ((actualDeg - limits.lower) / span) * 1000)))
+            : 0;
           state[`${f.key}.${i}`] = permilleVal;
           target[`${f.key}.${i}`] = permilleVal;
         });
