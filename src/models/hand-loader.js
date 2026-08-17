@@ -2,6 +2,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 /**
  * Universal Loader Function that builds a hand model rig from GLB file and JSON config.
+ * Supports both string joint arrays and rich URDF joint objects.
  * @param {Object} config - Hand model JSON configuration
  * @param {String} [overrideGlbUrl] - Optional GLB URL override
  * @returns {Promise<{model: Object, RIG: Object, wrist: Object}>}
@@ -35,7 +36,14 @@ export async function loadHandModelFromConfig(config, overrideGlbUrl) {
     if (!root) return;
 
     root.userData.joints = Array.isArray(fingerConfig.joints)
-      ? fingerConfig.joints.map((jName) => model.getObjectByName(jName)).filter(Boolean)
+      ? fingerConfig.joints.map((jointDef) => {
+          const nodeName = typeof jointDef === 'string' ? jointDef : (jointDef.name || jointDef.nodeName);
+          const jointNode = model.getObjectByName(nodeName);
+          if (jointNode && typeof jointDef === 'object') {
+            jointNode.userData.urdfDef = jointDef;
+          }
+          return jointNode;
+        }).filter(Boolean)
       : [];
 
     RIG[fingerKey] = root;
