@@ -72,7 +72,13 @@
     "yaw": [-45, 45]
   },
   "poses": {
-    "Nghỉ": {},
+    "Nghỉ": {
+      "thumb.0": 10, "thumb.1": 19, "thumb.spread": 58,
+      "index.0": 11, "index.1": 17, "index.2": 13,
+      "middle.0": 9, "middle.1": 15, "middle.2": 11,
+      "ring.0": 11, "ring.1": 17, "ring.2": 14,
+      "pinky.0": 15, "pinky.1": 19, "pinky.2": 15
+    },
     "Mở": {
       "index.0": 0, "index.1": 0, "index.2": 0,
       "middle.0": 0, "middle.1": 0, "middle.2": 0,
