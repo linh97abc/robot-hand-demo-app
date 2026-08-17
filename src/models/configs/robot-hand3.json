@@ -3,7 +3,7 @@
   "switchLabel": "Tay 3 ngón",
   "title": "Bàn tay robot · 3 ngón (gripper)",
   "subtitle": "Gripper công nghiệp 3 ngón, 7 khớp — mỗi khớp có motor riêng, quay được tối đa 180°. Ngón cái xoay quanh trục đứng để khép sát vào 2 ngón kia.",
-  "hint": "Góc tính theo độ, mỗi khớp hành trình 0–180°. Với cả 3 ngón (cái, trỏ, giữa), 90° là vị trí thẳng đứng. MCP/PIP/IP là các khớp có trục nằm ngang; \"Xoay đế\" là khớp trục đứng ở gốc ngón cái.",
+  "hint": "Giá trị khớp chuẩn phần nghìn (0–1000). Với cả 3 ngón (cái, trỏ, giữa), 500 là vị trí thẳng đứng. MCP/PIP/IP là các khớp có trục nằm ngang; \"Xoay đế\" là khớp trục đứng ở gốc ngón cái.",
   "defaultPose": "Nghỉ",
   "jointAngleOffset": -90,
   "fingers": [

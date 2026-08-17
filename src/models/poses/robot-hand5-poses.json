@@ -1,44 +1,44 @@
 {
   "Nghỉ": {
-    "thumb.0": 10, "thumb.1": 19, "thumb.spread": 58,
-    "index.0": 11, "index.1": 17, "index.2": 13,
-    "middle.0": 9, "middle.1": 15, "middle.2": 11,
-    "ring.0": 11, "ring.1": 17, "ring.2": 14,
-    "pinky.0": 15, "pinky.1": 19, "pinky.2": 15
+    "thumb.0": 143, "thumb.1": 238, "thumb.spread": 550,
+    "index.0": 122, "index.1": 170, "index.2": 163,
+    "middle.0": 100, "middle.1": 150, "middle.2": 138,
+    "ring.0": 122, "ring.1": 170, "ring.2": 175,
+    "pinky.0": 167, "pinky.1": 190, "pinky.2": 188
   },
   "Mở": {
     "index.0": 0, "index.1": 0, "index.2": 0,
     "middle.0": 0, "middle.1": 0, "middle.2": 0,
     "ring.0": 0, "ring.1": 0, "ring.2": 0,
     "pinky.0": 0, "pinky.1": 0, "pinky.2": 0,
-    "thumb.0": 0, "thumb.1": 0, "thumb.spread": 78
+    "thumb.0": 0, "thumb.1": 0, "thumb.spread": 883
   },
   "Nắm": {
-    "index.0": 82, "index.1": 95, "index.2": 68,
-    "middle.0": 84, "middle.1": 97, "middle.2": 70,
-    "ring.0": 82, "ring.1": 95, "ring.2": 68,
-    "pinky.0": 80, "pinky.1": 92, "pinky.2": 66,
-    "thumb.0": 45, "thumb.1": 58, "thumb.spread": 38
+    "index.0": 911, "index.1": 950, "index.2": 850,
+    "middle.0": 933, "middle.1": 970, "middle.2": 875,
+    "ring.0": 911, "ring.1": 950, "ring.2": 850,
+    "pinky.0": 889, "pinky.1": 920, "pinky.2": 825,
+    "thumb.0": 643, "thumb.1": 725, "thumb.spread": 217
   },
   "Kẹp": {
-    "index.0": 52, "index.1": 42, "index.2": 22,
-    "middle.0": 78, "middle.1": 90, "middle.2": 62,
-    "ring.0": 80, "ring.1": 92, "ring.2": 64,
-    "pinky.0": 78, "pinky.1": 90, "pinky.2": 62,
-    "thumb.0": 38, "thumb.1": 44, "thumb.spread": 47
+    "index.0": 578, "index.1": 420, "index.2": 275,
+    "middle.0": 867, "middle.1": 900, "middle.2": 775,
+    "ring.0": 889, "ring.1": 920, "ring.2": 800,
+    "pinky.0": 867, "pinky.1": 900, "pinky.2": 775,
+    "thumb.0": 543, "thumb.1": 550, "thumb.spread": 367
   },
   "Chỉ": {
     "index.0": 0, "index.1": 0, "index.2": 0,
-    "middle.0": 84, "middle.1": 97, "middle.2": 70,
-    "ring.0": 82, "ring.1": 95, "ring.2": 68,
-    "pinky.0": 80, "pinky.1": 92, "pinky.2": 66,
-    "thumb.0": 34, "thumb.1": 50, "thumb.spread": 40
+    "middle.0": 933, "middle.1": 970, "middle.2": 875,
+    "ring.0": 911, "ring.1": 950, "ring.2": 850,
+    "pinky.0": 889, "pinky.1": 920, "pinky.2": 825,
+    "thumb.0": 486, "thumb.1": 625, "thumb.spread": 250
   },
   "Chữ V": {
     "index.0": 0, "index.1": 0, "index.2": 0,
     "middle.0": 0, "middle.1": 0, "middle.2": 0,
-    "ring.0": 82, "ring.1": 95, "ring.2": 68,
-    "pinky.0": 80, "pinky.1": 92, "pinky.2": 66,
-    "thumb.0": 40, "thumb.1": 52, "thumb.spread": 36
+    "ring.0": 911, "ring.1": 950, "ring.2": 850,
+    "pinky.0": 889, "pinky.1": 920, "pinky.2": 825,
+    "thumb.0": 571, "thumb.1": 650, "thumb.spread": 183
   }
 }

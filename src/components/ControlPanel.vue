@@ -74,11 +74,11 @@ function onSliderInput(key, value) {
             <input
               type="range"
               :min="0"
-              :max="finger.max[index]"
+              :max="1000"
               :value="Math.round(state[`${finger.key}.${index}`] || 0)"
               @input="e => onSliderInput(`${finger.key}.${index}`, e.target.value)"
             />
-            <output>{{ Math.round(state[`${finger.key}.${index}`] || 0) }}°</output>
+            <output>{{ Math.round(state[`${finger.key}.${index}`] || 0) }}</output>
           </label>
 
           <!-- Thumb Extra Slider -->
@@ -89,12 +89,12 @@ function onSliderInput(key, value) {
             <span>{{ currentProfile.thumbExtra.label }}</span>
             <input
               type="range"
-              :min="currentProfile.thumbExtra.min"
-              :max="currentProfile.thumbExtra.max"
+              :min="0"
+              :max="1000"
               :value="Math.round(state[currentProfile.thumbExtra.key] || 0)"
               @input="e => onSliderInput(currentProfile.thumbExtra.key, e.target.value)"
             />
-            <output>{{ Math.round(state[currentProfile.thumbExtra.key] || 0) }}°</output>
+            <output>{{ Math.round(state[currentProfile.thumbExtra.key] || 0) }}</output>
           </label>
         </div>
 
@@ -106,24 +106,24 @@ function onSliderInput(key, value) {
             <span>Gập</span>
             <input
               type="range"
-              :min="currentProfile.wristRanges.pitch[0]"
-              :max="currentProfile.wristRanges.pitch[1]"
+              :min="0"
+              :max="1000"
               :value="Math.round(state['wrist.pitch'] || 0)"
               @input="e => onSliderInput('wrist.pitch', e.target.value)"
             />
-            <output>{{ Math.round(state['wrist.pitch'] || 0) }}°</output>
+            <output>{{ Math.round(state['wrist.pitch'] || 0) }}</output>
           </label>
 
           <label class="row">
             <span>Xoay</span>
             <input
               type="range"
-              :min="currentProfile.wristRanges.yaw[0]"
-              :max="currentProfile.wristRanges.yaw[1]"
+              :min="0"
+              :max="1000"
               :value="Math.round(state['wrist.yaw'] || 0)"
               @input="e => onSliderInput('wrist.yaw', e.target.value)"
             />
-            <output>{{ Math.round(state['wrist.yaw'] || 0) }}°</output>
+            <output>{{ Math.round(state['wrist.yaw'] || 0) }}</output>
           </label>
         </div>
       </template>

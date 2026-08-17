@@ -1,37 +1,37 @@
 {
   "Nghỉ": {
-    "index.0": 110, "index.1": 112,
-    "middle.0": 110, "middle.1": 112,
-    "thumb.0": 112, "thumb.1": 115, "thumb.yaw": 25
+    "index.0": 611, "index.1": 622,
+    "middle.0": 611, "middle.1": 622,
+    "thumb.0": 622, "thumb.1": 639, "thumb.yaw": 139
   },
   "Thẳng đứng": {
-    "index.0": 90, "index.1": 90,
-    "middle.0": 90, "middle.1": 90,
-    "thumb.0": 90, "thumb.1": 90, "thumb.yaw": 0
+    "index.0": 500, "index.1": 500,
+    "middle.0": 500, "middle.1": 500,
+    "thumb.0": 500, "thumb.1": 500, "thumb.yaw": 0
   },
   "Mở": {
-    "index.0": 100, "index.1": 105,
-    "middle.0": 100, "middle.1": 105,
-    "thumb.0": 100, "thumb.1": 105, "thumb.yaw": 40
+    "index.0": 556, "index.1": 583,
+    "middle.0": 556, "middle.1": 583,
+    "thumb.0": 556, "thumb.1": 583, "thumb.yaw": 222
   },
   "Nắm": {
-    "index.0": 160, "index.1": 180,
-    "middle.0": 162, "middle.1": 180,
-    "thumb.0": 145, "thumb.1": 160, "thumb.yaw": 170
+    "index.0": 889, "index.1": 1000,
+    "middle.0": 900, "middle.1": 1000,
+    "thumb.0": 806, "thumb.1": 889, "thumb.yaw": 944
   },
   "Kẹp": {
-    "index.0": 130, "index.1": 140,
-    "middle.0": 160, "middle.1": 178,
-    "thumb.0": 125, "thumb.1": 132, "thumb.yaw": 120
+    "index.0": 722, "index.1": 778,
+    "middle.0": 889, "middle.1": 989,
+    "thumb.0": 694, "thumb.1": 733, "thumb.yaw": 667
   },
   "Chỉ": {
-    "index.0": 90, "index.1": 90,
-    "middle.0": 162, "middle.1": 180,
-    "thumb.0": 140, "thumb.1": 154, "thumb.yaw": 150
+    "index.0": 500, "index.1": 500,
+    "middle.0": 900, "middle.1": 1000,
+    "thumb.0": 778, "thumb.1": 856, "thumb.yaw": 833
   },
   "Chữ V": {
-    "index.0": 90, "index.1": 90,
-    "middle.0": 90, "middle.1": 90,
-    "thumb.0": 140, "thumb.1": 154, "thumb.yaw": 150
+    "index.0": 500, "index.1": 500,
+    "middle.0": 500, "middle.1": 500,
+    "thumb.0": 778, "thumb.1": 856, "thumb.yaw": 833
   }
 }

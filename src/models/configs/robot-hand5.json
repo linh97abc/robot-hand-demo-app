@@ -3,7 +3,7 @@
   "switchLabel": "Tay 5 ngón",
   "title": "Bàn tay robot · 5 ngón",
   "subtitle": "Điều khiển từng khớp bằng thanh trượt, hoặc chọn một thế tay có sẵn. Kéo chuột trên khung 3D để quay góc nhìn.",
-  "hint": "Góc tính theo độ. MCP = khớp bàn–ngón, PIP = khớp giữa, DIP = khớp đầu ngón. Bản xuất OBJ/GLB giữ đúng thế tay hiện tại.",
+  "hint": "Giá trị khớp chuẩn phần nghìn (0–1000). MCP = khớp bàn–ngón, PIP = khớp giữa, DIP = khớp đầu ngón. Bản xuất OBJ/GLB giữ đúng thế tay hiện tại.",
   "defaultPose": "Nghỉ",
   "fingers": [
     {

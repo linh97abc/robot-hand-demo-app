@@ -22,13 +22,19 @@ function createProfile(config, poses) {
         const node = RIG[config.thumbExtra.targetKey];
         if (!node) return 0;
         const mult = config.thumbExtra.multiplier || 1;
-        return (mult * node.rotation[config.thumbExtra.axis]) / DEG;
+        const actualDeg = (mult * node.rotation[config.thumbExtra.axis]) / DEG;
+        const span = (config.thumbExtra.max || 180) - (config.thumbExtra.min || 0);
+        if (span <= 0) return 0;
+        return Math.round(((actualDeg - (config.thumbExtra.min || 0)) / span) * 1000);
       },
-      apply: (RIG, wrist, v) => {
+      apply: (RIG, wrist, permilleVal) => {
         const node = RIG[config.thumbExtra.targetKey];
         if (!node) return;
         const mult = config.thumbExtra.multiplier || 1;
-        node.rotation[config.thumbExtra.axis] = mult * v * DEG;
+        const minDeg = config.thumbExtra.min || 0;
+        const maxDeg = config.thumbExtra.max || 180;
+        const actualDeg = minDeg + (permilleVal / 1000) * (maxDeg - minDeg);
+        node.rotation[config.thumbExtra.axis] = mult * actualDeg * DEG;
       },
     } : null,
   };
@@ -68,8 +74,10 @@ function applyModelRotations() {
     if (fingerRoot && fingerRoot.userData && fingerRoot.userData.joints) {
       fingerRoot.userData.joints.forEach((jointNode, i) => {
         const offset = getJointOffset(profile, f, i);
-        const val = state[`${f.key}.${i}`] ?? 0;
-        jointNode.rotation.x = (val + offset) * DEG;
+        const permilleVal = state[`${f.key}.${i}`] ?? 0;
+        const maxAngle = (f.max && f.max[i] !== undefined) ? f.max[i] : 180;
+        const actualDeg = (permilleVal / 1000) * maxAngle;
+        jointNode.rotation.x = (actualDeg + offset) * DEG;
       });
     }
   });
@@ -80,8 +88,14 @@ function applyModelRotations() {
   }
 
   if (profile.hasWrist && wrist) {
-    wrist.rotation.x = (state['wrist.pitch'] ?? 0) * DEG;
-    wrist.rotation.y = (state['wrist.yaw'] ?? 0) * DEG;
+    const pitchRanges = profile.wristRanges?.pitch || [-35, 35];
+    const yawRanges = profile.wristRanges?.yaw || [-45, 45];
+    const pitchPermille = state['wrist.pitch'] ?? 500;
+    const yawPermille = state['wrist.yaw'] ?? 500;
+    const pitchDeg = pitchRanges[0] + (pitchPermille / 1000) * (pitchRanges[1] - pitchRanges[0]);
+    const yawDeg = yawRanges[0] + (yawPermille / 1000) * (yawRanges[1] - yawRanges[0]);
+    wrist.rotation.x = pitchDeg * DEG;
+    wrist.rotation.y = yawDeg * DEG;
   }
 
   stageRef.value?.requestRender();
@@ -91,7 +105,7 @@ function animateStep() {
   let moving = false;
   for (const k in state) {
     const d = (target[k] ?? 0) - state[k];
-    if (Math.abs(d) > 0.15) {
+    if (Math.abs(d) > 0.5) {
       state[k] += d * 0.18;
       moving = true;
     } else {
@@ -111,16 +125,15 @@ function goToPose(pose) {
   const REST = {};
   profile.fingers.forEach((f) => {
     f.joints.forEach((_, i) => {
-      const offset = getJointOffset(profile, f, i);
-      REST[`${f.key}.${i}`] = -offset;
+      REST[`${f.key}.${i}`] = 0;
     });
   });
   if (profile.thumbExtra) {
-    REST[profile.thumbExtra.key] = currentProfileKey.value === 'three' ? 0 : 78;
+    REST[profile.thumbExtra.key] = 0;
   }
   if (profile.hasWrist) {
-    REST['wrist.pitch'] = 0;
-    REST['wrist.yaw'] = 0;
+    REST['wrist.pitch'] = 500; // 0 degrees
+    REST['wrist.yaw'] = 500;   // 0 degrees
   }
 
   Object.assign(target, REST, pose);
@@ -165,31 +178,33 @@ async function loadProfile(profileKey) {
     Object.keys(state).forEach((k) => delete state[k]);
     Object.keys(target).forEach((k) => delete target[k]);
 
-    // Read initial joint angles from model using per-joint offset config
+    // Read initial joint angles from model in 0-1000 permille scale
     profile.fingers.forEach((f) => {
       const fingerRoot = RIG[f.key];
       if (fingerRoot && fingerRoot.userData && fingerRoot.userData.joints) {
         fingerRoot.userData.joints.forEach((jointNode, i) => {
           const offset = getJointOffset(profile, f, i);
           const rx = jointNode ? jointNode.rotation.x / DEG : 0;
-          const val = Math.round(rx - offset);
-          state[`${f.key}.${i}`] = val;
-          target[`${f.key}.${i}`] = val;
+          const actualDeg = rx - offset;
+          const maxAngle = (f.max && f.max[i] !== undefined) ? f.max[i] : 180;
+          const permilleVal = Math.round(Math.max(0, Math.min(1000, (actualDeg / maxAngle) * 1000)));
+          state[`${f.key}.${i}`] = permilleVal;
+          target[`${f.key}.${i}`] = permilleVal;
         });
       }
     });
 
     if (profile.thumbExtra && profile.thumbExtra.read) {
-      const val = Math.round(profile.thumbExtra.read(RIG));
-      state[profile.thumbExtra.key] = val;
-      target[profile.thumbExtra.key] = val;
+      const permilleVal = Math.round(profile.thumbExtra.read(RIG));
+      state[profile.thumbExtra.key] = permilleVal;
+      target[profile.thumbExtra.key] = permilleVal;
     }
 
     if (profile.hasWrist) {
-      state['wrist.pitch'] = 0;
-      target['wrist.pitch'] = 0;
-      state['wrist.yaw'] = 0;
-      target['wrist.yaw'] = 0;
+      state['wrist.pitch'] = 500;
+      target['wrist.pitch'] = 500;
+      state['wrist.yaw'] = 500;
+      target['wrist.yaw'] = 500;
     }
 
     // Select default pose from JSON config or pick first available pose
