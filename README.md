@@ -4,6 +4,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+![Demo](doc/image/demo.png)
+
 ---
 
 ## 🌟 Tính năng chính
@@ -41,6 +43,9 @@ hrhand-app/
 │   │   ├── profiles.js       # Central Model Registry tự động theo config.name
 │   │   ├── configs/          # Tệp cấu hình JSON mô tả khớp 3D (robot-hand5.json, robot-hand3.json)
 │   │   └── poses/            # Tệp lưu trữ thế tay mẫu JSON (robot-hand5-poses.json, ...)
+├── scripts/
+│   ├── update_config_from_urdf.py  # Đồng bộ config JSON từ file URDF chuẩn ROS
+│   └── examples/              # File .urdf mẫu & mapping để test script
 └── src-tauri/                # Đóng gói Desktop App (Tauri 2 + Rust)
     ├── Cargo.toml
     ├── tauri.conf.json
@@ -155,11 +160,46 @@ Tệp JSON cấu hình mô tả động học bàn tay tương thích 100% với
 
 ---
 
+## 🐍 Đồng bộ Config JSON từ file URDF
+
+Nếu robot đã có sẵn file mô tả `.urdf` chuẩn ROS, dùng script `scripts/update_config_from_urdf.py` để tự động điền `axis`, `limits` (lower/upper/effort/velocity), `type`, `dynamics`, `mimic` vào file JSON config thay vì gõ tay. Script chỉ dùng thư viện chuẩn Python (không cần `pip install`), khớp từng joint theo `name` và tự chuyển đơn vị góc từ radian (URDF) sang độ (JSON).
+
+```bash
+# Xem trước thay đổi, không ghi file
+python scripts/update_config_from_urdf.py path/to/robot.urdf src/models/configs/robot-hand5.json --dry-run
+
+# Ghi đè trực tiếp vào file config
+python scripts/update_config_from_urdf.py path/to/robot.urdf src/models/configs/robot-hand5.json
+
+# Ghi ra file khác thay vì ghi đè
+python scripts/update_config_from_urdf.py path/to/robot.urdf src/models/configs/robot-hand5.json -o output.json
+```
+
+Khi tên joint trong JSON không trùng tên joint trong URDF — ví dụ 2 khớp cổ tay ("Gập" và "Xoay") dùng chung 1 node `wrist_pivot` — dùng `--map` để chỉ định tường minh:
+
+```bash
+python scripts/update_config_from_urdf.py path/to/robot.urdf src/models/configs/robot-hand5.json --map wrist.map.json
+```
+
+Với file `wrist.map.json` dạng `{ "<name>|<label>": "<tên_joint_urdf>" }`:
+
+```json
+{
+  "wrist_pivot|Gập": "wrist_flex_joint",
+  "wrist_pivot|Xoay": "wrist_rotate_joint"
+}
+```
+
+📁 Thư mục `scripts/examples/` có sẵn file `.urdf` mẫu và file mapping khớp đúng tên với `robot-hand5.json`/`robot-hand3.json` để thử nghiệm nhanh script trước khi dùng với URDF thật.
+
+---
+
 ## 🚀 Hướng dẫn cài đặt & Chạy ứng dụng
 
 ### Yêu cầu hệ thống
 - **Node.js**: 18.x trở lên
 - **Rust**: Stable toolchain (`rustup`) 1.77+
+- **Python**: 3.x *(tùy chọn, chỉ cần khi dùng script `scripts/update_config_from_urdf.py`)*
 
 ### Chạy ở chế độ Development
 

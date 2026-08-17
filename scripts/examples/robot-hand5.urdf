@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+<!--
+  File URDF mẫu để test scripts/update_config_from_urdf.py với
+  src/models/configs/robot-hand5.json. Giá trị góc/lực chỉ mang tính
+  minh họa, không phải thông số vật lý thật của robot.
+-->
+<robot name="robot_hand5">
+
+  <link name="forearm_link"/>
+  <link name="wrist_flex_link"/>
+  <link name="palm_link"/>
+
+  <link name="thumb_mount_link"/>
+  <link name="thumb_prox_link"/>
+  <link name="thumb_dist_link"/>
+
+  <link name="index_prox_link"/>
+  <link name="index_mid_link"/>
+  <link name="index_dist_link"/>
+
+  <link name="middle_prox_link"/>
+  <link name="middle_mid_link"/>
+  <link name="middle_dist_link"/>
+
+  <link name="ring_prox_link"/>
+  <link name="ring_mid_link"/>
+  <link name="ring_dist_link"/>
+
+  <link name="pinky_prox_link"/>
+  <link name="pinky_mid_link"/>
+  <link name="pinky_dist_link"/>
+
+  <!-- Cổ tay: 2 khớp nối tiếp, gộp lại thành 1 node "wrist_pivot" trong JSON
+       (xem scripts/examples/robot-hand5.map.json) -->
+  <joint name="wrist_flex_joint" type="revolute">
+    <parent link="forearm_link"/>
+    <child link="wrist_flex_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-0.6109" upper="0.6109" effort="12" velocity="2"/>
+  </joint>
+
+  <joint name="wrist_rotate_joint" type="revolute">
+    <parent link="wrist_flex_link"/>
+    <child link="palm_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-0.7854" upper="0.7854" effort="12" velocity="2"/>
+  </joint>
+
+  <!-- Ngón cái -->
+  <joint name="thumb_cmc_mount" type="revolute">
+    <parent link="palm_link"/>
+    <child link="thumb_mount_link"/>
+    <origin xyz="0.02 0 0.01" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="0.4363" upper="1.4835" effort="8" velocity="2.5"/>
+    <dynamics damping="0.1" friction="0.05"/>
+  </joint>
+
+  <joint name="thumb_joint1" type="revolute">
+    <parent link="thumb_mount_link"/>
+    <child link="thumb_prox_link"/>
+    <origin xyz="0.03 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.2217" effort="6" velocity="3"/>
+  </joint>
+
+  <joint name="thumb_joint2" type="revolute">
+    <parent link="thumb_prox_link"/>
+    <child link="thumb_dist_link"/>
+    <origin xyz="0.025 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.3963" effort="5" velocity="3"/>
+  </joint>
+
+  <!-- Ngón trỏ -->
+  <joint name="index_joint1" type="revolute">
+    <parent link="palm_link"/>
+    <child link="index_prox_link"/>
+    <origin xyz="0.09 0.02 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.5708" effort="10" velocity="3"/>
+  </joint>
+
+  <joint name="index_joint2" type="revolute">
+    <parent link="index_prox_link"/>
+    <child link="index_mid_link"/>
+    <origin xyz="0.035 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.7453" effort="8" velocity="3"/>
+  </joint>
+
+  <joint name="index_joint3" type="revolute">
+    <parent link="index_mid_link"/>
+    <child link="index_dist_link"/>
+    <origin xyz="0.025 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.3963" effort="5" velocity="3"/>
+  </joint>
+
+  <!-- Ngón giữa -->
+  <joint name="middle_joint1" type="revolute">
+    <parent link="palm_link"/>
+    <child link="middle_prox_link"/>
+    <origin xyz="0.095 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.5708" effort="10" velocity="3"/>
+  </joint>
+
+  <joint name="middle_joint2" type="revolute">
+    <parent link="middle_prox_link"/>
+    <child link="middle_mid_link"/>
+    <origin xyz="0.04 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.7453" effort="8" velocity="3"/>
+  </joint>
+
+  <joint name="middle_joint3" type="revolute">
+    <parent link="middle_mid_link"/>
+    <child link="middle_dist_link"/>
+    <origin xyz="0.028 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.3963" effort="5" velocity="3"/>
+  </joint>
+
+  <!-- Ngón áp út -->
+  <joint name="ring_joint1" type="revolute">
+    <parent link="palm_link"/>
+    <child link="ring_prox_link"/>
+    <origin xyz="0.09 -0.02 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.5708" effort="10" velocity="3"/>
+  </joint>
+
+  <joint name="ring_joint2" type="revolute">
+    <parent link="ring_prox_link"/>
+    <child link="ring_mid_link"/>
+    <origin xyz="0.035 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.7453" effort="8" velocity="3"/>
+  </joint>
+
+  <joint name="ring_joint3" type="revolute">
+    <parent link="ring_mid_link"/>
+    <child link="ring_dist_link"/>
+    <origin xyz="0.025 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.3963" effort="5" velocity="3"/>
+  </joint>
+
+  <!-- Ngón út -->
+  <joint name="pinky_joint1" type="revolute">
+    <parent link="palm_link"/>
+    <child link="pinky_prox_link"/>
+    <origin xyz="0.08 -0.04 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.5708" effort="10" velocity="3"/>
+  </joint>
+
+  <joint name="pinky_joint2" type="revolute">
+    <parent link="pinky_prox_link"/>
+    <child link="pinky_mid_link"/>
+    <origin xyz="0.03 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.7453" effort="8" velocity="3"/>
+  </joint>
+
+  <joint name="pinky_joint3" type="revolute">
+    <parent link="pinky_mid_link"/>
+    <child link="pinky_dist_link"/>
+    <origin xyz="0.02 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0" upper="1.3963" effort="5" velocity="3"/>
+  </joint>
+
+</robot>

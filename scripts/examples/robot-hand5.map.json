@@ -1,0 +1,4 @@
+{
+  "wrist_pivot|Gập": "wrist_flex_joint",
+  "wrist_pivot|Xoay": "wrist_rotate_joint"
+}

@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!--
+  File URDF mẫu để test scripts/update_config_from_urdf.py với
+  src/models/configs/robot-hand3.json. Giá trị góc/lực chỉ mang tính
+  minh họa, không phải thông số vật lý thật của robot.
+-->
+<robot name="robot_hand3_gripper">
+
+  <link name="palm_link"/>
+
+  <link name="thumb_yaw_link"/>
+  <link name="thumb_prox_link"/>
+  <link name="thumb_dist_link"/>
+
+  <link name="index_prox_link"/>
+  <link name="index_dist_link"/>
+
+  <link name="middle_prox_link"/>
+  <link name="middle_dist_link"/>
+
+  <!-- Ngón cái -->
+  <joint name="thumb_yaw_mount" type="revolute">
+    <parent link="palm_link"/>
+    <child link="thumb_yaw_link"/>
+    <origin xyz="0 0.03 0" rpy="0 0 0"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="0" upper="3.1416" effort="15" velocity="2"/>
+  </joint>
+
+  <joint name="thumb_joint1" type="revolute">
+    <parent link="thumb_yaw_link"/>
+    <child link="thumb_prox_link"/>
+    <origin xyz="0.04 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="15" velocity="2"/>
+  </joint>
+
+  <joint name="thumb_joint2" type="revolute">
+    <parent link="thumb_prox_link"/>
+    <child link="thumb_dist_link"/>
+    <origin xyz="0.035 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="15" velocity="2"/>
+  </joint>
+
+  <!-- Ngón trỏ -->
+  <joint name="index_joint1" type="revolute">
+    <parent link="palm_link"/>
+    <child link="index_prox_link"/>
+    <origin xyz="0 -0.02 0.05" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="15" velocity="2"/>
+  </joint>
+
+  <joint name="index_joint2" type="revolute">
+    <parent link="index_prox_link"/>
+    <child link="index_dist_link"/>
+    <origin xyz="0.04 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="15" velocity="2"/>
+  </joint>
+
+  <!-- Ngón giữa -->
+  <joint name="middle_joint1" type="revolute">
+    <parent link="palm_link"/>
+    <child link="middle_prox_link"/>
+    <origin xyz="0 0.02 0.05" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="15" velocity="2"/>
+  </joint>
+
+  <joint name="middle_joint2" type="revolute">
+    <parent link="middle_prox_link"/>
+    <child link="middle_dist_link"/>
+    <origin xyz="0.04 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="15" velocity="2"/>
+  </joint>
+
+</robot>
