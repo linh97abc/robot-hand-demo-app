@@ -89,50 +89,6 @@ function onSliderInput(key, value) {
             <output>{{ Math.round(state[`${finger.key}.${index}`] || 0) }}</output>
           </label>
 
-          <!-- Thumb Extra Slider -->
-          <label
-            v-if="currentProfile.thumbExtra && finger.key === currentProfile.thumbExtra.finger"
-            class="row"
-          >
-            <span>{{ currentProfile.thumbExtra.label }}</span>
-            <input
-              type="range"
-              :min="0"
-              :max="1000"
-              :value="Math.round(state[currentProfile.thumbExtra.key] || 0)"
-              @input="e => onSliderInput(currentProfile.thumbExtra.key, e.target.value)"
-            />
-            <output>{{ Math.round(state[currentProfile.thumbExtra.key] || 0) }}</output>
-          </label>
-        </div>
-
-        <!-- Wrist Group -->
-        <div v-if="currentProfile.wrist" class="group">
-          <h2>Cổ tay</h2>
-
-          <label class="row">
-            <span>Gập</span>
-            <input
-              type="range"
-              :min="0"
-              :max="1000"
-              :value="Math.round(state['wrist.pitch'] || 0)"
-              @input="e => onSliderInput('wrist.pitch', e.target.value)"
-            />
-            <output>{{ Math.round(state['wrist.pitch'] || 0) }}</output>
-          </label>
-
-          <label class="row">
-            <span>Xoay</span>
-            <input
-              type="range"
-              :min="0"
-              :max="1000"
-              :value="Math.round(state['wrist.yaw'] || 0)"
-              @input="e => onSliderInput('wrist.yaw', e.target.value)"
-            />
-            <output>{{ Math.round(state['wrist.yaw'] || 0) }}</output>
-          </label>
         </div>
       </template>
     </div>

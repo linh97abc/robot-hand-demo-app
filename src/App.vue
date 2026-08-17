@@ -13,7 +13,6 @@ const activePreset = ref(null);
 
 const activeModel = shallowRef(null);
 let RIG = null;
-let wrist = null;
 
 const state = reactive({});
 const target = reactive({});
@@ -22,12 +21,13 @@ let animating = false;
 function applyModelRotations() {
   if (!RIG) return;
   const profile = PROFILES[currentProfileKey.value];
+  const nodesUpdatedThisFrame = new Set();
 
   profile.fingers.forEach((f) => {
     const fingerRoot = RIG[f.key];
     if (fingerRoot && fingerRoot.userData && fingerRoot.userData.joints) {
       fingerRoot.userData.joints.forEach((jointNode, i) => {
-        const mimic = getJointMimic(jointNode);
+        const mimic = getJointMimic(jointNode, f, i);
         let permilleVal = state[`${f.key}.${i}`] ?? 0;
 
         if (mimic && mimic.joint) {
@@ -38,40 +38,28 @@ function applyModelRotations() {
         const limits = getJointLimits(jointNode, f, i);
         const actualVal = limits.lower + (permilleVal / 1000) * (limits.upper - limits.lower);
         const axisVec = getJointAxisVector(jointNode, f, i);
-        const jType = getJointType(jointNode);
+        const jType = getJointType(jointNode, f, i);
+        const q = new THREE.Quaternion().setFromAxisAngle(axisVec, actualVal * DEG);
 
-        if (jType === 'prismatic') {
-          // Linear translation for prismatic joints
-          const initialPos = jointNode.userData.initialPosition || jointNode.position.clone();
-          if (!jointNode.userData.initialPosition) jointNode.userData.initialPosition = initialPos;
-          jointNode.position.copy(initialPos).addScaledVector(axisVec, actualVal);
+        if (!nodesUpdatedThisFrame.has(jointNode)) {
+          nodesUpdatedThisFrame.add(jointNode);
+          if (jType === 'prismatic') {
+            const initialPos = jointNode.userData.initialPosition || jointNode.position.clone();
+            if (!jointNode.userData.initialPosition) jointNode.userData.initialPosition = initialPos;
+            jointNode.position.copy(initialPos).addScaledVector(axisVec, actualVal);
+          } else {
+            jointNode.quaternion.copy(q);
+          }
         } else {
-          // Angular rotation for revolute joints
-          jointNode.quaternion.setFromAxisAngle(axisVec, actualVal * DEG);
+          if (jType === 'prismatic') {
+            jointNode.position.addScaledVector(axisVec, actualVal);
+          } else {
+            jointNode.quaternion.multiply(q);
+          }
         }
       });
     }
   });
-
-  if (profile.thumbExtra && profile.thumbExtra.apply) {
-    const val = state[profile.thumbExtra.key] ?? 0;
-    profile.thumbExtra.apply(RIG, wrist, val);
-  }
-
-  if (profile.wrist && wrist) {
-    if (profile.wrist.pitchRange) {
-      const pitchRanges = profile.wrist.pitchRange;
-      const pitchPermille = state['wrist.pitch'] ?? 500;
-      const pitchDeg = pitchRanges[0] + (pitchPermille / 1000) * (pitchRanges[1] - pitchRanges[0]);
-      wrist.rotation.x = pitchDeg * DEG;
-    }
-    if (profile.wrist.yawRange) {
-      const yawRanges = profile.wrist.yawRange;
-      const yawPermille = state['wrist.yaw'] ?? 500;
-      const yawDeg = yawRanges[0] + (yawPermille / 1000) * (yawRanges[1] - yawRanges[0]);
-      wrist.rotation.y = yawDeg * DEG;
-    }
-  }
 
   stageRef.value?.requestRender();
 }
@@ -100,16 +88,12 @@ function goToPose(pose) {
   const REST = {};
   profile.fingers.forEach((f) => {
     f.joints.forEach((_, i) => {
-      REST[`${f.key}.${i}`] = 0;
+      // Default rest position is 500 for joints with negative lower limits, 0 otherwise
+      const limits = getJointLimits(null, f, i);
+      const defaultVal = (limits && limits.lower < 0) ? 500 : 0;
+      REST[`${f.key}.${i}`] = defaultVal;
     });
   });
-  if (profile.thumbExtra) {
-    REST[profile.thumbExtra.key] = 0;
-  }
-  if (profile.wrist) {
-    if (profile.wrist.pitchRange) REST['wrist.pitch'] = 500;
-    if (profile.wrist.yawRange) REST['wrist.yaw'] = 500;
-  }
 
   Object.assign(target, REST, pose);
   if (!animating) {
@@ -147,7 +131,6 @@ async function loadProfile(profileKey) {
 
     activeModel.value = result.model;
     RIG = result.RIG;
-    wrist = result.wrist;
 
     // Reset state & target
     Object.keys(state).forEach((k) => delete state[k]);
@@ -170,23 +153,6 @@ async function loadProfile(profileKey) {
         });
       }
     });
-
-    if (profile.thumbExtra && profile.thumbExtra.read) {
-      const permilleVal = Math.round(profile.thumbExtra.read(RIG));
-      state[profile.thumbExtra.key] = permilleVal;
-      target[profile.thumbExtra.key] = permilleVal;
-    }
-
-    if (profile.wrist) {
-      if (profile.wrist.pitchRange) {
-        state['wrist.pitch'] = 500;
-        target['wrist.pitch'] = 500;
-      }
-      if (profile.wrist.yawRange) {
-        state['wrist.yaw'] = 500;
-        target['wrist.yaw'] = 500;
-      }
-    }
 
     // Select default pose from JSON config or pick first available pose
     const initialPoseKey = profile.defaultPose || (profile.poses ? Object.keys(profile.poses)[0] : null);

@@ -12,49 +12,42 @@ function createProfile(config, poses) {
     ...config,
     poses: poses || config.poses || {},
     buildModel: (url) => loadHandModelFromConfig(config, url),
-    thumbExtra: config.thumbExtra ? {
-      ...config.thumbExtra,
-      read: (RIG) => {
-        const node = RIG[config.thumbExtra.targetKey];
-        if (!node) return 0;
-        const mult = config.thumbExtra.multiplier || 1;
-        const actualDeg = (mult * node.rotation[config.thumbExtra.axis]) / DEG;
-        const span = (config.thumbExtra.max || 180) - (config.thumbExtra.min || 0);
-        if (span <= 0) return 0;
-        return Math.round(((actualDeg - (config.thumbExtra.min || 0)) / span) * 1000);
-      },
-      apply: (RIG, wrist, permilleVal) => {
-        const node = RIG[config.thumbExtra.targetKey];
-        if (!node) return;
-        const mult = config.thumbExtra.multiplier || 1;
-        const minDeg = config.thumbExtra.min || 0;
-        const maxDeg = config.thumbExtra.max || 180;
-        const actualDeg = minDeg + (permilleVal / 1000) * (maxDeg - minDeg);
-        node.rotation[config.thumbExtra.axis] = mult * actualDeg * DEG;
-      },
-    } : null,
+    thumbExtra: null,
   };
+}
+
+/**
+ * Gets joint definition from jointNode or fingerConfig.
+ */
+
+function getJointDef(jointNode, fingerConfig, jointIndex) {
+  const cfgDef = fingerConfig?.joints?.[jointIndex];
+  if (typeof cfgDef === 'object') return cfgDef;
+  return jointNode?.userData?.urdfDef || null;
 }
 
 /**
  * Gets joint type ('revolute' or 'prismatic'). Default is 'revolute'.
  */
-export function getJointType(jointNode) {
-  return jointNode?.userData?.urdfDef?.type || 'revolute';
+export function getJointType(jointNode, fingerConfig, jointIndex) {
+  const jointDef = getJointDef(jointNode, fingerConfig, jointIndex);
+  return jointDef?.type || 'revolute';
 }
 
 /**
  * Gets joint mimic configuration if defined. Default is null.
  */
-export function getJointMimic(jointNode) {
-  return jointNode?.userData?.urdfDef?.mimic || null;
+export function getJointMimic(jointNode, fingerConfig, jointIndex) {
+  const jointDef = getJointDef(jointNode, fingerConfig, jointIndex);
+  return jointDef?.mimic || null;
 }
 
 /**
  * Gets joint limits { lower, upper, effort, velocity } with automatic default fallbacks.
  */
 export function getJointLimits(jointNode, fingerConfig, jointIndex) {
-  const urdfLimits = jointNode?.userData?.urdfDef?.limits;
+  const jointDef = getJointDef(jointNode, fingerConfig, jointIndex);
+  const urdfLimits = jointDef?.limits;
   const maxVal = (fingerConfig && fingerConfig.max && fingerConfig.max[jointIndex] !== undefined)
     ? fingerConfig.max[jointIndex]
     : 180;
@@ -70,8 +63,9 @@ export function getJointLimits(jointNode, fingerConfig, jointIndex) {
 /**
  * Gets joint dynamics { damping, friction } with automatic default fallbacks.
  */
-export function getJointDynamics(jointNode) {
-  const urdfDynamics = jointNode?.userData?.urdfDef?.dynamics;
+export function getJointDynamics(jointNode, fingerConfig, jointIndex) {
+  const jointDef = getJointDef(jointNode, fingerConfig, jointIndex);
+  const urdfDynamics = jointDef?.dynamics;
   return {
     damping: urdfDynamics?.damping ?? 0.1,
     friction: urdfDynamics?.friction ?? 0.05,
@@ -82,7 +76,9 @@ export function getJointDynamics(jointNode) {
  * Gets normalized Three.js 3D vector for joint rotation axis (supports arbitrary [x,y,z] vectors & 'x','y','z').
  */
 export function getJointAxisVector(jointNode, fingerConfig, jointIndex) {
-  const urdfAxis = jointNode?.userData?.urdfDef?.axis;
+  const jointDef = getJointDef(jointNode, fingerConfig, jointIndex);
+  const urdfAxis = jointDef?.axis;
+
   if (urdfAxis) {
     if (Array.isArray(urdfAxis)) {
       return new THREE.Vector3(...urdfAxis).normalize();

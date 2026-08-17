@@ -11,6 +11,7 @@
       "label": "Ngón cái",
       "rootNode": "thumb",
       "joints": [
+        { "name": "thumb_yaw_mount", "label": "Xoay đế", "axis": [0, -1, 0], "limits": { "lower": 0, "upper": 180 } },
         { "name": "thumb_joint1", "label": "MCP", "axis": [1, 0, 0], "limits": { "lower": -90, "upper": 90 } },
         { "name": "thumb_joint2", "label": "IP", "axis": [1, 0, 0], "limits": { "lower": -90, "upper": 90 } }
       ]
@@ -33,19 +34,5 @@
         { "name": "middle_joint2", "label": "PIP", "axis": [1, 0, 0], "limits": { "lower": -90, "upper": 90 } }
       ]
     }
-  ],
-  "thumbMount": {
-    "key": "thumbYaw",
-    "nodeName": "thumb_yaw_mount"
-  },
-  "thumbExtra": {
-    "finger": "thumb",
-    "key": "thumb.yaw",
-    "label": "Xoay đế",
-    "min": 0,
-    "max": 180,
-    "targetKey": "thumbYaw",
-    "axis": "y",
-    "multiplier": -1
-  }
+  ]
 }

@@ -1,44 +1,50 @@
 {
   "Nghỉ": {
-    "thumb.0": 143, "thumb.1": 238, "thumb.spread": 550,
+    "thumb.0": 550, "thumb.1": 143, "thumb.2": 238,
     "index.0": 122, "index.1": 170, "index.2": 163,
     "middle.0": 100, "middle.1": 150, "middle.2": 138,
     "ring.0": 122, "ring.1": 170, "ring.2": 175,
-    "pinky.0": 167, "pinky.1": 190, "pinky.2": 188
+    "pinky.0": 167, "pinky.1": 190, "pinky.2": 188,
+    "wrist.0": 500, "wrist.1": 500
   },
   "Mở": {
+    "thumb.0": 883, "thumb.1": 0, "thumb.2": 0,
     "index.0": 0, "index.1": 0, "index.2": 0,
     "middle.0": 0, "middle.1": 0, "middle.2": 0,
     "ring.0": 0, "ring.1": 0, "ring.2": 0,
     "pinky.0": 0, "pinky.1": 0, "pinky.2": 0,
-    "thumb.0": 0, "thumb.1": 0, "thumb.spread": 883
+    "wrist.0": 500, "wrist.1": 500
   },
   "Nắm": {
+    "thumb.0": 217, "thumb.1": 643, "thumb.2": 725,
     "index.0": 911, "index.1": 950, "index.2": 850,
     "middle.0": 933, "middle.1": 970, "middle.2": 875,
     "ring.0": 911, "ring.1": 950, "ring.2": 850,
     "pinky.0": 889, "pinky.1": 920, "pinky.2": 825,
-    "thumb.0": 643, "thumb.1": 725, "thumb.spread": 217
+    "wrist.0": 500, "wrist.1": 500
   },
   "Kẹp": {
+    "thumb.0": 367, "thumb.1": 543, "thumb.2": 550,
     "index.0": 578, "index.1": 420, "index.2": 275,
     "middle.0": 867, "middle.1": 900, "middle.2": 775,
     "ring.0": 889, "ring.1": 920, "ring.2": 800,
     "pinky.0": 867, "pinky.1": 900, "pinky.2": 775,
-    "thumb.0": 543, "thumb.1": 550, "thumb.spread": 367
+    "wrist.0": 500, "wrist.1": 500
   },
   "Chỉ": {
+    "thumb.0": 250, "thumb.1": 486, "thumb.2": 625,
     "index.0": 0, "index.1": 0, "index.2": 0,
     "middle.0": 933, "middle.1": 970, "middle.2": 875,
     "ring.0": 911, "ring.1": 950, "ring.2": 850,
     "pinky.0": 889, "pinky.1": 920, "pinky.2": 825,
-    "thumb.0": 486, "thumb.1": 625, "thumb.spread": 250
+    "wrist.0": 500, "wrist.1": 500
   },
   "Chữ V": {
+    "thumb.0": 183, "thumb.1": 571, "thumb.2": 650,
     "index.0": 0, "index.1": 0, "index.2": 0,
     "middle.0": 0, "middle.1": 0, "middle.2": 0,
     "ring.0": 911, "ring.1": 950, "ring.2": 850,
     "pinky.0": 889, "pinky.1": 920, "pinky.2": 825,
-    "thumb.0": 571, "thumb.1": 650, "thumb.spread": 183
+    "wrist.0": 500, "wrist.1": 500
   }
 }

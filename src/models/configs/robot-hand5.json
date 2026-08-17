@@ -11,6 +11,7 @@
       "label": "Ngón cái",
       "rootNode": "thumb",
       "joints": [
+        { "name": "thumb_cmc_mount", "label": "Xoay", "axis": [0, 0, 1], "limits": { "lower": 25, "upper": 85 } },
         { "name": "thumb_joint1", "label": "MCP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 70 } },
         { "name": "thumb_joint2", "label": "IP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 80 } }
       ]
@@ -54,25 +55,15 @@
         { "name": "pinky_joint2", "label": "PIP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 100 } },
         { "name": "pinky_joint3", "label": "DIP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 80 } }
       ]
+    },
+    {
+      "key": "wrist",
+      "label": "Cổ tay",
+      "rootNode": "wrist_pivot",
+      "joints": [
+        { "name": "wrist_pivot", "label": "Gập", "axis": [1, 0, 0], "limits": { "lower": -35, "upper": 35 } },
+        { "name": "wrist_pivot", "label": "Xoay", "axis": [0, 1, 0], "limits": { "lower": -45, "upper": 45 } }
+      ]
     }
-  ],
-  "thumbMount": {
-    "key": "thumbMount",
-    "nodeName": "thumb_cmc_mount"
-  },
-  "thumbExtra": {
-    "finger": "thumb",
-    "key": "thumb.spread",
-    "label": "Xoay",
-    "min": 25,
-    "max": 85,
-    "targetKey": "thumbMount",
-    "axis": "z",
-    "multiplier": 1
-  },
-  "wrist": {
-    "nodeName": "wrist_pivot",
-    "pitchRange": [-35, 35],
-    "yawRange": [-45, 45]
-  }
+  ]
 }

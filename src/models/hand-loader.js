@@ -2,10 +2,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 /**
  * Universal Loader Function that builds a hand model rig from GLB file and JSON config.
- * Supports both string joint arrays and rich URDF joint objects.
+ * 100% Normalized loader operating on unified fingers & joint definitions.
  * @param {Object} config - Hand model JSON configuration
  * @param {String} [overrideGlbUrl] - Optional GLB URL override
- * @returns {Promise<{model: Object, RIG: Object, wrist: Object}>}
+ * @returns {Promise<{model: Object, RIG: Object, wrist: null}>}
  */
 export async function loadHandModelFromConfig(config, overrideGlbUrl) {
   const loader = new GLTFLoader();
@@ -32,8 +32,7 @@ export async function loadHandModelFromConfig(config, overrideGlbUrl) {
   fingerList.forEach((fingerConfig) => {
     const fingerKey = fingerConfig.key;
     const rootNodeName = fingerConfig.rootNode || fingerKey;
-    const root = model.getObjectByName(rootNodeName);
-    if (!root) return;
+    const root = model.getObjectByName(rootNodeName) || model;
 
     root.userData.joints = Array.isArray(fingerConfig.joints)
       ? fingerConfig.joints.map((jointDef) => {
@@ -49,17 +48,5 @@ export async function loadHandModelFromConfig(config, overrideGlbUrl) {
     RIG[fingerKey] = root;
   });
 
-  // Parse thumb mount
-  if (config.thumbMount && config.thumbMount.nodeName) {
-    const key = config.thumbMount.key || 'thumbMount';
-    RIG[key] = model.getObjectByName(config.thumbMount.nodeName);
-  }
-
-  // Parse wrist
-  let wrist = null;
-  if (config.wrist && config.wrist.nodeName) {
-    wrist = model.getObjectByName(config.wrist.nodeName) || model;
-  }
-
-  return { model, RIG, wrist };
+  return { model, RIG, wrist: null };
 }
