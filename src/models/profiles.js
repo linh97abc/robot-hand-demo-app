@@ -44,27 +44,38 @@ export function getJointType(jointNode) {
 }
 
 /**
- * Gets joint mimic configuration if defined.
+ * Gets joint mimic configuration if defined. Default is null.
  */
 export function getJointMimic(jointNode) {
   return jointNode?.userData?.urdfDef?.mimic || null;
 }
 
 /**
- * Gets joint limits { lower, upper } from URDF joint definition or finger max config.
+ * Gets joint limits { lower, upper, effort, velocity } with automatic default fallbacks.
  */
 export function getJointLimits(jointNode, fingerConfig, jointIndex) {
   const urdfLimits = jointNode?.userData?.urdfDef?.limits;
-  if (urdfLimits && urdfLimits.upper !== undefined) {
-    return {
-      lower: urdfLimits.lower ?? 0,
-      upper: urdfLimits.upper,
-    };
-  }
   const maxVal = (fingerConfig && fingerConfig.max && fingerConfig.max[jointIndex] !== undefined)
     ? fingerConfig.max[jointIndex]
     : 180;
-  return { lower: 0, upper: maxVal };
+
+  return {
+    lower: urdfLimits?.lower ?? 0,
+    upper: urdfLimits?.upper ?? maxVal,
+    effort: urdfLimits?.effort ?? 10.0,
+    velocity: urdfLimits?.velocity ?? 3.0,
+  };
+}
+
+/**
+ * Gets joint dynamics { damping, friction } with automatic default fallbacks.
+ */
+export function getJointDynamics(jointNode) {
+  const urdfDynamics = jointNode?.userData?.urdfDef?.dynamics;
+  return {
+    damping: urdfDynamics?.damping ?? 0.1,
+    friction: urdfDynamics?.friction ?? 0.05,
+  };
 }
 
 /**

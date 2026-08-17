@@ -11,26 +11,8 @@
       "label": "Ngón cái",
       "rootNode": "thumb",
       "joints": [
-        {
-          "name": "thumb_joint1",
-          "label": "MCP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 70, "effort": 5.0, "velocity": 2.0 },
-          "dynamics": { "damping": 0.1, "friction": 0.05 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        },
-        {
-          "name": "thumb_joint2",
-          "label": "IP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 80, "effort": 4.0, "velocity": 2.5 },
-          "dynamics": { "damping": 0.1, "friction": 0.05 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        }
+        { "name": "thumb_joint1", "label": "MCP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 70 } },
+        { "name": "thumb_joint2", "label": "IP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 80 } }
       ]
     },
     {
@@ -38,36 +20,9 @@
       "label": "Ngón trỏ",
       "rootNode": "index",
       "joints": [
-        {
-          "name": "index_joint1",
-          "label": "MCP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 90, "effort": 3.5, "velocity": 3.0 },
-          "dynamics": { "damping": 0.08, "friction": 0.04 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        },
-        {
-          "name": "index_joint2",
-          "label": "PIP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 100, "effort": 3.0, "velocity": 3.0 },
-          "dynamics": { "damping": 0.08, "friction": 0.04 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        },
-        {
-          "name": "index_joint3",
-          "label": "DIP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 80, "effort": 2.5, "velocity": 3.5 },
-          "dynamics": { "damping": 0.05, "friction": 0.03 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        }
+        { "name": "index_joint1", "label": "MCP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 90 } },
+        { "name": "index_joint2", "label": "PIP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 100 } },
+        { "name": "index_joint3", "label": "DIP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 80 } }
       ]
     },
     {
@@ -75,36 +30,9 @@
       "label": "Ngón giữa",
       "rootNode": "middle",
       "joints": [
-        {
-          "name": "middle_joint1",
-          "label": "MCP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 90, "effort": 3.5, "velocity": 3.0 },
-          "dynamics": { "damping": 0.08, "friction": 0.04 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        },
-        {
-          "name": "middle_joint2",
-          "label": "PIP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 100, "effort": 3.0, "velocity": 3.0 },
-          "dynamics": { "damping": 0.08, "friction": 0.04 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        },
-        {
-          "name": "middle_joint3",
-          "label": "DIP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 80, "effort": 2.5, "velocity": 3.5 },
-          "dynamics": { "damping": 0.05, "friction": 0.03 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        }
+        { "name": "middle_joint1", "label": "MCP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 90 } },
+        { "name": "middle_joint2", "label": "PIP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 100 } },
+        { "name": "middle_joint3", "label": "DIP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 80 } }
       ]
     },
     {
@@ -112,36 +40,9 @@
       "label": "Ngón áp út",
       "rootNode": "ring",
       "joints": [
-        {
-          "name": "ring_joint1",
-          "label": "MCP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 90, "effort": 3.5, "velocity": 3.0 },
-          "dynamics": { "damping": 0.08, "friction": 0.04 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        },
-        {
-          "name": "ring_joint2",
-          "label": "PIP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 100, "effort": 3.0, "velocity": 3.0 },
-          "dynamics": { "damping": 0.08, "friction": 0.04 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        },
-        {
-          "name": "ring_joint3",
-          "label": "DIP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 80, "effort": 2.5, "velocity": 3.5 },
-          "dynamics": { "damping": 0.05, "friction": 0.03 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        }
+        { "name": "ring_joint1", "label": "MCP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 90 } },
+        { "name": "ring_joint2", "label": "PIP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 100 } },
+        { "name": "ring_joint3", "label": "DIP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 80 } }
       ]
     },
     {
@@ -149,36 +50,9 @@
       "label": "Ngón nhỏ",
       "rootNode": "pinky",
       "joints": [
-        {
-          "name": "pinky_joint1",
-          "label": "MCP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 90, "effort": 3.0, "velocity": 3.0 },
-          "dynamics": { "damping": 0.08, "friction": 0.04 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        },
-        {
-          "name": "pinky_joint2",
-          "label": "PIP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 100, "effort": 2.5, "velocity": 3.0 },
-          "dynamics": { "damping": 0.08, "friction": 0.04 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        },
-        {
-          "name": "pinky_joint3",
-          "label": "DIP",
-          "type": "revolute",
-          "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 80, "effort": 2.0, "velocity": 3.5 },
-          "dynamics": { "damping": 0.05, "friction": 0.03 },
-          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
-          "mimic": null
-        }
+        { "name": "pinky_joint1", "label": "MCP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 90 } },
+        { "name": "pinky_joint2", "label": "PIP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 100 } },
+        { "name": "pinky_joint3", "label": "DIP", "axis": [1, 0, 0], "limits": { "lower": 0, "upper": 80 } }
       ]
     }
   ],
