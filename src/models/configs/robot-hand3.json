@@ -20,8 +20,5 @@
   "thumbMount": {
     "key": "thumbYaw",
     "nodeName": "thumb_yaw_mount"
-  },
-  "wrist": {
-    "nodeName": "wrist_pivot_inert"
   }
 }
