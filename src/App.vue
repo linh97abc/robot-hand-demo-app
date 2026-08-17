@@ -5,8 +5,9 @@ import ThreeStage from './components/ThreeStage.vue';
 import ControlPanel from './components/ControlPanel.vue';
 import { PROFILES, getJointOffset, DEG } from './models/profiles.js';
 
+const defaultProfileKey = Object.keys(PROFILES)[0] || '';
 const stageRef = ref(null);
-const currentProfileKey = ref('five');
+const currentProfileKey = ref(defaultProfileKey);
 const loading = ref(false);
 const activePreset = ref(null);
 
@@ -181,7 +182,9 @@ function handleProfileSwitch(profileKey) {
 }
 
 onMounted(() => {
-  loadProfile('five');
+  if (defaultProfileKey) {
+    loadProfile(defaultProfileKey);
+  }
 });
 </script>
 
@@ -193,7 +196,7 @@ onMounted(() => {
         ref="stageRef"
         :model="activeModel"
         background="#efece6"
-        :model-name="currentProfileKey === 'three' ? 'robot-hand3' : 'robot-hand5'"
+        :model-name="PROFILES[currentProfileKey]?.name || currentProfileKey"
       />
     </main>
 

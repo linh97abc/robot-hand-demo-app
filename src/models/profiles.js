@@ -46,9 +46,9 @@ export function getJointOffset(profile, fingerConfig, jointIndex) {
 }
 
 /**
- * Central Model Registry: To add a new hand model, import its JSON config & poses here!
+ * Central Model Registry: Keyed automatically by config.name!
  */
 export const PROFILES = {
-  five: createProfile(hand5Config, hand5Poses),
-  three: createProfile(hand3Config, hand3Poses),
+  [hand5Config.name]: createProfile(hand5Config, hand5Poses),
+  [hand3Config.name]: createProfile(hand3Config, hand3Poses),
 };
