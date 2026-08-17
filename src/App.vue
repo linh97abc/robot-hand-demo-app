@@ -3,8 +3,9 @@ import { ref, reactive, onMounted, shallowRef } from 'vue';
 import * as THREE from 'three';
 import ThreeStage from './components/ThreeStage.vue';
 import ControlPanel from './components/ControlPanel.vue';
-import { buildHandModel5 } from './models/robot-hand5-model.js';
-import { buildHandModel3 } from './models/robot-hand3-model.js';
+import { loadHandModelFromConfig } from './models/hand-loader.js';
+import hand5Config from './models/configs/robot-hand5.json';
+import hand3Config from './models/configs/robot-hand3.json';
 
 const DEG = Math.PI / 180;
 
@@ -14,7 +15,7 @@ const PROFILES = {
     title: 'Bàn tay robot · 5 ngón',
     subtitle: 'Điều khiển từng khớp bằng thanh trượt, hoặc chọn một thế tay có sẵn. Kéo chuột trên khung 3D để quay góc nhìn.',
     hint: 'Góc tính theo độ. MCP = khớp bàn–ngón, PIP = khớp giữa, DIP = khớp đầu ngón. Bản xuất OBJ/GLB giữ đúng thế tay hiện tại.',
-    buildModel: buildHandModel5,
+    buildModel: (THREE, url) => loadHandModelFromConfig(THREE, hand5Config, url),
     fingers: [
       { key: 'thumb', label: 'Ngón cái', joints: ['MCP', 'IP'], max: [70, 80] },
       { key: 'index', label: 'Ngón trỏ', joints: ['MCP', 'PIP', 'DIP'], max: [90, 100, 80] },
@@ -54,7 +55,7 @@ const PROFILES = {
     title: 'Bàn tay robot · 3 ngón (gripper)',
     subtitle: 'Gripper công nghiệp 3 ngón, 7 khớp — mỗi khớp có motor riêng, quay được tối đa 180°. Ngón cái xoay quanh trục đứng để khép sát vào 2 ngón kia.',
     hint: 'Góc tính theo độ, mỗi khớp hành trình 0–180°. Với cả 3 ngón (cái, trỏ, giữa), 90° là vị trí thẳng đứng. MCP/PIP/IP là các khớp có trục nằm ngang; "Xoay đế" là khớp trục đứng ở gốc ngón cái.',
-    buildModel: buildHandModel3,
+    buildModel: (THREE, url) => loadHandModelFromConfig(THREE, hand3Config, url),
     fingers: [
       { key: 'thumb', label: 'Ngón cái', joints: ['MCP', 'IP'], max: [180, 180] },
       { key: 'index', label: 'Ngón trỏ', joints: ['MCP', 'PIP'], max: [180, 180] },

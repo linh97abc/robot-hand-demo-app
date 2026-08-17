@@ -37,8 +37,8 @@ hrhand-app/
 │   │   └── ControlPanel.vue  # Vue component bảng điều khiển khớp
 │   ├── assets/               # Assets cho Webview (robot-hand5.glb, robot-hand3.glb)
 │   ├── models/
-│   │   ├── robot-hand5-model.js # Loader & Rig tay 5 ngón
-│   │   └── robot-hand3-model.js # Loader & Rig tay 3 ngón
+│   │   ├── hand-loader.js    # Nạp & rig mô hình 3D tổng quát từ GLB và JSON
+│   │   └── configs/          # Tệp cấu hình JSON mô tả khớp 3D (robot-hand5.json, robot-hand3.json)
 │   └── vendor/               # Three.js r184 & các plugin local (offline)
 └── src-tauri/                # Đóng gói Desktop App (Tauri 2 + Rust)
     ├── Cargo.toml

@@ -8,8 +8,8 @@ Bàn tay robot (three.js) — 2 model song song nạp từ file `.glb` (5 ngón 
 - `src/components/ControlPanel.vue` — Vue component bảng điều khiển khớp & presets.
 - `src/assets/robot-hand5.glb` — file 3D GLB bàn tay 5 ngón.
 - `src/assets/robot-hand3.glb` — file 3D GLB bàn tay 3 ngón (gripper).
-- `src/models/robot-hand5-model.js` — nạp **model tay 5 ngón** từ GLB, export `async buildHandModel5(THREE)` trả về `{ model, RIG, wrist }`.
-- `src/models/robot-hand3-model.js` — nạp **model tay 3 ngón** từ GLB, export `async buildHandModel3(THREE)` trả về `{ model, RIG, wrist }`.
+- `src/models/hand-loader.js` — hàm nạp & rig mô hình 3D tổng quát từ GLB và JSON `loadHandModelFromConfig(THREE, config, overrideGlbUrl)`.
+- `src/models/configs/` — tệp cấu hình JSON mô tả danh sách node khớp 3D (`robot-hand5.json`, `robot-hand3.json`).
 - `src-tauri/` — cấu hình Tauri chuẩn (Cargo.toml, tauri.conf.json, icons).
 
 ## Nạp & Điều khiển GLB Model
