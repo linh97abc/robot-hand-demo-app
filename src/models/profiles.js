@@ -37,6 +37,20 @@ function createProfile(config, poses) {
 }
 
 /**
+ * Gets joint type ('revolute' or 'prismatic'). Default is 'revolute'.
+ */
+export function getJointType(jointNode) {
+  return jointNode?.userData?.urdfDef?.type || 'revolute';
+}
+
+/**
+ * Gets joint mimic configuration if defined.
+ */
+export function getJointMimic(jointNode) {
+  return jointNode?.userData?.urdfDef?.mimic || null;
+}
+
+/**
  * Gets joint limits { lower, upper } from URDF joint definition or finger max config.
  */
 export function getJointLimits(jointNode, fingerConfig, jointIndex) {

@@ -14,14 +14,22 @@
         {
           "name": "thumb_joint1",
           "label": "MCP",
+          "type": "revolute",
           "axis": [1, 0, 0],
-          "limits": { "lower": -90, "upper": 90 }
+          "limits": { "lower": -90, "upper": 90, "effort": 12.0, "velocity": 1.8 },
+          "dynamics": { "damping": 0.25, "friction": 0.1 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
+          "mimic": null
         },
         {
           "name": "thumb_joint2",
           "label": "IP",
+          "type": "revolute",
           "axis": [1, 0, 0],
-          "limits": { "lower": -90, "upper": 90 }
+          "limits": { "lower": -90, "upper": 90, "effort": 10.0, "velocity": 2.0 },
+          "dynamics": { "damping": 0.2, "friction": 0.08 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
+          "mimic": null
         }
       ]
     },
@@ -33,14 +41,22 @@
         {
           "name": "index_joint1",
           "label": "MCP",
+          "type": "revolute",
           "axis": [1, 0, 0],
-          "limits": { "lower": -90, "upper": 90 }
+          "limits": { "lower": -90, "upper": 90, "effort": 10.0, "velocity": 2.0 },
+          "dynamics": { "damping": 0.2, "friction": 0.08 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
+          "mimic": null
         },
         {
           "name": "index_joint2",
           "label": "PIP",
+          "type": "revolute",
           "axis": [1, 0, 0],
-          "limits": { "lower": -90, "upper": 90 }
+          "limits": { "lower": -90, "upper": 90, "effort": 8.0, "velocity": 2.5 },
+          "dynamics": { "damping": 0.15, "friction": 0.05 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
+          "mimic": null
         }
       ]
     },
@@ -52,14 +68,22 @@
         {
           "name": "middle_joint1",
           "label": "MCP",
+          "type": "revolute",
           "axis": [1, 0, 0],
-          "limits": { "lower": -90, "upper": 90 }
+          "limits": { "lower": -90, "upper": 90, "effort": 10.0, "velocity": 2.0 },
+          "dynamics": { "damping": 0.2, "friction": 0.08 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
+          "mimic": null
         },
         {
           "name": "middle_joint2",
           "label": "PIP",
+          "type": "revolute",
           "axis": [1, 0, 0],
-          "limits": { "lower": -90, "upper": 90 }
+          "limits": { "lower": -90, "upper": 90, "effort": 8.0, "velocity": 2.5 },
+          "dynamics": { "damping": 0.15, "friction": 0.05 },
+          "origin": { "xyz": [0, 0, 0], "rpy": [0, 0, 0] },
+          "mimic": null
         }
       ]
     }

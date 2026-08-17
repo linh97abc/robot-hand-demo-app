@@ -3,7 +3,7 @@ import { ref, reactive, onMounted, shallowRef } from 'vue';
 import * as THREE from 'three';
 import ThreeStage from './components/ThreeStage.vue';
 import ControlPanel from './components/ControlPanel.vue';
-import { PROFILES, getJointLimits, getJointAxisVector, DEG } from './models/profiles.js';
+import { PROFILES, getJointLimits, getJointAxisVector, getJointType, getJointMimic, DEG } from './models/profiles.js';
 
 const defaultProfileKey = Object.keys(PROFILES)[0] || '';
 const stageRef = ref(null);
@@ -27,11 +27,28 @@ function applyModelRotations() {
     const fingerRoot = RIG[f.key];
     if (fingerRoot && fingerRoot.userData && fingerRoot.userData.joints) {
       fingerRoot.userData.joints.forEach((jointNode, i) => {
-        const permilleVal = state[`${f.key}.${i}`] ?? 0;
+        const mimic = getJointMimic(jointNode);
+        let permilleVal = state[`${f.key}.${i}`] ?? 0;
+
+        if (mimic && mimic.joint) {
+          const targetVal = state[mimic.joint] ?? (state[`${mimic.joint}.0`] ?? 0);
+          permilleVal = targetVal * (mimic.multiplier ?? 1.0) + (mimic.offset ?? 0);
+        }
+
         const limits = getJointLimits(jointNode, f, i);
-        const actualDeg = limits.lower + (permilleVal / 1000) * (limits.upper - limits.lower);
+        const actualVal = limits.lower + (permilleVal / 1000) * (limits.upper - limits.lower);
         const axisVec = getJointAxisVector(jointNode, f, i);
-        jointNode.quaternion.setFromAxisAngle(axisVec, actualDeg * DEG);
+        const jType = getJointType(jointNode);
+
+        if (jType === 'prismatic') {
+          // Linear translation for prismatic joints
+          const initialPos = jointNode.userData.initialPosition || jointNode.position.clone();
+          if (!jointNode.userData.initialPosition) jointNode.userData.initialPosition = initialPos;
+          jointNode.position.copy(initialPos).addScaledVector(axisVec, actualVal);
+        } else {
+          // Angular rotation for revolute joints
+          jointNode.quaternion.setFromAxisAngle(axisVec, actualVal * DEG);
+        }
       });
     }
   });
