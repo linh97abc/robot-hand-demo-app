@@ -5,7 +5,6 @@
   "subtitle": "Gripper công nghiệp 3 ngón, 7 khớp — mỗi khớp có motor riêng, quay được tối đa 180°. Ngón cái xoay quanh trục đứng để khép sát vào 2 ngón kia.",
   "hint": "Giá trị khớp chuẩn phần nghìn (0–1000). Với cả 3 ngón (cái, trỏ, giữa), 500 là vị trí thẳng đứng. MCP/PIP/IP là các khớp có trục nằm ngang; \"Xoay đế\" là khớp trục đứng ở gốc ngón cái.",
   "defaultPose": "Nghỉ",
-  "jointAngleOffset": -90,
   "fingers": [
     {
       "key": "thumb",
@@ -16,15 +15,13 @@
           "name": "thumb_joint1",
           "label": "MCP",
           "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 180 },
-          "jointOffset": -90
+          "limits": { "lower": -90, "upper": 90 }
         },
         {
           "name": "thumb_joint2",
           "label": "IP",
           "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 180 },
-          "jointOffset": -90
+          "limits": { "lower": -90, "upper": 90 }
         }
       ]
     },
@@ -37,15 +34,13 @@
           "name": "index_joint1",
           "label": "MCP",
           "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 180 },
-          "jointOffset": -90
+          "limits": { "lower": -90, "upper": 90 }
         },
         {
           "name": "index_joint2",
           "label": "PIP",
           "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 180 },
-          "jointOffset": -90
+          "limits": { "lower": -90, "upper": 90 }
         }
       ]
     },
@@ -58,15 +53,13 @@
           "name": "middle_joint1",
           "label": "MCP",
           "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 180 },
-          "jointOffset": -90
+          "limits": { "lower": -90, "upper": 90 }
         },
         {
           "name": "middle_joint2",
           "label": "PIP",
           "axis": [1, 0, 0],
-          "limits": { "lower": 0, "upper": 180 },
-          "jointOffset": -90
+          "limits": { "lower": -90, "upper": 90 }
         }
       ]
     }

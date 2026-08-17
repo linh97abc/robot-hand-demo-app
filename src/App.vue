@@ -3,7 +3,7 @@ import { ref, reactive, onMounted, shallowRef } from 'vue';
 import * as THREE from 'three';
 import ThreeStage from './components/ThreeStage.vue';
 import ControlPanel from './components/ControlPanel.vue';
-import { PROFILES, getJointOffset, getJointLimits, getJointAxisVector, DEG } from './models/profiles.js';
+import { PROFILES, getJointLimits, getJointAxisVector, DEG } from './models/profiles.js';
 
 const defaultProfileKey = Object.keys(PROFILES)[0] || '';
 const stageRef = ref(null);
@@ -27,12 +27,11 @@ function applyModelRotations() {
     const fingerRoot = RIG[f.key];
     if (fingerRoot && fingerRoot.userData && fingerRoot.userData.joints) {
       fingerRoot.userData.joints.forEach((jointNode, i) => {
-        const offset = getJointOffset(profile, f, i);
         const permilleVal = state[`${f.key}.${i}`] ?? 0;
         const limits = getJointLimits(jointNode, f, i);
         const actualDeg = limits.lower + (permilleVal / 1000) * (limits.upper - limits.lower);
         const axisVec = getJointAxisVector(jointNode, f, i);
-        jointNode.quaternion.setFromAxisAngle(axisVec, (actualDeg + offset) * DEG);
+        jointNode.quaternion.setFromAxisAngle(axisVec, actualDeg * DEG);
       });
     }
   });
@@ -142,10 +141,9 @@ async function loadProfile(profileKey) {
       const fingerRoot = RIG[f.key];
       if (fingerRoot && fingerRoot.userData && fingerRoot.userData.joints) {
         fingerRoot.userData.joints.forEach((jointNode, i) => {
-          const offset = getJointOffset(profile, f, i);
           const limits = getJointLimits(jointNode, f, i);
           const rx = jointNode ? jointNode.rotation.x / DEG : 0;
-          const actualDeg = rx - offset;
+          const actualDeg = rx;
           const span = limits.upper - limits.lower;
           const permilleVal = span > 0
             ? Math.round(Math.max(0, Math.min(1000, ((actualDeg - limits.lower) / span) * 1000)))

@@ -37,20 +37,6 @@ function createProfile(config, poses) {
 }
 
 /**
- * Calculates joint offset angle using per-joint config fallback to model profile default.
- */
-export function getJointOffset(profile, fingerConfig, jointIndex) {
-  const jointDef = fingerConfig?.joints?.[jointIndex];
-  if (typeof jointDef === 'object' && jointDef.jointOffset !== undefined) {
-    return jointDef.jointOffset;
-  }
-  if (fingerConfig && fingerConfig.jointOffsets && fingerConfig.jointOffsets[jointIndex] !== undefined) {
-    return fingerConfig.jointOffsets[jointIndex];
-  }
-  return profile.jointAngleOffset || 0;
-}
-
-/**
  * Gets joint limits { lower, upper } from URDF joint definition or finger max config.
  */
 export function getJointLimits(jointNode, fingerConfig, jointIndex) {
