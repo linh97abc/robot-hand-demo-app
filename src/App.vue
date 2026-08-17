@@ -34,6 +34,13 @@ function createProfile(config, poses) {
   };
 }
 
+function getJointOffset(profile, fingerConfig, jointIndex) {
+  if (fingerConfig && fingerConfig.jointOffsets && fingerConfig.jointOffsets[jointIndex] !== undefined) {
+    return fingerConfig.jointOffsets[jointIndex];
+  }
+  return profile.jointAngleOffset || 0;
+}
+
 const PROFILES = {
   five: createProfile(hand5Config, hand5Poses),
   three: createProfile(hand3Config, hand3Poses),
@@ -55,12 +62,12 @@ let animating = false;
 function applyModelRotations() {
   if (!RIG) return;
   const profile = PROFILES[currentProfileKey.value];
-  const offset = profile.jointAngleOffset || 0;
 
   profile.fingers.forEach((f) => {
     const fingerRoot = RIG[f.key];
     if (fingerRoot && fingerRoot.userData && fingerRoot.userData.joints) {
       fingerRoot.userData.joints.forEach((jointNode, i) => {
+        const offset = getJointOffset(profile, f, i);
         const val = state[`${f.key}.${i}`] ?? 0;
         jointNode.rotation.x = (val + offset) * DEG;
       });
@@ -101,10 +108,10 @@ function animateStep() {
 
 function goToPose(pose) {
   const profile = PROFILES[currentProfileKey.value];
-  const offset = profile.jointAngleOffset || 0;
   const REST = {};
   profile.fingers.forEach((f) => {
     f.joints.forEach((_, i) => {
+      const offset = getJointOffset(profile, f, i);
       REST[`${f.key}.${i}`] = -offset;
     });
   });
@@ -158,12 +165,12 @@ async function loadProfile(profileKey) {
     Object.keys(state).forEach((k) => delete state[k]);
     Object.keys(target).forEach((k) => delete target[k]);
 
-    // Read initial joint angles from model using jointAngleOffset config
-    const offset = profile.jointAngleOffset || 0;
+    // Read initial joint angles from model using per-joint offset config
     profile.fingers.forEach((f) => {
       const fingerRoot = RIG[f.key];
       if (fingerRoot && fingerRoot.userData && fingerRoot.userData.joints) {
         fingerRoot.userData.joints.forEach((jointNode, i) => {
+          const offset = getJointOffset(profile, f, i);
           const rx = jointNode ? jointNode.rotation.x / DEG : 0;
           const val = Math.round(rx - offset);
           state[`${f.key}.${i}`] = val;

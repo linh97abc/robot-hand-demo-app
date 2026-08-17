@@ -13,7 +13,8 @@
       "rootNode": "thumb",
       "joints": ["thumb_joint1", "thumb_joint2"],
       "jointLabels": ["MCP", "IP"],
-      "max": [180, 180]
+      "max": [180, 180],
+      "jointOffsets": [-90, -90]
     },
     {
       "key": "index",
@@ -21,7 +22,8 @@
       "rootNode": "index",
       "joints": ["index_joint1", "index_joint2"],
       "jointLabels": ["MCP", "PIP"],
-      "max": [180, 180]
+      "max": [180, 180],
+      "jointOffsets": [-90, -90]
     },
     {
       "key": "middle",
@@ -29,7 +31,8 @@
       "rootNode": "middle",
       "joints": ["middle_joint1", "middle_joint2"],
       "jointLabels": ["MCP", "PIP"],
-      "max": [180, 180]
+      "max": [180, 180],
+      "jointOffsets": [-90, -90]
     }
   ],
   "thumbMount": {
