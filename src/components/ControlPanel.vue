@@ -20,12 +20,6 @@ function onSliderInput(key, value) {
 
 <template>
   <aside class="panel">
-    <!-- Header -->
-    <div>
-      <h1 id="panelTitle">{{ currentProfile.title }}</h1>
-      <p class="sub" id="panelSub">{{ currentProfile.subtitle }}</p>
-    </div>
-
     <!-- Model Switcher Dropdown -->
     <div class="model-select-container" id="modelSwitch">
       <label class="model-select-label">MÔ HÌNH ROBOT</label>
@@ -44,6 +38,12 @@ function onSliderInput(key, value) {
         </select>
         <span class="select-chevron">▾</span>
       </div>
+    </div>
+
+    <!-- Header -->
+    <div>
+      <h1 id="panelTitle">{{ currentProfile.title }}</h1>
+      <p class="sub" id="panelSub">{{ currentProfile.subtitle }}</p>
     </div>
 
     <!-- Presets Bar -->
