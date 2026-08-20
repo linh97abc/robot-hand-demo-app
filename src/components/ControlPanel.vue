@@ -7,6 +7,7 @@ const props = defineProps({
   state: { type: Object, required: true },
   activePreset: { type: String, default: null },
   loading: { type: Boolean, default: false },
+  selectedWaypointName: { type: String, default: null },
 });
 
 const emit = defineEmits(['switch-profile', 'update-joint', 'select-preset']);
@@ -20,40 +21,27 @@ function onSliderInput(key, value) {
 
 <template>
   <aside class="panel">
-    <!-- Model Switcher Dropdown -->
-    <div class="model-select-container" id="modelSwitch">
-      <label class="model-select-label">MÔ HÌNH ROBOT</label>
-      <div class="select-wrapper">
-        <select
-          :value="currentProfileKey"
-          @change="emit('switch-profile', $event.target.value)"
-        >
-          <option
-            v-for="(profile, key) in profiles"
-            :key="key"
-            :value="key"
-          >
-            {{ profile.displayName || profile.label || profile.title }}
-          </option>
-        </select>
-        <span class="select-chevron">▾</span>
-      </div>
-    </div>
-
     <!-- Header -->
     <div>
-      <h1 id="panelTitle">{{ currentProfile.title }}</h1>
-      <p class="sub" id="panelSub">{{ currentProfile.subtitle }}</p>
+      <h1 id="panelTitle">TƯ THẾ HIỆN TẠI</h1>
+    </div>
+
+    <!-- Status Banner -->
+    <div class="status-banner" :class="{ 'editing-mode': !!selectedWaypointName }">
+      <template v-if="selectedWaypointName">
+        <span class="status-icon">✎</span>
+        <span>Đang sửa <strong>{{ selectedWaypointName }}</strong> — bấm lại WP để hoàn tất</span>
+      </template>
+      <template v-else>
+        <span class="status-icon">+</span>
+        <span>Đang tạo tư thế mới — bấm <strong>"+ Thêm waypoint"</strong> để lưu</span>
+      </template>
     </div>
 
     <!-- Presets Bar -->
     <div class="presets" id="presets">
-      <button
-        v-for="(pose, name) in currentProfile.poses"
-        :key="name"
-        @click="emit('select-preset', name)"
-        :class="{ on: activePreset === name }"
-      >
+      <button v-for="(pose, name) in currentProfile.poses" :key="name" @click="emit('select-preset', name)"
+        :class="{ on: activePreset === name }">
         {{ name }}
       </button>
     </div>
@@ -66,26 +54,14 @@ function onSliderInput(key, value) {
 
       <template v-else>
         <!-- Finger Groups -->
-        <div
-          v-for="finger in currentProfile.fingers"
-          :key="finger.key"
-          class="group"
-        >
+        <div v-for="finger in currentProfile.fingers" :key="finger.key" class="group">
           <h2>{{ finger.label }}</h2>
 
-          <label
-            v-for="(jointLabel, index) in finger.joints"
-            :key="index"
-            class="row"
-          >
-            <span>{{ typeof jointLabel === 'object' ? jointLabel.label : (finger.jointLabels ? finger.jointLabels[index] : jointLabel) }}</span>
-            <input
-              type="range"
-              :min="0"
-              :max="1000"
-              :value="Math.round(state[`${finger.key}.${index}`] || 0)"
-              @input="e => onSliderInput(`${finger.key}.${index}`, e.target.value)"
-            />
+          <label v-for="(jointLabel, index) in finger.joints" :key="index" class="row">
+            <span>{{ typeof jointLabel === 'object' ? jointLabel.label : (finger.jointLabels ? finger.jointLabels[index]
+              : jointLabel) }}</span>
+            <input type="range" :min="0" :max="1000" :value="Math.round(state[`${finger.key}.${index}`] || 0)"
+              @input="e => onSliderInput(`${finger.key}.${index}`, e.target.value)" />
             <output>{{ Math.round(state[`${finger.key}.${index}`] || 0) }}</output>
           </label>
 
@@ -100,8 +76,10 @@ function onSliderInput(key, value) {
 
 <style scoped>
 .panel {
-  width: 360px;
+  width: 340px;
   flex: none;
+  flex-shrink: 0;
+  border-left: 1px solid #2a2d32;
   background: #1c1e21;
   color: #e9e7e2;
   overflow-y: auto;
@@ -226,7 +204,7 @@ function onSliderInput(key, value) {
   gap: 6px;
 }
 
-.group > h2 {
+.group>h2 {
   font-size: 11px;
   letter-spacing: .1em;
   text-transform: uppercase;
@@ -257,5 +235,30 @@ function onSliderInput(key, value) {
   border-top: 1px solid #2c3035;
   padding-top: 10px;
   margin-top: auto;
+}
+
+.status-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px dashed rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+  line-height: 1.35;
+}
+
+.status-banner.editing-mode {
+  background: rgba(201, 163, 92, 0.12);
+  border: 1px solid rgba(201, 163, 92, 0.6);
+  color: #fde047;
+}
+
+.status-icon {
+  font-weight: bold;
+  font-size: 12px;
+  flex-shrink: 0;
 }
 </style>
