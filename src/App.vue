@@ -262,13 +262,7 @@ function handleReorderWaypoints({ fromIndex, toIndex }) {
   const item = segments.value.splice(fromIndex, 1)[0];
   segments.value.splice(toIndex, 0, item);
 
-  if (selectedWaypointIndex.value === fromIndex) {
-    selectedWaypointIndex.value = toIndex;
-  } else if (selectedWaypointIndex.value > fromIndex && selectedWaypointIndex.value <= toIndex) {
-    selectedWaypointIndex.value--;
-  } else if (selectedWaypointIndex.value < fromIndex && selectedWaypointIndex.value >= toIndex) {
-    selectedWaypointIndex.value++;
-  }
+  handleSelectWaypoint(toIndex);
 }
 
 function getInterpolatedStateAtTime(tMs) {

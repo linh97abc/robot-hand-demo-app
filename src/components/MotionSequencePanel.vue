@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, reactive } from 'vue';
 
 const props = defineProps({
   segments: { type: Array, required: true },
@@ -26,7 +26,6 @@ const emit = defineEmits([
 ]);
 
 const fileInputRef = ref(null);
-const draggedIndex = ref(null);
 
 function handleFileChange(event) {
   const file = event.target.files?.[0];
@@ -58,34 +57,137 @@ function onDwellChange(index, value) {
   emit('update-segment', { index, field: 'dwell_ms', value: val });
 }
 
-function moveUp(index) {
-  if (index > 0) {
-    emit('reorder-waypoints', { fromIndex: index, toIndex: index - 1 });
+const draggingIndex = ref(null);
+const dropTargetIndex = ref(null);
+const isPointerDragging = ref(false);
+const dragPosition = reactive({ x: 0, y: 0 });
+
+const displaySegments = computed(() => {
+  if (!isPointerDragging.value || draggingIndex.value === null || dropTargetIndex.value === null) {
+    return props.segments.map((seg, origIdx) => ({
+      ...seg,
+      origIndex: origIdx,
+      isPlaceholder: false,
+    }));
+  }
+
+  const list = props.segments.map((seg, origIdx) => ({
+    ...seg,
+    origIndex: origIdx,
+    isPlaceholder: false,
+  }));
+
+  const [draggedItem] = list.splice(draggingIndex.value, 1);
+  const placeholderItem = {
+    ...draggedItem,
+    id: 'placeholder_' + (draggedItem.id || draggingIndex.value),
+    isPlaceholder: true,
+  };
+
+  const target = Math.max(0, Math.min(list.length, dropTargetIndex.value));
+  list.splice(target, 0, placeholderItem);
+
+  return list;
+});
+
+let initialMidpointsInContainer = [];
+let initialContainerTop = 0;
+
+function startPointerDrag(index, event) {
+  if (event.button !== 0) return;
+  event.preventDefault();
+  event.stopPropagation();
+
+  const listEl = document.querySelector('.segments-list');
+  if (listEl) {
+    const listRect = listEl.getBoundingClientRect();
+    initialContainerTop = listRect.top - listEl.scrollTop;
+
+    const rowElements = Array.from(listEl.querySelectorAll('.segment-row'));
+    initialMidpointsInContainer = rowElements.map((rowEl) => {
+      const rBox = rowEl.getBoundingClientRect();
+      return (rBox.top + rBox.height / 2) - initialContainerTop;
+    });
+  }
+
+  draggingIndex.value = index;
+  dropTargetIndex.value = index;
+  isPointerDragging.value = true;
+  dragPosition.x = event.clientX;
+  dragPosition.y = event.clientY;
+
+  document.body.classList.add('is-dragging-waypoint');
+  document.body.classList.remove('is-outside-drop-zone');
+
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+  window.addEventListener('pointercancel', onPointerUp);
+}
+
+function onPointerMove(event) {
+  if (!isPointerDragging.value || draggingIndex.value === null) return;
+
+  dragPosition.x = event.clientX;
+  dragPosition.y = event.clientY;
+
+  const listEl = document.querySelector('.segments-list');
+  if (!listEl) return;
+
+  const rect = listEl.getBoundingClientRect();
+  const isInsideDropZone = (
+    event.clientX >= rect.left - 60 &&
+    event.clientX <= rect.right + 60 &&
+    event.clientY >= rect.top - 40 &&
+    event.clientY <= rect.bottom + 40
+  );
+
+  if (isInsideDropZone) {
+    document.body.classList.remove('is-outside-drop-zone');
+
+    if (initialMidpointsInContainer.length === 0) {
+      dropTargetIndex.value = 0;
+      return;
+    }
+
+    const currentYInContainer = event.clientY - rect.top + listEl.scrollTop;
+
+    let closestIdx = 0;
+    let minDistance = Infinity;
+
+    initialMidpointsInContainer.forEach((midY, idx) => {
+      const dist = Math.abs(currentYInContainer - midY);
+      if (dist < minDistance) {
+        minDistance = dist;
+        closestIdx = idx;
+      }
+    });
+
+    dropTargetIndex.value = closestIdx;
+  } else {
+    dropTargetIndex.value = null;
+    document.body.classList.add('is-outside-drop-zone');
   }
 }
 
-function moveDown(index) {
-  if (index < props.segments.length - 1) {
-    emit('reorder-waypoints', { fromIndex: index, toIndex: index + 1 });
+function onPointerUp() {
+  if (isPointerDragging.value && draggingIndex.value !== null && dropTargetIndex.value !== null) {
+    if (draggingIndex.value !== dropTargetIndex.value) {
+      emit('reorder-waypoints', {
+        fromIndex: draggingIndex.value,
+        toIndex: dropTargetIndex.value,
+      });
+    }
   }
-}
 
-// Drag and drop handlers
-function onDragStart(index, e) {
-  draggedIndex.value = index;
-  e.dataTransfer.effectAllowed = 'move';
-}
+  draggingIndex.value = null;
+  dropTargetIndex.value = null;
+  isPointerDragging.value = false;
 
-function onDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-}
+  document.body.classList.remove('is-dragging-waypoint', 'is-outside-drop-zone');
 
-function onDrop(targetIndex) {
-  if (draggedIndex.value !== null && draggedIndex.value !== targetIndex) {
-    emit('reorder-waypoints', { fromIndex: draggedIndex.value, toIndex: targetIndex });
-  }
-  draggedIndex.value = null;
+  window.removeEventListener('pointermove', onPointerMove);
+  window.removeEventListener('pointerup', onPointerUp);
+  window.removeEventListener('pointercancel', onPointerUp);
 }
 </script>
 
@@ -177,99 +279,112 @@ function onDrop(targetIndex) {
 
     <!-- Segments Table / List Header -->
     <div class="table-header">
-      <span class="col-name"></span>
-      <span class="col-dur">CHUYỂN ĐỘNG (MS)</span>
-      <span class="col-dwell">DỪNG (MS)</span>
+      <span class="col-name">WAYPOINT</span>
+      <span class="col-dur">CHUYỂN ĐỘNG (ms)</span>
+      <span class="col-dwell">DỪNG (ms)</span>
       <span class="col-action"></span>
     </div>
 
     <!-- Segments List -->
-    <div class="segments-list">
-      <div v-if="segments.length === 0" class="empty-state">
+    <div v-if="segments.length === 0" class="segments-list">
+      <div class="empty-state">
         Chưa có waypoint nào. Bấm "+ Thêm waypoint" để bắt đầu tạo kịch bản.
       </div>
-
-      <div
-        v-for="(seg, index) in segments"
-        :key="seg.id || index"
-        class="segment-row"
-        :class="{ selected: selectedWaypointIndex === index }"
-        draggable="true"
-        @dragstart="e => onDragStart(index, e)"
-        @dragover="onDragOver"
-        @drop="() => onDrop(index)"
-      >
-        <!-- Reorder Handle & Waypoint Button -->
-        <div class="wp-title-cell">
-          <span class="drag-handle" title="Kéo thả để đổi thứ tự">⋮⋮</span>
-          <button
-            type="button"
-            class="btn-wp"
-            :class="{ active: selectedWaypointIndex === index }"
-            @click="emit('select-waypoint', index)"
-          >
-            {{ seg.name || `WP ${index + 1}` }}
-          </button>
-        </div>
-
-        <!-- Duration input -->
-        <div class="input-cell">
-          <input
-            type="number"
-            min="0"
-            step="100"
-            :value="seg.duration_ms"
-            @input="e => onDurationChange(index, e.target.value)"
-          />
-        </div>
-
-        <!-- Dwell input -->
-        <div class="input-cell">
-          <input
-            type="number"
-            min="0"
-            step="100"
-            :value="seg.dwell_ms"
-            @input="e => onDwellChange(index, e.target.value)"
-          />
-        </div>
-
-        <!-- Row actions: Up, Down, Delete -->
-        <div class="action-cell">
-          <button
-            type="button"
-            class="btn-move"
-            :disabled="index === 0"
-            @click.stop="moveUp(index)"
-            title="Di chuyển lên"
-          >
-            ▲
-          </button>
-          <button
-            type="button"
-            class="btn-move"
-            :disabled="index === segments.length - 1"
-            @click.stop="moveDown(index)"
-            title="Di chuyển xuống"
-          >
-            ▼
-          </button>
-          <button
-            type="button"
-            class="btn-del"
-            @click.stop="emit('delete-waypoint', index)"
-            title="Xóa waypoint"
-          >
-            ✕
-          </button>
-        </div>
-      </div>
     </div>
+
+    <TransitionGroup v-else name="flip-list" tag="div" class="segments-list">
+      <div
+        v-for="item in displaySegments"
+        :key="item.id || item.origIndex"
+        class="segment-row"
+        :data-index="item.origIndex"
+        :class="{
+          selected: selectedWaypointIndex === item.origIndex,
+          placeholder: item.isPlaceholder,
+        }"
+      >
+        <template v-if="item.isPlaceholder">
+          <div class="placeholder-content">
+            <span class="placeholder-icon">↓</span>
+            <span>Thả vào đây (chèn {{ item.name || `WP ${item.origIndex + 1}` }})</span>
+          </div>
+        </template>
+
+        <template v-else>
+          <!-- Reorder Handle & Waypoint Button -->
+          <div class="wp-title-cell">
+            <span
+              class="drag-handle"
+              title="Nhấn giữ và kéo thả để đổi thứ tự"
+              @pointerdown="e => startPointerDrag(item.origIndex, e)"
+            >⋮⋮</span>
+            <button
+              type="button"
+              class="btn-wp"
+              :class="{ active: selectedWaypointIndex === item.origIndex }"
+              @click="emit('select-waypoint', item.origIndex)"
+            >
+              {{ item.name || `WP ${item.origIndex + 1}` }}
+            </button>
+          </div>
+
+          <!-- Duration input -->
+          <div class="input-cell">
+            <input
+              type="number"
+              min="0"
+              step="100"
+              :value="item.duration_ms"
+              @input="e => onDurationChange(item.origIndex, e.target.value)"
+            />
+          </div>
+
+          <!-- Dwell input -->
+          <div class="input-cell">
+            <input
+              type="number"
+              min="0"
+              step="100"
+              :value="item.dwell_ms"
+              @input="e => onDwellChange(item.origIndex, e.target.value)"
+            />
+          </div>
+
+          <!-- Row actions: Delete -->
+          <div class="action-cell">
+            <button
+              type="button"
+              class="btn-del"
+              @click.stop="emit('delete-waypoint', item.origIndex)"
+              title="Xóa waypoint"
+            >
+              ✕
+            </button>
+          </div>
+        </template>
+      </div>
+    </TransitionGroup>
 
     <!-- Footer JSON Spec Hint -->
     <div class="script-footer">
       Định dạng file: {"segments": [ {"waypoint": {"thumb.0": 10, ...}, "duration_ms": 800, "dwell_ms": 0}, ... ]}. duration_ms là thời gian chuyển động, dwell_ms là thời gian dừng nghỉ tại waypoint đó.
     </div>
+
+    <!-- Floating Drag Preview Avatar following mouse -->
+    <Teleport to="body">
+      <div
+        v-if="isPointerDragging && draggingIndex !== null && segments[draggingIndex]"
+        class="drag-floating-avatar"
+        :style="{
+          left: dragPosition.x + 'px',
+          top: dragPosition.y + 'px',
+        }"
+      >
+        <span class="avatar-handle">⋮⋮</span>
+        <span class="avatar-title">{{ segments[draggingIndex].name || `WP ${draggingIndex + 1}` }}</span>
+        <span class="avatar-dur">{{ segments[draggingIndex].duration_ms }} ms</span>
+      </div>
+    </Teleport>
   </aside>
 </template>
 
@@ -283,12 +398,13 @@ function onDrop(targetIndex) {
   border-right: 1px solid #2a2d32;
   display: flex;
   flex-direction: column;
-  padding: 16px 18px 20px;
+  padding: 16px 14px 20px;
   gap: 14px;
   box-sizing: border-box;
   font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
   user-select: none;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .header-section h1 {
@@ -402,18 +518,21 @@ function onDrop(targetIndex) {
 
 .table-header {
   display: grid;
-  grid-template-columns: 110px 100px 90px 1fr;
-  font-size: 9.5px;
-  letter-spacing: .06em;
+  grid-template-columns: 84px 114px 74px 1fr;
+  align-items: center;
+  font-size: 8.5px;
+  letter-spacing: .01em;
   color: #71767c;
   font-weight: 700;
   padding-bottom: 4px;
   border-bottom: 1px solid #2a2d32;
   margin-top: 4px;
+  white-space: nowrap;
 }
 
 .col-dur, .col-dwell {
   text-align: center;
+  white-space: nowrap;
 }
 
 .segments-list {
@@ -423,6 +542,7 @@ function onDrop(targetIndex) {
   flex: 1;
   min-height: 100px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .empty-state {
@@ -435,12 +555,12 @@ function onDrop(targetIndex) {
 
 .segment-row {
   display: grid;
-  grid-template-columns: 110px 100px 90px 1fr;
+  grid-template-columns: 84px 114px 74px 1fr;
   align-items: center;
   background: #23262a;
   border: 1px solid #32363b;
   border-radius: 6px;
-  padding: 5px 8px;
+  padding: 5px 6px;
   transition: border-color 0.15s, background-color 0.15s;
 }
 
@@ -453,6 +573,49 @@ function onDrop(targetIndex) {
   background: #2a2d32;
 }
 
+.flip-list-move {
+  transition: transform 0.22s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.segment-row.placeholder {
+  display: flex !important;
+  grid-template-columns: none !important;
+  align-items: center;
+  justify-content: center;
+  background: rgba(201, 163, 92, 0.12) !important;
+  border: 1.5px dashed #c9a35c !important;
+  box-shadow: inset 0 0 12px rgba(201, 163, 92, 0.2);
+  height: 38px;
+  padding: 0 8px;
+  pointer-events: none;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.placeholder-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #c9a35c;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  width: 100%;
+}
+
+.placeholder-icon {
+  font-size: 12px;
+  font-weight: bold;
+  animation: bounce-slot 0.7s infinite alternate;
+}
+
+@keyframes bounce-slot {
+  from { transform: translateY(-1.5px); }
+  to { transform: translateY(2px); }
+}
+
 .wp-title-cell {
   display: flex;
   align-items: center;
@@ -460,10 +623,18 @@ function onDrop(targetIndex) {
 }
 
 .drag-handle {
-  color: #55595f;
+  color: #71767c;
   cursor: grab;
-  font-size: 10px;
+  font-size: 11px;
   user-select: none;
+  touch-action: none;
+  padding: 4px 2px;
+}
+
+.drag-handle:active,
+.segment-row.dragging .drag-handle {
+  cursor: grabbing;
+  color: #c9a35c;
 }
 
 .btn-wp {
@@ -472,12 +643,13 @@ function onDrop(targetIndex) {
   border: 1px solid #3e4249;
   color: #e9e7e2;
   border-radius: 4px;
-  padding: 3px 8px;
+  padding: 3px 5px;
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
   text-align: left;
   white-space: nowrap;
+  max-width: 64px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -494,12 +666,12 @@ function onDrop(targetIndex) {
 }
 
 .input-cell input {
-  width: 68px;
+  width: 56px;
   background: #191b1d;
   border: 1px solid #373b42;
   color: #e9e7e2;
   border-radius: 4px;
-  padding: 3px 6px;
+  padding: 3px 4px;
   font-size: 11px;
   text-align: center;
   font-family: inherit;
@@ -517,24 +689,7 @@ function onDrop(targetIndex) {
   gap: 3px;
 }
 
-.btn-move {
-  appearance: none;
-  background: transparent;
-  border: none;
-  color: #71767c;
-  cursor: pointer;
-  font-size: 9px;
-  padding: 2px 3px;
-}
 
-.btn-move:hover:not(:disabled) {
-  color: #c9a35c;
-}
-
-.btn-move:disabled {
-  opacity: 0.25;
-  cursor: default;
-}
 
 .btn-del {
   appearance: none;
@@ -558,5 +713,52 @@ function onDrop(targetIndex) {
   border-top: 1px solid #2c3035;
   padding-top: 10px;
   margin-top: auto;
+}
+</style>
+
+<style>
+body.is-dragging-waypoint,
+body.is-dragging-waypoint * {
+  cursor: grabbing !important;
+  user-select: none !important;
+}
+
+body.is-dragging-waypoint.is-outside-drop-zone,
+body.is-dragging-waypoint.is-outside-drop-zone * {
+  cursor: not-allowed !important;
+}
+
+.drag-floating-avatar {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 99999;
+  background: #2a2d32;
+  border: 1px solid #c9a35c;
+  border-radius: 6px;
+  padding: 6px 14px;
+  color: #e9e7e2;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 14px rgba(201, 163, 92, 0.4);
+  user-select: none;
+}
+
+.avatar-handle {
+  color: #c9a35c;
+  font-weight: bold;
+}
+
+.avatar-title {
+  color: #e9e7e2;
+}
+
+.avatar-dur {
+  font-size: 10px;
+  color: #9a9ea4;
+  font-weight: 500;
 }
 </style>
