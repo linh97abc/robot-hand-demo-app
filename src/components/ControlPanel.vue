@@ -8,6 +8,7 @@ const props = defineProps({
   activePreset: { type: String, default: null },
   loading: { type: Boolean, default: false },
   selectedWaypointName: { type: String, default: null },
+  isPlaying: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['switch-profile', 'update-joint', 'select-preset']);
@@ -31,11 +32,17 @@ function onSliderInput(key, value) {
     <!-- Status Banner -->
     <div
       class="flex items-center gap-2 py-2 px-2.5 rounded-md text-[11px] leading-[1.35]"
-      :class="selectedWaypointName
-        ? 'bg-gold/12 border border-gold/60 text-[#fde047]'
-        : 'bg-[#22c55e14] border border-dashed border-[#22c55e66] text-[#4ade80]'"
+      :class="isPlaying
+        ? 'bg-sky-400/12 border border-sky-400/60 text-sky-300'
+        : (selectedWaypointName
+            ? 'bg-gold/12 border border-gold/60 text-[#fde047]'
+            : 'bg-[#22c55e14] border border-dashed border-[#22c55e66] text-[#4ade80]')"
     >
-      <template v-if="selectedWaypointName">
+      <template v-if="isPlaying">
+        <span class="font-bold text-xs flex-shrink-0">▶</span>
+        <span>Đang phát chuyển động — dừng phát để chỉnh sửa</span>
+      </template>
+      <template v-else-if="selectedWaypointName">
         <span class="font-bold text-xs flex-shrink-0">✎</span>
         <span>Đang sửa <strong>{{ selectedWaypointName }}</strong> — bấm lại WP để hoàn tất</span>
       </template>
@@ -50,8 +57,9 @@ function onSliderInput(key, value) {
       <button
         v-for="(pose, name) in currentProfile.poses"
         :key="name"
+        :disabled="isPlaying"
         @click="emit('select-preset', name)"
-        class="text-[11px] tracking-[.03em] py-[5px] px-2.5 rounded-full border cursor-pointer"
+        class="text-[11px] tracking-[.03em] py-[5px] px-2.5 rounded-full border cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         :class="activePreset === name
           ? 'bg-gold border-gold text-panel font-bold'
           : 'bg-[#24272b] border-line text-panel-fg hover:bg-[#2f3338] hover:border-[#55595f]'"
@@ -79,6 +87,7 @@ function onSliderInput(key, value) {
             <span>{{ typeof jointLabel === 'object' ? jointLabel.label : (finger.jointLabels ? finger.jointLabels[index]
               : jointLabel) }}</span>
             <input type="range" :min="0" :max="1000" :value="Math.round(state[`${finger.key}.${index}`] || 0)"
+              :disabled="isPlaying" class="disabled:opacity-40 disabled:cursor-not-allowed"
               @input="e => onSliderInput(`${finger.key}.${index}`, e.target.value)" />
             <output class="text-right tabular-nums text-panel-fg">{{ Math.round(state[`${finger.key}.${index}`] || 0) }}</output>
           </label>

@@ -16,6 +16,11 @@
   to { transform: translateY(2px); }
 }
 
+@keyframes playing-glow {
+  0%, 100% { box-shadow: 0 0 6px rgba(201,163,92,0.35); border-color: #c9a35c; }
+  50% { box-shadow: 0 0 16px rgba(201,163,92,0.85); border-color: #e6c988; }
+}
+
 /* Native control resets that Tailwind has no utility for */
 input[type="number"] {
   appearance: textfield;

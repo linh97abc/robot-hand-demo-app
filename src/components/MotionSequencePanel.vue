@@ -44,6 +44,7 @@ function handleFileChange(event) {
 }
 
 function triggerImport() {
+  if (props.isPlaying) return;
   fileInputRef.value?.click();
 }
 
@@ -94,10 +95,29 @@ const displaySegments = computed(() => {
   return list;
 });
 
+const activeWaypointIndex = computed(() => {
+  if (!props.isPlaying || props.segments.length === 0) return null;
+
+  let accum = 0;
+  const tMs = props.currentTimeMs;
+
+  for (let i = 0; i < props.segments.length; i++) {
+    const seg = props.segments[i];
+    const segTotal = (seg.duration_ms || 0) + (seg.dwell_ms || 0);
+    if (tMs <= accum + segTotal || i === props.segments.length - 1) {
+      return i;
+    }
+    accum += segTotal;
+  }
+
+  return props.segments.length - 1;
+});
+
 let initialMidpointsInContainer = [];
 let initialContainerTop = 0;
 
 function startPointerDrag(index, event) {
+  if (props.isPlaying) return;
   if (event.button !== 0) return;
   event.preventDefault();
   event.stopPropagation();
@@ -207,14 +227,16 @@ function onPointerUp() {
       <div class="flex gap-2">
         <button
           type="button"
-          class="appearance-none bg-[#282b30] border border-line text-panel-fg rounded-md py-1.5 px-3.5 text-[11.5px] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#32363c] hover:border-[#55595f]"
+          :disabled="isPlaying"
+          class="appearance-none bg-[#282b30] border border-line text-panel-fg rounded-md py-1.5 px-3.5 text-[11.5px] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#32363c] hover:border-[#55595f] disabled:opacity-40 disabled:cursor-not-allowed"
           @click="emit('export-json')"
         >
           Xuất JSON
         </button>
         <button
           type="button"
-          class="appearance-none bg-[#282b30] border border-line text-panel-fg rounded-md py-1.5 px-3.5 text-[11.5px] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#32363c] hover:border-[#55595f]"
+          :disabled="isPlaying"
+          class="appearance-none bg-[#282b30] border border-line text-panel-fg rounded-md py-1.5 px-3.5 text-[11.5px] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#32363c] hover:border-[#55595f] disabled:opacity-40 disabled:cursor-not-allowed"
           @click="triggerImport"
         >
           Nhập JSON
@@ -224,6 +246,7 @@ function onPointerUp() {
           type="file"
           accept=".json"
           class="hidden"
+          :disabled="isPlaying"
           @change="handleFileChange"
         />
       </div>
@@ -248,7 +271,8 @@ function onPointerUp() {
     <div class="flex gap-1.5 items-center flex-wrap">
       <button
         type="button"
-        class="appearance-none bg-[#282b30] border border-[#484c54] text-panel-fg rounded-md py-1.5 px-2.5 text-[11.5px] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#343840] hover:border-gold"
+        :disabled="isPlaying"
+        class="appearance-none bg-[#282b30] border border-[#484c54] text-panel-fg rounded-md py-1.5 px-2.5 text-[11.5px] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#343840] hover:border-gold disabled:opacity-40 disabled:cursor-not-allowed"
         @click="emit('add-waypoint')"
       >
         + Thêm waypoint
@@ -314,9 +338,11 @@ function onPointerUp() {
         :data-index="item.origIndex"
         :class="item.isPlaceholder
           ? 'flex items-center justify-center bg-gold/[0.12] border-[1.5px] border-dashed border-gold shadow-[inset_0_0_12px_rgba(201,163,92,0.2)] h-[38px] px-2 pointer-events-none w-full box-border'
-          : (selectedWaypointIndex === item.origIndex
-              ? 'grid grid-cols-[84px_114px_74px_1fr] items-center bg-[#2a2d32] border border-gold py-[5px] px-1.5 cursor-pointer shadow-[0_0_8px_rgba(201,163,92,0.2)]'
-              : 'grid grid-cols-[84px_114px_74px_1fr] items-center bg-[#23262a] border border-[#32363b] py-[5px] px-1.5 cursor-pointer transition-colors duration-150 hover:border-[#484c54] hover:bg-[#272a2e]')"
+          : (activeWaypointIndex === item.origIndex
+              ? 'grid grid-cols-[84px_114px_74px_1fr] items-center bg-[#2a2d32] border-2 border-gold py-[4px] px-1.5 cursor-pointer animate-[playing-glow_1s_ease-in-out_infinite]'
+              : (selectedWaypointIndex === item.origIndex
+                  ? 'grid grid-cols-[84px_114px_74px_1fr] items-center bg-[#2a2d32] border border-gold py-[5px] px-1.5 cursor-pointer shadow-[0_0_8px_rgba(201,163,92,0.2)]'
+                  : 'grid grid-cols-[84px_114px_74px_1fr] items-center bg-[#23262a] border border-[#32363b] py-[5px] px-1.5 cursor-pointer transition-colors duration-150 hover:border-[#484c54] hover:bg-[#272a2e]'))"
         @click="!item.isPlaceholder && emit('select-waypoint', item.origIndex)"
       >
         <template v-if="item.isPlaceholder">
@@ -330,13 +356,15 @@ function onPointerUp() {
           <!-- Reorder Handle & Waypoint Name Textbox -->
           <div class="flex items-center gap-1">
             <span
-              class="text-dim cursor-grab text-[11px] select-none [touch-action:none] py-1 px-0.5 active:cursor-grabbing active:text-gold"
+              class="text-[11px] select-none [touch-action:none] py-1 px-0.5"
+              :class="isPlaying ? 'text-dim cursor-not-allowed opacity-40' : 'text-dim cursor-grab active:cursor-grabbing active:text-gold'"
               title="Nhấn giữ và kéo thả để đổi thứ tự"
               @pointerdown="e => startPointerDrag(item.origIndex, e)"
             >⋮⋮</span>
             <input
               type="text"
-              class="w-[58px] bg-[#191b1d] border border-[#373b42] rounded py-[3px] px-[5px] text-[11px] font-bold outline-none focus:border-gold focus:bg-[#23262b]"
+              :disabled="isPlaying"
+              class="w-[58px] bg-[#191b1d] border border-[#373b42] rounded py-[3px] px-[5px] text-[11px] font-bold outline-none focus:border-gold focus:bg-[#23262b] disabled:opacity-40 disabled:cursor-not-allowed"
               :class="selectedWaypointIndex === item.origIndex ? 'text-gold' : 'text-panel-fg'"
               :value="item.name"
               :placeholder="`WP ${item.origIndex + 1}`"
@@ -352,7 +380,8 @@ function onPointerUp() {
               type="number"
               min="0"
               step="100"
-              class="w-[56px] bg-[#191b1d] border border-[#373b42] text-panel-fg rounded py-[3px] px-1 text-[11px] text-center outline-none focus:border-gold"
+              :disabled="isPlaying"
+              class="w-[56px] bg-[#191b1d] border border-[#373b42] text-panel-fg rounded py-[3px] px-1 text-[11px] text-center outline-none focus:border-gold disabled:opacity-40 disabled:cursor-not-allowed"
               :value="item.duration_ms"
               @click.stop
               @input="e => onDurationChange(item.origIndex, e.target.value)"
@@ -365,7 +394,8 @@ function onPointerUp() {
               type="number"
               min="0"
               step="100"
-              class="w-[56px] bg-[#191b1d] border border-[#373b42] text-panel-fg rounded py-[3px] px-1 text-[11px] text-center outline-none focus:border-gold"
+              :disabled="isPlaying"
+              class="w-[56px] bg-[#191b1d] border border-[#373b42] text-panel-fg rounded py-[3px] px-1 text-[11px] text-center outline-none focus:border-gold disabled:opacity-40 disabled:cursor-not-allowed"
               :value="item.dwell_ms"
               @click.stop
               @input="e => onDwellChange(item.origIndex, e.target.value)"
@@ -376,7 +406,8 @@ function onPointerUp() {
           <div class="flex items-center justify-end gap-[3px]">
             <button
               type="button"
-              class="appearance-none bg-transparent border-none text-dim cursor-pointer text-xs py-0.5 px-1 leading-none hover:text-red-500"
+              :disabled="isPlaying"
+              class="appearance-none bg-transparent border-none text-dim cursor-pointer text-xs py-0.5 px-1 leading-none hover:text-red-500 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-dim"
               @click.stop="emit('delete-waypoint', item.origIndex)"
               title="Xóa waypoint"
             >

@@ -5,6 +5,10 @@ import ThreeStage from './components/ThreeStage.vue';
 import MotionSequencePanel from './components/MotionSequencePanel.vue';
 import ControlPanel from './components/ControlPanel.vue';
 import { PROFILES, getJointLimits, getJointAxisVector, getJointType, getJointMimic, DEG } from './models/profiles.js';
+import { save as saveFileDialog } from '@tauri-apps/plugin-dialog';
+import { writeTextFile } from '@tauri-apps/plugin-fs';
+
+const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
 
 const defaultProfileKey = Object.keys(PROFILES)[0] || '';
 const stageRef = ref(null);
@@ -129,6 +133,7 @@ function goToPose(pose) {
 }
 
 function handleJointUpdate(key, value) {
+  if (isPlaying.value) return;
   animating = false;
   state[key] = value;
   target[key] = value;
@@ -143,6 +148,7 @@ function handleJointUpdate(key, value) {
 }
 
 function handlePresetSelect(presetName) {
+  if (isPlaying.value) return;
   const profile = PROFILES[currentProfileKey.value];
   const pose = profile.poses[presetName];
   if (pose) {
@@ -212,6 +218,7 @@ function handleProfileSwitch(profileKey) {
 // --- Motion Sequence Logic ---
 
 function handleAddWaypoint() {
+  if (isPlaying.value) return;
   const currentSnapshot = { ...state };
   const count = segments.value.length + 1;
   const newSegment = {
@@ -241,6 +248,7 @@ function handleSelectWaypoint(index) {
 }
 
 function handleDeleteWaypoint(index) {
+  if (isPlaying.value) return;
   segments.value.splice(index, 1);
   if (selectedWaypointIndex.value === index) {
     selectedWaypointIndex.value = null;
@@ -250,12 +258,14 @@ function handleDeleteWaypoint(index) {
 }
 
 function handleUpdateSegment({ index, field, value }) {
+  if (isPlaying.value) return;
   if (segments.value[index]) {
     segments.value[index][field] = value;
   }
 }
 
 function handleReorderWaypoints({ fromIndex, toIndex }) {
+  if (isPlaying.value) return;
   if (fromIndex < 0 || fromIndex >= segments.value.length) return;
   if (toIndex < 0 || toIndex >= segments.value.length) return;
 
@@ -367,7 +377,8 @@ function handleSeek(timeMs) {
   applyStateAtTime(timeMs);
 }
 
-function handleExportJSON() {
+async function handleExportJSON() {
+  if (isPlaying.value) return;
   const data = {
     version: 1,
     profile: currentProfileKey.value,
@@ -379,11 +390,24 @@ function handleExportJSON() {
     })),
   };
   const jsonStr = JSON.stringify(data, null, 2);
+  const defaultFileName = `${currentProfileKey.value}_motion_sequence.json`;
+
+  if (isTauri) {
+    const filePath = await saveFileDialog({
+      defaultPath: defaultFileName,
+      filters: [{ name: 'JSON', extensions: ['json'] }],
+    });
+    if (!filePath) return; // Người dùng hủy hộp thoại
+    await writeTextFile(filePath, jsonStr);
+    return;
+  }
+
+  // Chạy trong trình duyệt thường (vd. `npm run dev` không qua Tauri): tải file như cũ
   const blob = new Blob([jsonStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${currentProfileKey.value}_motion_sequence.json`;
+  a.download = defaultFileName;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -391,6 +415,7 @@ function handleExportJSON() {
 }
 
 function handleImportJSON(data) {
+  if (isPlaying.value) return;
   if (!data || !Array.isArray(data.segments)) {
     alert('File JSON không hợp lệ: Thiếu danh sách segments.');
     return;
@@ -467,6 +492,7 @@ onMounted(() => {
       :active-preset="activePreset"
       :loading="loading"
       :selected-waypoint-name="selectedWaypointName"
+      :is-playing="isPlaying"
       @switch-profile="handleProfileSwitch"
       @update-joint="handleJointUpdate"
       @select-preset="handlePresetSelect"
