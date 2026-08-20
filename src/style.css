@@ -1,5 +1,33 @@
 @import "tailwindcss";
 
+@theme {
+  --color-panel: #1c1e21;
+  --color-panel-fg: #e9e7e2;
+  --color-gold: #c9a35c;
+  --color-muted: #9a9ea4;
+  --color-dim: #71767c;
+  --color-line: #3a3e44;
+  --color-stage: #efece6;
+  --font-ui: Helvetica, "Helvetica Neue", Arial, sans-serif;
+}
+
+@keyframes bounce-slot {
+  from { transform: translateY(-1.5px); }
+  to { transform: translateY(2px); }
+}
+
+/* Native control resets that Tailwind has no utility for */
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 /* Custom Range Input Styling (Original Exact Match) */
 input[type="range"] {
   -webkit-appearance: none;

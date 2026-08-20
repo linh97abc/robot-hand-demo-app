@@ -254,198 +254,56 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="stage-container">
-    <div ref="containerRef" class="canvas-wrapper"></div>
+  <div class="relative w-full h-full bg-stage overflow-hidden">
+    <div ref="containerRef" class="w-full h-full overflow-hidden canvas-wrapper"></div>
 
     <!-- Top-Left Model Switcher Overlay -->
-    <div v-if="profiles && currentProfileKey" class="model-select-overlay">
-      <div class="model-select-header">
-        <label class="model-select-label">MÔ HÌNH ROBOT</label>
-        <div class="select-wrapper">
-          <select :value="currentProfileKey" @change="emit('switch-profile', $event.target.value)">
+    <div
+      v-if="profiles && currentProfileKey"
+      class="absolute top-4 left-4 z-10 bg-[#1c1e21eb] backdrop-blur-md border border-line rounded-[10px] py-3 px-3.5 flex flex-col gap-2.5 max-w-[320px] shadow-[0_6px_20px_rgba(0,0,0,0.25)] text-panel-fg font-ui select-none"
+    >
+      <div class="flex flex-col gap-[5px]">
+        <label class="text-[10px] tracking-[.08em] uppercase text-gold font-bold">MÔ HÌNH ROBOT</label>
+        <div class="relative w-full">
+          <select
+            :value="currentProfileKey"
+            @change="emit('switch-profile', $event.target.value)"
+            class="w-full appearance-none bg-[#24272b] text-panel-fg border border-line rounded-md py-[7px] pr-7 pl-2.5 text-xs font-semibold cursor-pointer outline-none transition-colors duration-200 hover:bg-[#2f3338] hover:border-[#55595f] focus:border-gold"
+          >
             <option v-for="(profile, key) in profiles" :key="key" :value="key">
               {{ profile.displayName || profile.label || profile.title }}
             </option>
           </select>
-          <span class="select-chevron">▾</span>
+          <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gold text-[11px] pointer-events-none">▾</span>
         </div>
       </div>
 
-      <div v-if="currentProfile.title" class="model-info">
-        <h2 class="model-title">{{ currentProfile.title }}</h2>
-        <p v-if="currentProfile.subtitle" class="model-subtitle">{{ currentProfile.subtitle }}</p>
+      <div v-if="currentProfile.title" class="border-t border-[#2d3137] pt-2 flex flex-col gap-1">
+        <h2 class="text-xs tracking-[.06em] uppercase m-0 font-bold text-panel-fg">{{ currentProfile.title }}</h2>
+        <p v-if="currentProfile.subtitle" class="text-[10.5px] leading-[1.4] text-muted m-0">{{ currentProfile.subtitle }}</p>
       </div>
     </div>
 
-    <div class="note">Drag to orbit · scroll to zoom · right-drag to pan</div>
-    <div class="toolbar">
-      <button type="button" @click="exportOBJ">Download OBJ + MTL</button>
-      <button type="button" @click="exportGLTF">Download GLB</button>
+    <div class="absolute left-4 bottom-4 max-w-[60%] text-[12px] leading-[1.5] text-[#1a19158c] select-none pointer-events-none font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,sans-serif]">Drag to orbit · scroll to zoom · right-drag to pan</div>
+    <div class="absolute right-4 bottom-4 flex gap-2 z-10 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,sans-serif]">
+      <button
+        type="button"
+        @click="exportOBJ"
+        class="appearance-none border border-[#1414132e] rounded-lg bg-[#ffffffeb] text-[#1a1915] text-[12.5px] font-medium leading-none py-2.5 px-3 cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:bg-white active:translate-y-px"
+      >Download OBJ + MTL</button>
+      <button
+        type="button"
+        @click="exportGLTF"
+        class="appearance-none border border-[#1414132e] rounded-lg bg-[#ffffffeb] text-[#1a1915] text-[12.5px] font-medium leading-none py-2.5 px-3 cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:bg-white active:translate-y-px"
+      >Download GLB</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.stage-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background: #efece6;
-  overflow: hidden;
-}
-
-.canvas-wrapper {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
 .canvas-wrapper :deep(canvas) {
   display: block !important;
   width: 100% !important;
   height: 100% !important;
-}
-
-.model-select-overlay {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 10;
-  background: rgba(28, 30, 33, 0.92);
-  backdrop-filter: blur(10px);
-  border: 1px solid #3a3e44;
-  border-radius: 10px;
-  padding: 12px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-width: 320px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  color: #e9e7e2;
-  font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
-  user-select: none;
-}
-
-.model-select-header {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.model-select-label {
-  font-size: 10px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: #c9a35c;
-  font-weight: 700;
-}
-
-.select-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.select-wrapper select {
-  width: 100%;
-  appearance: none;
-  -webkit-appearance: none;
-  background: #24272b;
-  color: #e9e7e2;
-  border: 1px solid #3a3e44;
-  border-radius: 6px;
-  padding: 7px 28px 7px 10px;
-  font-size: 12px;
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  outline: none;
-  transition: border-color 0.2s, background-color 0.2s;
-}
-
-.select-wrapper select:hover {
-  background: #2f3338;
-  border-color: #55595f;
-}
-
-.select-wrapper select:focus {
-  border-color: #c9a35c;
-}
-
-.select-chevron {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #c9a35c;
-  font-size: 11px;
-  pointer-events: none;
-}
-
-.model-info {
-  border-top: 1px solid #2d3137;
-  padding-top: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.model-title {
-  font-size: 12px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  margin: 0;
-  font-weight: 700;
-  color: #e9e7e2;
-}
-
-.model-subtitle {
-  font-size: 10.5px;
-  line-height: 1.4;
-  color: #9a9ea4;
-  margin: 0;
-}
-
-.toolbar {
-  position: absolute;
-  right: 16px;
-  bottom: 16px;
-  display: flex;
-  gap: 8px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  z-index: 10;
-}
-
-.toolbar button {
-  appearance: none;
-  border: 1px solid rgba(20, 20, 19, 0.18);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #1a1915;
-  font-family: inherit;
-  font-size: 12.5px;
-  font-weight: 500;
-  line-height: 1;
-  padding: 9px 12px;
-  cursor: pointer;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.toolbar button:hover {
-  background: #ffffff;
-}
-
-.toolbar button:active {
-  transform: translateY(1px);
-}
-
-.note {
-  position: absolute;
-  left: 16px;
-  bottom: 16px;
-  max-width: 60%;
-  font: 400 12px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  color: rgba(26, 25, 21, 0.55);
-  user-select: none;
-  pointer-events: none;
 }
 </style>

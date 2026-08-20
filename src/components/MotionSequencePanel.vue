@@ -196,19 +196,27 @@ function onPointerUp() {
 </script>
 
 <template>
-  <aside class="script-panel">
+  <aside class="w-[360px] flex-none bg-panel text-panel-fg border-r border-[#2a2d32] flex flex-col pt-4 px-3.5 pb-5 gap-3.5 box-border font-ui select-none overflow-y-auto overflow-x-hidden">
     <!-- Header -->
-    <div class="header-section">
-      <h1>KỊCH BẢN CHUYỂN ĐỘNG</h1>
-      <p class="desc">
+    <div>
+      <h1 class="text-[14.5px] tracking-[.08em] uppercase m-0 mb-1.5 font-bold text-panel-fg">KỊCH BẢN CHUYỂN ĐỘNG</h1>
+      <p class="text-[11px] leading-[1.45] text-muted m-0 mb-3">
         Ghi lại tư thế hiện tại thành các waypoint. Bấm vào 1 waypoint để chọn — chỉnh sửa tư thế bằng các thanh trượt ở cột bên phải. Xuất/nhập file JSON để dùng lại.
       </p>
-      
-      <div class="json-actions">
-        <button type="button" class="btn-secondary" @click="emit('export-json')">
+
+      <div class="flex gap-2">
+        <button
+          type="button"
+          class="appearance-none bg-[#282b30] border border-line text-panel-fg rounded-md py-1.5 px-3.5 text-[11.5px] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#32363c] hover:border-[#55595f]"
+          @click="emit('export-json')"
+        >
           Xuất JSON
         </button>
-        <button type="button" class="btn-secondary" @click="triggerImport">
+        <button
+          type="button"
+          class="appearance-none bg-[#282b30] border border-line text-panel-fg rounded-md py-1.5 px-3.5 text-[11.5px] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#32363c] hover:border-[#55595f]"
+          @click="triggerImport"
+        >
           Nhập JSON
         </button>
         <input
@@ -222,8 +230,8 @@ function onPointerUp() {
     </div>
 
     <!-- Timeline Scrub section -->
-    <div class="timeline-section">
-      <div class="time-readout">
+    <div class="flex flex-col gap-1.5">
+      <div class="text-[10.5px] text-muted font-medium tabular-nums">
         <span>{{ Math.round(currentTimeMs) }} ms / {{ Math.round(totalTimeMs) }} ms</span>
       </div>
       <input
@@ -232,15 +240,15 @@ function onPointerUp() {
         :max="totalTimeMs || 100"
         :value="currentTimeMs"
         @input="e => emit('seek', parseFloat(e.target.value))"
-        class="scrub-slider"
+        class="w-full accent-gold cursor-pointer"
       />
     </div>
 
     <!-- Controls toolbar -->
-    <div class="toolbar">
+    <div class="flex gap-1.5 items-center flex-wrap">
       <button
         type="button"
-        class="btn-primary btn-add"
+        class="appearance-none bg-[#282b30] border border-[#484c54] text-panel-fg rounded-md py-1.5 px-2.5 text-[11.5px] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#343840] hover:border-gold"
         @click="emit('add-waypoint')"
       >
         + Thêm waypoint
@@ -249,7 +257,7 @@ function onPointerUp() {
       <button
         v-if="!isPlaying"
         type="button"
-        class="btn-action"
+        class="appearance-none bg-[#24272b] border border-line text-panel-fg rounded-md py-1.5 px-2.5 text-[11.5px] font-semibold cursor-pointer hover:bg-[#2f3338]"
         @click="emit('play')"
       >
         ► Phát
@@ -257,7 +265,7 @@ function onPointerUp() {
       <button
         v-else
         type="button"
-        class="btn-action btn-active"
+        class="appearance-none bg-gold border border-gold text-panel rounded-md py-1.5 px-2.5 text-[11.5px] font-semibold cursor-pointer"
         @click="emit('pause')"
       >
         ⏸ Tạm dừng
@@ -265,7 +273,7 @@ function onPointerUp() {
 
       <button
         type="button"
-        class="btn-action"
+        class="appearance-none bg-[#24272b] border border-line text-panel-fg rounded-md py-1.5 px-2.5 text-[11.5px] font-semibold cursor-pointer hover:bg-[#2f3338]"
         @click="emit('stop')"
       >
         ■ Dừng
@@ -273,8 +281,10 @@ function onPointerUp() {
 
       <button
         type="button"
-        class="btn-action"
-        :class="{ active: isLooping }"
+        class="appearance-none rounded-md py-1.5 px-2.5 text-[11.5px] font-semibold cursor-pointer"
+        :class="isLooping
+          ? 'bg-gold border border-gold text-panel'
+          : 'bg-[#24272b] border border-line text-panel-fg hover:bg-[#2f3338]'"
         @click="emit('toggle-loop')"
       >
         ↻ Lặp
@@ -282,50 +292,52 @@ function onPointerUp() {
     </div>
 
     <!-- Segments Table / List Header -->
-    <div class="table-header">
-      <span class="col-name">WAYPOINT</span>
-      <span class="col-dur">CHUYỂN ĐỘNG (ms)</span>
-      <span class="col-dwell">DỪNG (ms)</span>
-      <span class="col-action"></span>
+    <div class="grid grid-cols-[84px_114px_74px_1fr] items-center text-[8.5px] tracking-[.01em] text-dim font-bold pb-1 border-b border-[#2a2d32] mt-1 whitespace-nowrap">
+      <span>WAYPOINT</span>
+      <span class="text-center whitespace-nowrap">CHUYỂN ĐỘNG (ms)</span>
+      <span class="text-center whitespace-nowrap">DỪNG (ms)</span>
+      <span></span>
     </div>
 
     <!-- Segments List -->
-    <div v-if="segments.length === 0" class="segments-list">
-      <div class="empty-state">
+    <div v-if="segments.length === 0" class="flex flex-col gap-1.5 flex-1 min-h-[100px] overflow-y-auto overflow-x-hidden">
+      <div class="text-[11px] text-dim italic py-4 text-center">
         Chưa có waypoint nào. Bấm "+ Thêm waypoint" để bắt đầu tạo kịch bản.
       </div>
     </div>
 
-    <TransitionGroup v-else name="flip-list" tag="div" class="segments-list">
+    <TransitionGroup v-else name="flip-list" tag="div" class="segments-list flex flex-col gap-1.5 flex-1 min-h-[100px] overflow-y-auto overflow-x-hidden">
       <div
         v-for="item in displaySegments"
         :key="item.id || item.origIndex"
-        class="segment-row"
+        class="segment-row rounded-md"
         :data-index="item.origIndex"
-        :class="{
-          selected: selectedWaypointIndex === item.origIndex,
-          placeholder: item.isPlaceholder,
-        }"
+        :class="item.isPlaceholder
+          ? 'flex items-center justify-center bg-gold/[0.12] border-[1.5px] border-dashed border-gold shadow-[inset_0_0_12px_rgba(201,163,92,0.2)] h-[38px] px-2 pointer-events-none w-full box-border'
+          : (selectedWaypointIndex === item.origIndex
+              ? 'grid grid-cols-[84px_114px_74px_1fr] items-center bg-[#2a2d32] border border-gold py-[5px] px-1.5 cursor-pointer shadow-[0_0_8px_rgba(201,163,92,0.2)]'
+              : 'grid grid-cols-[84px_114px_74px_1fr] items-center bg-[#23262a] border border-[#32363b] py-[5px] px-1.5 cursor-pointer transition-colors duration-150 hover:border-[#484c54] hover:bg-[#272a2e]')"
         @click="!item.isPlaceholder && emit('select-waypoint', item.origIndex)"
       >
         <template v-if="item.isPlaceholder">
-          <div class="placeholder-content">
-            <span class="placeholder-icon">↓</span>
+          <div class="flex items-center justify-center gap-2 text-gold text-[11px] font-bold tracking-[.02em] w-full">
+            <span class="text-xs font-bold animate-[bounce-slot_0.7s_infinite_alternate]">↓</span>
             <span>Thả vào đây (chèn {{ item.name || `WP ${item.origIndex + 1}` }})</span>
           </div>
         </template>
 
         <template v-else>
           <!-- Reorder Handle & Waypoint Name Textbox -->
-          <div class="wp-title-cell">
+          <div class="flex items-center gap-1">
             <span
-              class="drag-handle"
+              class="text-dim cursor-grab text-[11px] select-none [touch-action:none] py-1 px-0.5 active:cursor-grabbing active:text-gold"
               title="Nhấn giữ và kéo thả để đổi thứ tự"
               @pointerdown="e => startPointerDrag(item.origIndex, e)"
             >⋮⋮</span>
             <input
               type="text"
-              class="input-wp-name"
+              class="w-[58px] bg-[#191b1d] border border-[#373b42] rounded py-[3px] px-[5px] text-[11px] font-bold outline-none focus:border-gold focus:bg-[#23262b]"
+              :class="selectedWaypointIndex === item.origIndex ? 'text-gold' : 'text-panel-fg'"
               :value="item.name"
               :placeholder="`WP ${item.origIndex + 1}`"
               title="Nhấp vào để chỉnh sửa tên Waypoint"
@@ -335,11 +347,12 @@ function onPointerUp() {
           </div>
 
           <!-- Duration input -->
-          <div class="input-cell">
+          <div class="flex justify-center">
             <input
               type="number"
               min="0"
               step="100"
+              class="w-[56px] bg-[#191b1d] border border-[#373b42] text-panel-fg rounded py-[3px] px-1 text-[11px] text-center outline-none focus:border-gold"
               :value="item.duration_ms"
               @click.stop
               @input="e => onDurationChange(item.origIndex, e.target.value)"
@@ -347,11 +360,12 @@ function onPointerUp() {
           </div>
 
           <!-- Dwell input -->
-          <div class="input-cell">
+          <div class="flex justify-center">
             <input
               type="number"
               min="0"
               step="100"
+              class="w-[56px] bg-[#191b1d] border border-[#373b42] text-panel-fg rounded py-[3px] px-1 text-[11px] text-center outline-none focus:border-gold"
               :value="item.dwell_ms"
               @click.stop
               @input="e => onDwellChange(item.origIndex, e.target.value)"
@@ -359,10 +373,10 @@ function onPointerUp() {
           </div>
 
           <!-- Row actions: Delete -->
-          <div class="action-cell">
+          <div class="flex items-center justify-end gap-[3px]">
             <button
               type="button"
-              class="btn-del"
+              class="appearance-none bg-transparent border-none text-dim cursor-pointer text-xs py-0.5 px-1 leading-none hover:text-red-500"
               @click.stop="emit('delete-waypoint', item.origIndex)"
               title="Xóa waypoint"
             >
@@ -374,7 +388,7 @@ function onPointerUp() {
     </TransitionGroup>
 
     <!-- Footer JSON Spec Hint -->
-    <div class="script-footer">
+    <div class="text-[10px] text-dim leading-[1.4] border-t border-[#2c3035] pt-2.5 mt-auto">
       Định dạng file: {"segments": [ {"waypoint": {"thumb.0": 10, ...}, "duration_ms": 800, "dwell_ms": 0}, ... ]}. duration_ms là thời gian chuyển động, dwell_ms là thời gian dừng nghỉ tại waypoint đó.
     </div>
 
@@ -382,359 +396,25 @@ function onPointerUp() {
     <Teleport to="body">
       <div
         v-if="isPointerDragging && draggingIndex !== null && segments[draggingIndex]"
-        class="drag-floating-avatar"
+        class="fixed -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[99999] bg-[#2a2d32] border border-gold rounded-md py-1.5 px-3.5 text-panel-fg text-[11px] font-bold flex items-center gap-2 shadow-[0_10px_25px_rgba(0,0,0,0.5),0_0_14px_rgba(201,163,92,0.4)] select-none"
         :style="{
           left: dragPosition.x + 'px',
           top: dragPosition.y + 'px',
         }"
       >
-        <span class="avatar-handle">⋮⋮</span>
-        <span class="avatar-title">{{ segments[draggingIndex].name || `WP ${draggingIndex + 1}` }}</span>
-        <span class="avatar-dur">{{ segments[draggingIndex].duration_ms }} ms</span>
+        <span class="text-gold font-bold">⋮⋮</span>
+        <span class="text-panel-fg">{{ segments[draggingIndex].name || `WP ${draggingIndex + 1}` }}</span>
+        <span class="text-[10px] text-muted font-medium">{{ segments[draggingIndex].duration_ms }} ms</span>
       </div>
     </Teleport>
   </aside>
 </template>
 
-<style scoped>
-.script-panel {
-  width: 360px;
-  flex: none;
-  flex-shrink: 0;
-  background: #1c1e21;
-  color: #e9e7e2;
-  border-right: 1px solid #2a2d32;
-  display: flex;
-  flex-direction: column;
-  padding: 16px 14px 20px;
-  gap: 14px;
-  box-sizing: border-box;
-  font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
-  user-select: none;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.header-section h1 {
-  font-size: 14.5px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  margin: 0 0 6px 0;
-  font-weight: 700;
-  color: #e9e7e2;
-}
-
-.header-section .desc {
-  font-size: 11px;
-  line-height: 1.45;
-  color: #9a9ea4;
-  margin: 0 0 12px 0;
-}
-
-.json-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.btn-secondary {
-  appearance: none;
-  background: #282b30;
-  border: 1px solid #3a3e44;
-  color: #e9e7e2;
-  border-radius: 6px;
-  padding: 6px 14px;
-  font-size: 11.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s;
-}
-
-.btn-secondary:hover {
-  background: #32363c;
-  border-color: #55595f;
-}
-
-.hidden {
-  display: none;
-}
-
-.timeline-section {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.time-readout {
-  font-size: 10.5px;
-  color: #9a9ea4;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-}
-
-.scrub-slider {
-  width: 100%;
-  accent-color: #c9a35c;
-  cursor: pointer;
-}
-
-.toolbar {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.btn-primary {
-  appearance: none;
-  background: #282b30;
-  border: 1px solid #484c54;
-  color: #e9e7e2;
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 11.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s;
-}
-
-.btn-primary:hover {
-  background: #343840;
-  border-color: #c9a35c;
-}
-
-.btn-action {
-  appearance: none;
-  background: #24272b;
-  border: 1px solid #3a3e44;
-  color: #e9e7e2;
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 11.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-action:hover {
-  background: #2f3338;
-}
-
-.btn-action.active, .btn-action.btn-active {
-  background: #c9a35c;
-  border-color: #c9a35c;
-  color: #1c1e21;
-}
-
-.table-header {
-  display: grid;
-  grid-template-columns: 84px 114px 74px 1fr;
-  align-items: center;
-  font-size: 8.5px;
-  letter-spacing: .01em;
-  color: #71767c;
-  font-weight: 700;
-  padding-bottom: 4px;
-  border-bottom: 1px solid #2a2d32;
-  margin-top: 4px;
-  white-space: nowrap;
-}
-
-.col-dur, .col-dwell {
-  text-align: center;
-  white-space: nowrap;
-}
-
-.segments-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
-  min-height: 100px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.empty-state {
-  font-size: 11px;
-  color: #71767c;
-  font-style: italic;
-  padding: 16px 0;
-  text-align: center;
-}
-
-.segment-row {
-  display: grid;
-  grid-template-columns: 84px 114px 74px 1fr;
-  align-items: center;
-  background: #23262a;
-  border: 1px solid #32363b;
-  border-radius: 6px;
-  padding: 5px 6px;
-  cursor: pointer;
-  transition: border-color 0.15s, background-color 0.15s;
-}
-
-.segment-row:hover {
-  border-color: #484c54;
-  background: #272a2e;
-}
-
-.segment-row.selected {
-  border-color: #c9a35c;
-  background: #2a2d32;
-  box-shadow: 0 0 8px rgba(201, 163, 92, 0.2);
-}
-
+<style>
 .flip-list-move {
   transition: transform 0.22s cubic-bezier(0.2, 0, 0, 1);
 }
 
-.segment-row.placeholder {
-  display: flex !important;
-  grid-template-columns: none !important;
-  align-items: center;
-  justify-content: center;
-  background: rgba(201, 163, 92, 0.12) !important;
-  border: 1.5px dashed #c9a35c !important;
-  box-shadow: inset 0 0 12px rgba(201, 163, 92, 0.2);
-  height: 38px;
-  padding: 0 8px;
-  pointer-events: none;
-  border-radius: 6px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.placeholder-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: #c9a35c;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  width: 100%;
-}
-
-.placeholder-icon {
-  font-size: 12px;
-  font-weight: bold;
-  animation: bounce-slot 0.7s infinite alternate;
-}
-
-@keyframes bounce-slot {
-  from { transform: translateY(-1.5px); }
-  to { transform: translateY(2px); }
-}
-
-.wp-title-cell {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.drag-handle {
-  color: #71767c;
-  cursor: grab;
-  font-size: 11px;
-  user-select: none;
-  touch-action: none;
-  padding: 4px 2px;
-}
-
-.drag-handle:active,
-.segment-row.dragging .drag-handle {
-  cursor: grabbing;
-  color: #c9a35c;
-}
-
-.input-wp-name {
-  width: 58px;
-  background: #191b1d;
-  border: 1px solid #373b42;
-  color: #e9e7e2;
-  border-radius: 4px;
-  padding: 3px 5px;
-  font-size: 11px;
-  font-weight: 700;
-  font-family: inherit;
-  outline: none;
-}
-
-.input-wp-name:focus {
-  border-color: #c9a35c;
-  background: #23262b;
-}
-
-.segment-row.selected .input-wp-name {
-  color: #c9a35c;
-}
-
-.input-cell {
-  display: flex;
-  justify-content: center;
-}
-
-.input-cell input {
-  width: 56px;
-  background: #191b1d;
-  border: 1px solid #373b42;
-  color: #e9e7e2;
-  border-radius: 4px;
-  padding: 3px 4px;
-  font-size: 11px;
-  text-align: center;
-  font-family: inherit;
-  outline: none;
-  appearance: textfield;
-  -moz-appearance: textfield;
-}
-
-.input-cell input::-webkit-outer-spin-button,
-.input-cell input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.input-cell input:focus {
-  border-color: #c9a35c;
-}
-
-.action-cell {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 3px;
-}
-
-
-
-.btn-del {
-  appearance: none;
-  background: transparent;
-  border: none;
-  color: #71767c;
-  cursor: pointer;
-  font-size: 12px;
-  padding: 2px 4px;
-  line-height: 1;
-}
-
-.btn-del:hover {
-  color: #ef4444;
-}
-
-.script-footer {
-  font-size: 10px;
-  color: #71767c;
-  line-height: 1.4;
-  border-top: 1px solid #2c3035;
-  padding-top: 10px;
-  margin-top: auto;
-}
-</style>
-
-<style>
 body.is-dragging-waypoint,
 body.is-dragging-waypoint * {
   cursor: grabbing !important;
@@ -744,39 +424,5 @@ body.is-dragging-waypoint * {
 body.is-dragging-waypoint.is-outside-drop-zone,
 body.is-dragging-waypoint.is-outside-drop-zone * {
   cursor: not-allowed !important;
-}
-
-.drag-floating-avatar {
-  position: fixed;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 99999;
-  background: #2a2d32;
-  border: 1px solid #c9a35c;
-  border-radius: 6px;
-  padding: 6px 14px;
-  color: #e9e7e2;
-  font-size: 11px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 14px rgba(201, 163, 92, 0.4);
-  user-select: none;
-}
-
-.avatar-handle {
-  color: #c9a35c;
-  font-weight: bold;
-}
-
-.avatar-title {
-  color: #e9e7e2;
-}
-
-.avatar-dur {
-  font-size: 10px;
-  color: #9a9ea4;
-  font-weight: 500;
 }
 </style>
