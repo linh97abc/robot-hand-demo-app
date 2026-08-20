@@ -686,6 +686,14 @@ function onPointerUp() {
   text-align: center;
   font-family: inherit;
   outline: none;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.input-cell input::-webkit-outer-spin-button,
+.input-cell input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .input-cell input:focus {
