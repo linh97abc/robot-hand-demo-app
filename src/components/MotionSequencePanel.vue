@@ -47,6 +47,10 @@ function triggerImport() {
   fileInputRef.value?.click();
 }
 
+function onNameChange(index, value) {
+  emit('update-segment', { index, field: 'name', value });
+}
+
 function onDurationChange(index, value) {
   const val = Math.max(0, parseInt(value, 10) || 0);
   emit('update-segment', { index, field: 'duration_ms', value: val });
@@ -302,6 +306,7 @@ function onPointerUp() {
           selected: selectedWaypointIndex === item.origIndex,
           placeholder: item.isPlaceholder,
         }"
+        @click="!item.isPlaceholder && emit('select-waypoint', item.origIndex)"
       >
         <template v-if="item.isPlaceholder">
           <div class="placeholder-content">
@@ -311,21 +316,22 @@ function onPointerUp() {
         </template>
 
         <template v-else>
-          <!-- Reorder Handle & Waypoint Button -->
+          <!-- Reorder Handle & Waypoint Name Textbox -->
           <div class="wp-title-cell">
             <span
               class="drag-handle"
               title="Nhấn giữ và kéo thả để đổi thứ tự"
               @pointerdown="e => startPointerDrag(item.origIndex, e)"
             >⋮⋮</span>
-            <button
-              type="button"
-              class="btn-wp"
-              :class="{ active: selectedWaypointIndex === item.origIndex }"
-              @click="emit('select-waypoint', item.origIndex)"
-            >
-              {{ item.name || `WP ${item.origIndex + 1}` }}
-            </button>
+            <input
+              type="text"
+              class="input-wp-name"
+              :value="item.name"
+              :placeholder="`WP ${item.origIndex + 1}`"
+              title="Nhấp vào để chỉnh sửa tên Waypoint"
+              @click.stop
+              @input="e => onNameChange(item.origIndex, e.target.value)"
+            />
           </div>
 
           <!-- Duration input -->
@@ -335,6 +341,7 @@ function onPointerUp() {
               min="0"
               step="100"
               :value="item.duration_ms"
+              @click.stop
               @input="e => onDurationChange(item.origIndex, e.target.value)"
             />
           </div>
@@ -346,6 +353,7 @@ function onPointerUp() {
               min="0"
               step="100"
               :value="item.dwell_ms"
+              @click.stop
               @input="e => onDwellChange(item.origIndex, e.target.value)"
             />
           </div>
@@ -561,16 +569,19 @@ function onPointerUp() {
   border: 1px solid #32363b;
   border-radius: 6px;
   padding: 5px 6px;
+  cursor: pointer;
   transition: border-color 0.15s, background-color 0.15s;
 }
 
 .segment-row:hover {
   border-color: #484c54;
+  background: #272a2e;
 }
 
 .segment-row.selected {
   border-color: #c9a35c;
   background: #2a2d32;
+  box-shadow: 0 0 8px rgba(201, 163, 92, 0.2);
 }
 
 .flip-list-move {
@@ -637,27 +648,26 @@ function onPointerUp() {
   color: #c9a35c;
 }
 
-.btn-wp {
-  appearance: none;
-  background: #2b2f34;
-  border: 1px solid #3e4249;
+.input-wp-name {
+  width: 58px;
+  background: #191b1d;
+  border: 1px solid #373b42;
   color: #e9e7e2;
   border-radius: 4px;
   padding: 3px 5px;
   font-size: 11px;
   font-weight: 700;
-  cursor: pointer;
-  text-align: left;
-  white-space: nowrap;
-  max-width: 64px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-family: inherit;
+  outline: none;
 }
 
-.btn-wp.active {
-  background: #c9a35c;
+.input-wp-name:focus {
   border-color: #c9a35c;
-  color: #1c1e21;
+  background: #23262b;
+}
+
+.segment-row.selected .input-wp-name {
+  color: #c9a35c;
 }
 
 .input-cell {
