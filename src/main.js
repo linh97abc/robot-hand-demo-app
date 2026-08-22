@@ -47,9 +47,13 @@ const HRHandPreset = definePreset(Aura, {
     slider: {
       track: { background: '#3a3e44' },
       handle: {
+        width: '12px',
+        height: '12px',
         background: '{primary.color}',
         hoverBackground: '{primary.color}',
         content: {
+          width: '12px',
+          height: '12px',
           background: '{primary.color}',
           hoverBackground: '{primary.color}',
         },
