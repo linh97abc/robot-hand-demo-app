@@ -8,6 +8,7 @@ import Select from 'primevue/select';
 import Button from 'primevue/button';
 import ButtonGroup from 'primevue/buttongroup';
 import Card from 'primevue/card';
+import { currentLang, toggleLang, t } from '../i18n/index.js';
 
 const props = defineProps({
   model: { type: Object, default: null },
@@ -39,7 +40,6 @@ function toggleTheme() {
 
 function handleModelSwitch(val) {
   if (!val || val === props.currentProfileKey) return;
-  // Defer heavy 3D model rebuild to next event loop frame so dropdown overlay closes instantly with 60 FPS
   setTimeout(() => {
     emit('switch-profile', val);
   }, 10);
@@ -288,15 +288,26 @@ onBeforeUnmount(() => {
     <Card v-if="profiles && currentProfileKey" class="absolute top-4 left-4 z-10 min-w-[240px] max-w-[320px] select-none">
       <template #content>
         <div class="flex items-center justify-between mb-1">
-          <label class="text-gold font-bold">ROBOT MODEL</label>
-          <Button
-            :icon="isDark ? 'pi pi-sun' : 'pi pi-moon'"
-            severity="secondary"
-            size="small"
-            rounded
-            :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
-            @click="toggleTheme"
-          />
+          <label class="text-gold font-bold">{{ t('robotModelLabel') }}</label>
+          <div class="flex items-center gap-1.5">
+            <Button
+              :label="currentLang.toUpperCase()"
+              severity="secondary"
+              size="small"
+              rounded
+              class="!px-2 !py-0.5 !text-[10px] !font-bold"
+              :title="currentLang === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'"
+              @click="toggleLang"
+            />
+            <Button
+              :icon="isDark ? 'pi pi-sun' : 'pi pi-moon'"
+              severity="secondary"
+              size="small"
+              rounded
+              :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+              @click="toggleTheme"
+            />
+          </div>
         </div>
         <Select
           size="small"
@@ -316,12 +327,12 @@ onBeforeUnmount(() => {
     </Card>
 
     <p class="stage-hint">
-      Drag to orbit · scroll to zoom · right-drag to pan
+      {{ t('stageHint') }}
     </p>
 
     <ButtonGroup class="absolute right-4 bottom-4 flex gap-2 z-10">
-      <Button label="Download OBJ + MTL" severity="secondary" size="small" @click="exportOBJ" />
-      <Button label="Download GLB" severity="secondary" size="small" @click="exportGLTF" />
+      <Button :label="t('downloadObj')" severity="secondary" size="small" @click="exportOBJ" />
+      <Button :label="t('downloadGlb')" severity="secondary" size="small" @click="exportGLTF" />
     </ButtonGroup>
   </div>
 </template>

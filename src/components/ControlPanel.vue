@@ -5,7 +5,7 @@ import Button from 'primevue/button';
 import ButtonGroup from 'primevue/buttongroup';
 import Message from 'primevue/message';
 import Fieldset from 'primevue/fieldset';
-import ProgressSpinner from 'primevue/progressspinner';
+import { t } from '../i18n/index.js';
 
 const props = defineProps({
   profiles: { type: Object, required: true },
@@ -43,22 +43,22 @@ function onSliderInput(key, value) {
     class="w-[340px] flex-none border-l border-[#2a2d32] bg-panel text-panel-fg overflow-y-auto pt-4 px-[18px] pb-5 flex flex-col gap-3.5 box-border font-ui select-none"
   >
     <!-- Header -->
-    <h1 id="panelTitle">CURRENT POSE</h1>
+    <h1 id="panelTitle">{{ t('currentPose') }}</h1>
 
-    <!-- Status Banner (Single persistent element, instant content swap, zero layout shift) -->
+    <!-- Status Banner -->
     <Message :severity="statusSeverity" size="small" :icon="statusIcon" class="status-message">
       <template v-if="isPlaying">
-        Playing motion sequence — stop playback to edit
+        {{ t('statusPlaying') }}
       </template>
       <template v-else-if="selectedWaypointName">
-        Editing <strong>{{ selectedWaypointName }}</strong> — click WP again to complete
+        {{ t('statusEditing', { name: selectedWaypointName }) }}
       </template>
       <template v-else>
-        Creating new pose — click <strong>"+ Add Waypoint"</strong> to save
+        {{ t('statusCreating') }}
       </template>
     </Message>
 
-    <!-- Presets Bar -->
+    <!-- Presets Bar (Rendered 100% directly from JSON config) -->
     <ButtonGroup id="presets">
       <Button
         v-for="(pose, name) in currentProfile.poses"
@@ -74,7 +74,7 @@ function onSliderInput(key, value) {
 
     <!-- Controls / Finger Groups -->
     <Message v-if="loading" severity="secondary" size="small" icon="pi pi-spin pi-spinner" class="italic">
-      Loading 3D model...
+      {{ t('loadingModel') }}
     </Message>
 
     <template v-else>
@@ -84,8 +84,7 @@ function onSliderInput(key, value) {
           :key="index"
           class="joint-row"
         >
-          <span>{{ typeof jointLabel === 'object' ? jointLabel.label : (finger.jointLabels ? finger.jointLabels[index]
-            : jointLabel) }}</span>
+          <span>{{ typeof jointLabel === 'object' ? jointLabel.label : (finger.jointLabels ? finger.jointLabels[index] : jointLabel) }}</span>
           <Slider
             :model-value="Math.round(state[`${finger.key}.${index}`] || 0)"
             :min="0" :max="1000" :disabled="isPlaying"
@@ -96,7 +95,9 @@ function onSliderInput(key, value) {
       </Fieldset>
     </template>
 
-    <!-- Hint Footer -->
-    <p id="panelHint" class="panel-hint">{{ currentProfile.hint }}</p>
+    <!-- Hint Footer (Rendered 100% directly from JSON config) -->
+    <p id="panelHint" class="panel-hint">
+      {{ currentProfile.hint }}
+    </p>
   </aside>
 </template>

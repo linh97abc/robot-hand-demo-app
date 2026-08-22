@@ -6,6 +6,7 @@ import Slider from 'primevue/slider';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Message from 'primevue/message';
+import { currentLang, t } from '../i18n/index.js';
 
 const props = defineProps({
   segments: { type: Array, required: true },
@@ -228,14 +229,14 @@ function onPointerUp() {
   >
     <!-- Header -->
     <div>
-      <h1>MOTION SEQUENCE</h1>
+      <h1>{{ t('motionSequence') }}</h1>
       <p class="mb-3">
-        Record current pose into waypoints. Select a waypoint to edit its pose using joint sliders. Export or import JSON files to reuse sequences.
+        {{ t('motionSeqDesc') }}
       </p>
 
       <ButtonGroup class="flex gap-2">
-        <Button label="Export JSON" severity="secondary" size="small" :disabled="isPlaying" @click="emit('export-json')" />
-        <Button label="Import JSON" severity="secondary" size="small" :disabled="isPlaying" @click="triggerImport" />
+        <Button :label="t('exportJson')" severity="secondary" size="small" :disabled="isPlaying" @click="emit('export-json')" />
+        <Button :label="t('importJson')" severity="secondary" size="small" :disabled="isPlaying" @click="triggerImport" />
         <input
           ref="fileInputRef"
           type="file"
@@ -261,27 +262,27 @@ function onPointerUp() {
 
     <!-- Controls toolbar -->
     <ButtonGroup class="flex gap-1 items-center flex-nowrap w-full justify-between">
-      <Button label="+ Add Waypoint" severity="primary" size="small" :disabled="isPlaying" @click="emit('add-waypoint')" />
+      <Button :label="t('addWaypoint')" severity="primary" size="small" :disabled="isPlaying" @click="emit('add-waypoint')" />
 
-      <Button v-if="!isPlaying" label="► Play" severity="success" size="small" @click="emit('play')" />
-      <Button v-else label="⏸ Pause" severity="warn" size="small" class="animate-pulse shadow-[0_0_12px_rgba(245,158,11,0.4)]" @click="emit('pause')" />
+      <Button v-if="!isPlaying" :label="t('play')" severity="success" size="small" @click="emit('play')" />
+      <Button v-else :label="t('pause')" severity="warn" size="small" class="animate-pulse shadow-[0_0_12px_rgba(245,158,11,0.4)]" @click="emit('pause')" />
 
-      <Button label="■ Stop" :disabled="!isPlaying" severity="danger" size="small" :class="isPlaying ? 'animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]' : ''" @click="emit('stop')" />
+      <Button :label="t('stop')" :disabled="!isPlaying" severity="danger" size="small" :class="isPlaying ? 'animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]' : ''" @click="emit('stop')" />
 
-      <Button label="↻ Loop" :severity="isLooping ? 'primary' : 'secondary'" size="small" @click="emit('toggle-loop')" />
+      <Button :label="t('loop')" :severity="isLooping ? 'primary' : 'secondary'" size="small" @click="emit('toggle-loop')" />
     </ButtonGroup>
 
     <!-- Segments Table / List Header -->
     <header class="segment-grid table-header">
-      <span>WAYPOINT</span>
-      <span class="text-center">DURATION (ms)</span>
-      <span class="text-center">DWELL (ms)</span>
+      <span>{{ t('colWaypoint') }}</span>
+      <span class="text-center">{{ t('colDuration') }}</span>
+      <span class="text-center">{{ t('colDwell') }}</span>
       <span></span>
     </header>
 
     <!-- Segments List -->
     <Message v-if="segments.length === 0" severity="secondary" size="small" icon="pi pi-info-circle" class="justify-center my-4">
-      No waypoints yet. Click "+ Add Waypoint" to create a motion sequence.
+      {{ t('noWaypoints') }}
     </Message>
 
     <TransitionGroup v-else name="flip-list" tag="div" class="segments-list flex flex-col gap-1.5 flex-1 min-h-[100px] overflow-y-auto overflow-x-hidden">
@@ -370,7 +371,7 @@ function onPointerUp() {
 
     <!-- Footer JSON Spec Hint -->
     <p class="panel-hint">
-      File format: {"segments": [ {"waypoint": {"thumb.0": 10, ...}, "duration_ms": 800, "dwell_ms": 0}, ... ]}. duration_ms is motion duration, dwell_ms is hold time at waypoint.
+      {{ t('jsonHint') }}
     </p>
 
     <!-- Floating Drag Preview Avatar following mouse -->
