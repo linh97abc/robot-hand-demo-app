@@ -21,6 +21,50 @@
   50% { box-shadow: 0 0 16px rgba(201,163,92,0.85); border-color: #e6c988; }
 }
 
+/* Typography & Base Element Rules */
+h1 {
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-panel-fg);
+  margin: 0 0 6px 0;
+}
+
+h2 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin: 0 0 4px 0;
+}
+
+p {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.joint-row {
+  display: grid;
+  grid-template-columns: 46px 1fr 38px;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #b8bcc2;
+}
+
+.panel-hint {
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--color-dim);
+  border-top: 1px solid #2c3035;
+  padding-top: 10px;
+  margin-top: auto;
+}
+
 /* Scrollbar styling to match dark panel theme */
 * {
   scrollbar-width: thin;

@@ -29,7 +29,7 @@ function onSliderInput(key, value) {
   >
     <!-- Header -->
     <div>
-      <h1 id="panelTitle" class="text-[14.5px] tracking-[.08em] uppercase m-0 font-bold">CURRENT POSE</h1>
+      <h1 id="panelTitle">CURRENT POSE</h1>
     </div>
 
     <!-- Status Banner -->
@@ -79,12 +79,12 @@ function onSliderInput(key, value) {
       <template v-else>
         <!-- Finger Groups -->
         <div v-for="finger in currentProfile.fingers" :key="finger.key" class="flex flex-col gap-1.5">
-          <h2 class="text-[11px] tracking-[.1em] uppercase text-gold m-0 mb-px font-bold">{{ finger.label }}</h2>
+          <h2>{{ finger.label }}</h2>
 
           <label
             v-for="(jointLabel, index) in finger.joints"
             :key="index"
-            class="grid grid-cols-[46px_1fr_38px] items-center gap-2 text-[11px] text-[#b8bcc2]"
+            class="joint-row"
           >
             <span>{{ typeof jointLabel === 'object' ? jointLabel.label : (finger.jointLabels ? finger.jointLabels[index]
               : jointLabel) }}</span>
@@ -101,6 +101,6 @@ function onSliderInput(key, value) {
     </div>
 
     <!-- Hint Footer -->
-    <p id="panelHint" class="text-[10px] text-dim leading-[1.4] border-t border-[#2c3035] pt-2.5 mt-auto">{{ currentProfile.hint }}</p>
+    <p id="panelHint" class="panel-hint">{{ currentProfile.hint }}</p>
   </aside>
 </template>

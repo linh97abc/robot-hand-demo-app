@@ -226,8 +226,8 @@ function onPointerUp() {
   >
     <!-- Header -->
     <div>
-      <h1 class="text-[14.5px] tracking-[.08em] uppercase m-0 mb-1.5 font-bold text-panel-fg">MOTION SEQUENCE</h1>
-      <p class="text-[11px] leading-[1.45] text-muted m-0 mb-3">
+      <h1>MOTION SEQUENCE</h1>
+      <p class="mb-3">
         Record current pose into waypoints. Select a waypoint to edit its pose using joint sliders. Export or import JSON files to reuse sequences.
       </p>
 
@@ -373,9 +373,9 @@ function onPointerUp() {
     </TransitionGroup>
 
     <!-- Footer JSON Spec Hint -->
-    <div class="text-[10px] text-dim leading-[1.4] border-t border-[#2c3035] pt-2.5 mt-auto">
+    <p class="panel-hint">
       File format: {"segments": [ {"waypoint": {"thumb.0": 10, ...}, "duration_ms": 800, "dwell_ms": 0}, ... ]}. duration_ms is motion duration, dwell_ms is hold time at waypoint.
-    </div>
+    </p>
 
     <!-- Floating Drag Preview Avatar following mouse -->
     <Teleport to="body">
