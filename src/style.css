@@ -1,48 +1,48 @@
 @import "tailwindcss";
 
 @theme {
-  /* Dark Studio Base Palette Tokens */
-  --color-stage: #141619;       /* 3D Stage Background */
-  --color-panel: #1c1e21;       /* Main Sidebar Panel Background */
-  --color-panel-fg: #e9e7e2;    /* Warm Ivory Text (Primary) */
-  --color-muted: #9a9ea4;       /* Muted Gray Text (Secondary) */
-  --color-dim: #71767c;         /* Dimmed Gray Text (Tertiary / Hints) */
-  --color-line: #3a3e44;        /* Primary Border Line */
-  --color-line-subtle: #32363b; /* Subtle Inner Border Line */
-  --color-gold: #c9a35c;        /* Accent Gold (Primary Active / Focus) */
+  /* Alias directly to PrimeVue 4 Theme Tokens (--p-*) defined in main.js */
+  --color-stage: var(--p-surface-900);                 /* 3D Stage Background (#141619) */
+  --color-panel: var(--p-surface-800);                 /* Sidebar Panel Background (#1c1e21) */
+  --color-panel-fg: var(--p-surface-50);               /* Primary Text (#e9e7e2) */
+  --color-muted: var(--p-surface-200);                 /* Secondary Text (#9a9ea4) */
+  --color-dim: var(--p-surface-300);                   /* Tertiary Text (#71767c) */
+  --color-line: var(--p-surface-400);                  /* Primary Border Line (#3a3e44) */
+  --color-line-subtle: var(--p-surface-500);           /* Subtle Inner Border Line (#32363b) */
+  --color-gold: var(--p-primary-color);                /* PrimeVue Primary Gold (#c9a35c) */
 
-  /* Surface Elevation Tokens */
-  --color-surface-input: #1f2226;   /* Recessed Input/Message Box Surface */
-  --color-surface-row: #23262a;     /* Default Segment Row Surface */
-  --color-surface-hover: #272a2e;   /* Hover Surface */
-  --color-surface-active: #2a2d32;  /* Active/Selected Row & Drag Surface */
-  --color-surface-btn-hover: #2e3238; /* Button Hover Surface */
-  --color-surface-border-hover: #484c54; /* Border Hover Color */
-  --color-surface-card: rgba(28, 30, 33, 0.84); /* Glassmorphism Card Surface */
+  /* Surface Elevation Tokens bound to PrimeVue Preset */
+  --color-surface-input: var(--p-form-field-background);          /* Recessed Input/Message Surface */
+  --color-surface-row: var(--p-surface-700);                      /* Default Row Surface (#23262a) */
+  --color-surface-hover: var(--p-surface-600);                    /* Hover Surface (#2a2d32) */
+  --color-surface-active: var(--p-surface-600);                   /* Active / Drag Surface (#2a2d32) */
+  --color-surface-btn-hover: var(--p-surface-600);                /* Button Hover Surface (#2a2d32) */
+  --color-surface-border-hover: var(--p-form-field-hover-border-color); /* Hover Border Color (#484c54) */
+  --color-surface-card: var(--p-content-background);              /* Card Background (#1c1e21) */
 
   /* Glassmorphism Blur Token */
   --blur-glass: blur(12px);
 
-  /* Semantic State Palette Tokens */
-  --color-info-bg: rgba(56, 189, 248, 0.12);
-  --color-info-border: rgba(56, 189, 248, 0.5);
-  --color-info-fg: #7dd3fc;
+  /* Semantic State Palette Tokens bound directly to PrimeVue Preset in main.js */
+  --color-info-bg: var(--p-info-background);
+  --color-info-border: var(--p-info-border-color);
+  --color-info-fg: var(--p-info-color);
 
-  --color-warn-bg: rgba(245, 158, 11, 0.18);
-  --color-warn-border: rgba(245, 158, 11, 0.6);
-  --color-warn-fg: #fbbf24;
+  --color-warn-bg: var(--p-warn-background);
+  --color-warn-border: var(--p-warn-border-color);
+  --color-warn-fg: var(--p-warn-color);
 
-  --color-success-bg: rgba(34, 197, 94, 0.12);
-  --color-success-border: rgba(34, 197, 94, 0.5);
-  --color-success-fg: #4ade80;
+  --color-success-bg: var(--p-success-background);
+  --color-success-border: var(--p-success-border-color);
+  --color-success-fg: var(--p-success-color);
 
-  --color-danger-bg: rgba(239, 68, 68, 0.15);
-  --color-danger-border: rgba(239, 68, 68, 0.5);
-  --color-danger-fg: #f87171;
+  --color-danger-bg: var(--p-danger-background);
+  --color-danger-border: var(--p-danger-border-color);
+  --color-danger-fg: var(--p-danger-color);
 
-  --color-primary-bg: rgba(201, 163, 92, 0.15);
-  --color-primary-border: rgba(201, 163, 92, 0.6);
-  --color-primary-fg: #fde047;
+  --color-primary-bg: var(--p-highlight-background);
+  --color-primary-border: var(--p-primary-color);
+  --color-primary-fg: var(--p-primary-color);
 
   --font-ui: Helvetica, "Helvetica Neue", Arial, sans-serif;
 
