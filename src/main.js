@@ -9,10 +9,32 @@ import './style.css';
 
 /**
  * PrimeVue 4 Single Source of Truth Preset Definition
- * Defines 100% of colors, semantic states, form fields, and component rules.
+ * Defines 100% of colors, typography (font-size, font-weight), semantic states, and component rules.
  */
 const HRHandPreset = definePreset(Aura, {
+  primitive: {
+    borderRadius: {
+      none: '0',
+      xs: '2px',
+      sm: '6px',
+      md: '8px',
+      lg: '10px',
+    },
+  },
   semantic: {
+    /* PrimeVue 4 Standard Typography Scale Tokens */
+    fontSize: {
+      xs: '9px',       /* Level 1: Micro labels, table headers */
+      sm: '10px',      /* Level 2: Sub-labels, hints, footer specs, timestamps */
+      base: '11px',    /* Level 3: Standard UI text (sliders, buttons, inputs, list items) */
+      md: '12px',      /* Level 4: Section subheadings, card titles */
+      lg: '14px',      /* Level 5: Main Panel Headers */
+    },
+    fontWeight: {
+      normal: '400',   /* Regular body text */
+      medium: '500',   /* Medium buttons, timeline numbers */
+      bold: '700',     /* Headers, active labels */
+    },
     primary: {
       50: '#fbf7ef',
       100: '#f3e9d4',

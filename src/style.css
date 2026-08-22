@@ -2,23 +2,23 @@
 
 @theme {
   /* Alias directly to PrimeVue 4 Theme Tokens (--p-*) defined in main.js */
-  --color-stage: var(--p-surface-900);                 /* 3D Stage Background (#141619) */
-  --color-panel: var(--p-surface-800);                 /* Sidebar Panel Background (#1c1e21) */
-  --color-panel-fg: var(--p-surface-50);               /* Primary Text (#e9e7e2) */
-  --color-muted: var(--p-surface-200);                 /* Secondary Text (#9a9ea4) */
-  --color-dim: var(--p-surface-300);                   /* Tertiary Text (#71767c) */
-  --color-line: var(--p-surface-400);                  /* Primary Border Line (#3a3e44) */
-  --color-line-subtle: var(--p-surface-500);           /* Subtle Inner Border Line (#32363b) */
-  --color-gold: var(--p-primary-color);                /* PrimeVue Primary Gold (#c9a35c) */
+  --color-stage: var(--p-surface-900);                 /* 3D Stage Background */
+  --color-panel: var(--p-surface-800);                 /* Sidebar Panel Background */
+  --color-panel-fg: var(--p-surface-50);               /* Primary Text */
+  --color-muted: var(--p-surface-200);                 /* Secondary Text */
+  --color-dim: var(--p-surface-300);                   /* Tertiary Text */
+  --color-line: var(--p-surface-400);                  /* Primary Border Line */
+  --color-line-subtle: var(--p-surface-500);           /* Subtle Inner Border Line */
+  --color-gold: var(--p-primary-color);                /* PrimeVue Primary Gold */
 
   /* Surface Elevation Tokens bound to PrimeVue Preset */
   --color-surface-input: var(--p-form-field-background);          /* Recessed Input/Message Surface */
-  --color-surface-row: var(--p-surface-700);                      /* Default Row Surface (#23262a) */
-  --color-surface-hover: var(--p-surface-600);                    /* Hover Surface (#2a2d32) */
-  --color-surface-active: var(--p-surface-600);                   /* Active / Drag Surface (#2a2d32) */
-  --color-surface-btn-hover: var(--p-surface-600);                /* Button Hover Surface (#2a2d32) */
-  --color-surface-border-hover: var(--p-form-field-hover-border-color); /* Hover Border Color (#484c54) */
-  --color-surface-card: var(--p-content-background);              /* Card Background (#1c1e21) */
+  --color-surface-row: var(--p-surface-700);                      /* Default Row Surface */
+  --color-surface-hover: var(--p-surface-600);                    /* Hover Surface */
+  --color-surface-active: var(--p-surface-600);                   /* Active / Drag Surface */
+  --color-surface-btn-hover: var(--p-surface-600);                /* Button Hover Surface */
+  --color-surface-border-hover: var(--p-form-field-hover-border-color); /* Hover Border Color */
+  --color-surface-card: var(--p-content-background);              /* Card Background */
 
   /* Glassmorphism Blur Token */
   --blur-glass: blur(12px);
@@ -46,17 +46,17 @@
 
   --font-ui: Helvetica, "Helvetica Neue", Arial, sans-serif;
 
-  /* Standardized 5-Level Type Scale System Tokens */
-  --fs-xs: 9px;       /* Level 1: Micro labels, table headers */
-  --fs-sm: 10px;      /* Level 2: Sub-labels, hints, footer specs, timestamps */
-  --fs-base: 11px;    /* Level 3: Standard UI text (sliders, buttons, inputs, messages, list items) */
-  --fs-md: 12px;      /* Level 4: Section subheadings, card titles, profile titles */
-  --fs-lg: 14px;      /* Level 5: Main Panel Headers (CURRENT POSE, MOTION SEQUENCE) */
+  /* PrimeVue 4 Standard Typography Tokens bound directly to main.js HRHandPreset */
+  --fs-xs: var(--p-font-size-xs);       /* Level 1: Micro labels, table headers */
+  --fs-sm: var(--p-font-size-sm);       /* Level 2: Sub-labels, hints, footer specs, timestamps */
+  --fs-base: var(--p-font-size-base);   /* Level 3: Standard UI text (sliders, buttons, inputs, messages) */
+  --fs-md: var(--p-font-size-md);       /* Level 4: Section subheadings, card titles */
+  --fs-lg: var(--p-font-size-lg);       /* Level 5: Main Panel Headers */
 
-  /* Standardized 3-Level Font Weight System Tokens */
-  --fw-normal: 400;   /* Regular body text, hints */
-  --fw-medium: 500;   /* Medium buttons, timeline numbers */
-  --fw-bold: 700;     /* Headers, labels, titles, active items */
+  /* PrimeVue 4 Font Weight Tokens bound directly to main.js HRHandPreset */
+  --fw-normal: var(--p-font-weight-normal);   /* Regular body text */
+  --fw-medium: var(--p-font-weight-medium);   /* Medium buttons */
+  --fw-bold: var(--p-font-weight-bold);       /* Headers, active labels */
 
   /* Standardized 3-Level Letter Spacing System Tokens */
   --ls-normal: 0;       /* Standard body text */
@@ -72,10 +72,10 @@
   --space-xl: 12px;   /* Large container padding */
   --space-2xl: 14px;  /* Extra large container padding */
 
-  /* Standardized 3-Level Border Radius System Tokens */
-  --radius-sm: 6px;   /* Compact items, segment rows, input fields, drag avatar */
-  --radius-md: 8px;   /* Buttons, Messages */
-  --radius-lg: 10px;  /* Cards, elevated panels */
+  /* PrimeVue 4 Border Radius Tokens bound directly to main.js HRHandPreset */
+  --radius-sm: var(--p-border-radius-sm);   /* Compact items, segment rows, input fields */
+  --radius-md: var(--p-border-radius-md);   /* Buttons, Messages */
+  --radius-lg: var(--p-border-radius-lg);   /* Cards, elevated panels */
 
   /* Standardized Box Shadow System Tokens */
   --shadow-gold-subtle: 0 0 8px rgba(201, 163, 92, 0.2);   /* Selected row glow */
