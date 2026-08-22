@@ -4,6 +4,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
+import Select from 'primevue/select';
+import Button from 'primevue/button';
 
 const props = defineProps({
   model: { type: Object, default: null },
@@ -16,6 +18,19 @@ const props = defineProps({
 const emit = defineEmits(['switch-profile']);
 
 const currentProfile = computed(() => props.profiles?.[props.currentProfileKey] || {});
+
+const profileOptions = computed(() =>
+  Object.entries(props.profiles || {}).map(([key, profile]) => ({
+    key,
+    label: profile.displayName || profile.label || profile.title || key,
+  }))
+);
+
+const downloadButtonPt = {
+  root: {
+    class: '!bg-[#ffffffeb] !text-[#1a1915] !border-[#1414132e] !rounded-lg !shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:!bg-white active:!translate-y-px !font-medium !text-[12.5px] !py-2.5 !px-3',
+  },
+};
 
 const containerRef = ref(null);
 let scene, camera, renderer, controls, animationId = null;
@@ -264,18 +279,14 @@ onBeforeUnmount(() => {
     >
       <div class="flex flex-col gap-[5px]">
         <label class="text-[10px] tracking-[.08em] uppercase text-gold font-bold">MÔ HÌNH ROBOT</label>
-        <div class="relative w-full">
-          <select
-            :value="currentProfileKey"
-            @change="emit('switch-profile', $event.target.value)"
-            class="w-full appearance-none bg-[#24272b] text-panel-fg border border-line rounded-md py-[7px] pr-7 pl-2.5 text-xs font-semibold cursor-pointer outline-none transition-colors duration-200 hover:bg-[#2f3338] hover:border-[#55595f] focus:border-gold"
-          >
-            <option v-for="(profile, key) in profiles" :key="key" :value="key">
-              {{ profile.displayName || profile.label || profile.title }}
-            </option>
-          </select>
-          <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gold text-[11px] pointer-events-none">▾</span>
-        </div>
+        <Select
+          :model-value="currentProfileKey"
+          :options="profileOptions"
+          option-label="label"
+          option-value="key"
+          class="w-full !text-xs"
+          @update:model-value="v => emit('switch-profile', v)"
+        />
       </div>
 
       <div v-if="currentProfile.title" class="border-t border-[#2d3137] pt-2 flex flex-col gap-1">
@@ -286,16 +297,8 @@ onBeforeUnmount(() => {
 
     <div class="absolute left-4 bottom-4 max-w-[60%] text-[12px] leading-[1.5] text-[#1a19158c] select-none pointer-events-none font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,sans-serif]">Drag to orbit · scroll to zoom · right-drag to pan</div>
     <div class="absolute right-4 bottom-4 flex gap-2 z-10 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,sans-serif]">
-      <button
-        type="button"
-        @click="exportOBJ"
-        class="appearance-none border border-[#1414132e] rounded-lg bg-[#ffffffeb] text-[#1a1915] text-[12.5px] font-medium leading-none py-2.5 px-3 cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:bg-white active:translate-y-px"
-      >Download OBJ + MTL</button>
-      <button
-        type="button"
-        @click="exportGLTF"
-        class="appearance-none border border-[#1414132e] rounded-lg bg-[#ffffffeb] text-[#1a1915] text-[12.5px] font-medium leading-none py-2.5 px-3 cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:bg-white active:translate-y-px"
-      >Download GLB</button>
+      <Button label="Download OBJ + MTL" :pt="downloadButtonPt" @click="exportOBJ" />
+      <Button label="Download GLB" :pt="downloadButtonPt" @click="exportGLTF" />
     </div>
   </div>
 </template>

@@ -1,5 +1,8 @@
 <script setup>
 import { computed } from 'vue';
+import Slider from 'primevue/slider';
+import Button from 'primevue/button';
+import ProgressSpinner from 'primevue/progressspinner';
 
 const props = defineProps({
   profiles: { type: Object, required: true },
@@ -16,7 +19,7 @@ const emit = defineEmits(['switch-profile', 'update-joint', 'select-preset']);
 const currentProfile = computed(() => props.profiles[props.currentProfileKey] || {});
 
 function onSliderInput(key, value) {
-  emit('update-joint', key, parseFloat(value));
+  emit('update-joint', key, value);
 }
 </script>
 
@@ -54,24 +57,23 @@ function onSliderInput(key, value) {
 
     <!-- Presets Bar -->
     <div class="flex flex-wrap gap-[5px]" id="presets">
-      <button
+      <Button
         v-for="(pose, name) in currentProfile.poses"
         :key="name"
+        :label="name"
+        size="small"
         :disabled="isPlaying"
+        :severity="activePreset === name ? undefined : 'secondary'"
+        :pt="{ root: { class: '!rounded-full !text-[11px] !tracking-[.03em] !py-[5px] !px-2.5' } }"
         @click="emit('select-preset', name)"
-        class="text-[11px] tracking-[.03em] py-[5px] px-2.5 rounded-full border cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-        :class="activePreset === name
-          ? 'bg-gold border-gold text-panel font-bold'
-          : 'bg-[#24272b] border-line text-panel-fg hover:bg-[#2f3338] hover:border-[#55595f]'"
-      >
-        {{ name }}
-      </button>
+      />
     </div>
 
     <!-- Controls Container -->
     <div id="controls" class="flex flex-col gap-3">
-      <div v-if="loading" class="text-[11.5px] text-muted italic">
-        Đang tải mô hình 3D...
+      <div v-if="loading" class="flex items-center gap-2 text-[11.5px] text-muted italic">
+        <ProgressSpinner style="width: 14px; height: 14px" stroke-width="6" />
+        <span>Đang tải mô hình 3D...</span>
       </div>
 
       <template v-else>
@@ -86,9 +88,11 @@ function onSliderInput(key, value) {
           >
             <span>{{ typeof jointLabel === 'object' ? jointLabel.label : (finger.jointLabels ? finger.jointLabels[index]
               : jointLabel) }}</span>
-            <input type="range" :min="0" :max="1000" :value="Math.round(state[`${finger.key}.${index}`] || 0)"
-              :disabled="isPlaying" class="disabled:opacity-40 disabled:cursor-not-allowed"
-              @input="e => onSliderInput(`${finger.key}.${index}`, e.target.value)" />
+            <Slider
+              :model-value="Math.round(state[`${finger.key}.${index}`] || 0)"
+              :min="0" :max="1000" :disabled="isPlaying"
+              @update:model-value="v => onSliderInput(`${finger.key}.${index}`, v)"
+            />
             <output class="text-right tabular-nums text-panel-fg">{{ Math.round(state[`${finger.key}.${index}`] || 0) }}</output>
           </label>
 

@@ -28,5 +28,12 @@ Bàn tay robot (three.js) — 2 model song song nạp từ `.glb` (5 ngón dạn
 - Nhập dùng `<input type="file">` bình thường (đã tự hiện dialog OS ở cả browser lẫn Tauri).
 - Dùng command mới của plugin Tauri nào thì phải khai quyền tương ứng trong `src-tauri/capabilities/default.json` (`<plugin>:default` hoặc `<plugin>:allow-<command>`), không sẽ bị chặn runtime dù JS compile được.
 
+## Giao diện (PrimeVue v4)
+- Component có hành vi/state phức tạp (slider, input số, dropdown, nút, toast) dùng **PrimeVue v4** (`primevue` + `@primevue/themes` — KHÔNG dùng `@primeuix/themes`, package đó target v5, đã cân nhắc và chọn v4 vì ổn định hơn cho phần mềm thương mại). Layout (flex/grid, `<aside>`, spacing, heading tĩnh) vẫn dùng Tailwind thuần — không viết lại bằng PrimeVue.
+- Theme custom định nghĩa trong `src/main.js` qua `definePreset(Aura, {...})`, khớp palette gold/dark hiện có. App luôn ở dark mode: `<html class="app-dark">` (`index.html`) + `darkModeSelector: '.app-dark'` trong `main.js` — **không** set `darkModeSelector: false` (sẽ ép theme về light mode mặc định, không phải dark, làm input/select bị nền trắng sai theme).
+- Slider track/handle cần override riêng trong `components.slider` của preset để khớp CSS gốc. Lưu ý: token màu handle ở chế độ tối phải đặt trong `components.slider.colorScheme.dark.handle.content.background`, không phải `components.slider.handle.content.background` (token dark-mode-specific override đè token gốc, đặt sai chỗ sẽ không có tác dụng — xem `main.js`).
+- Danh sách waypoint (`MotionSequencePanel.vue`) giữ nguyên toàn bộ logic kéo-thả Pointer Events tự viết — **không** dùng PrimeVue `OrderList` (component này không hỗ trợ kéo-thả bằng chuột ở bất kỳ bản nào, chỉ có 4 nút mũi tên lên/xuống/đầu/cuối). Chỉ input/button bên trong mỗi hàng dùng PrimeVue (`InputText`/`InputNumber`/`Button`).
+- Icon nút PrimeVue (`icon="pi pi-..."`) cần package `primeicons` + import `primeicons/primeicons.css` trong `main.js`.
+
 ## Offline
-App phải chạy không cần Internet sau build — mọi dependency (three, vue, @tauri-apps/*) là npm package do Vite bundle vào `dist/`. Không dùng CDN/URL tuyệt đối. (`src/debug-model.html` là trang debug ngoài luồng, không tính vào bundle production.)
+App phải chạy không cần Internet sau build — mọi dependency (three, vue, primevue, @tauri-apps/*) là npm package do Vite bundle vào `dist/`. Không dùng CDN/URL tuyệt đối. (`src/debug-model.html` là trang debug ngoài luồng, không tính vào bundle production.)

@@ -1,6 +1,8 @@
 <script setup>
 import { ref, reactive, computed, onMounted, shallowRef } from 'vue';
 import * as THREE from 'three';
+import { useToast } from 'primevue/usetoast';
+import Toast from 'primevue/toast';
 import ThreeStage from './components/ThreeStage.vue';
 import MotionSequencePanel from './components/MotionSequencePanel.vue';
 import ControlPanel from './components/ControlPanel.vue';
@@ -9,6 +11,7 @@ import { save as saveFileDialog } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
 
 const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+const toast = useToast();
 
 const defaultProfileKey = Object.keys(PROFILES)[0] || '';
 const stageRef = ref(null);
@@ -414,10 +417,14 @@ async function handleExportJSON() {
   setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 
+function handleImportError(message) {
+  toast.add({ severity: 'error', summary: 'Lỗi nhập JSON', detail: message, life: 4000 });
+}
+
 function handleImportJSON(data) {
   if (isPlaying.value) return;
   if (!data || !Array.isArray(data.segments)) {
-    alert('File JSON không hợp lệ: Thiếu danh sách segments.');
+    handleImportError('File JSON không hợp lệ: Thiếu danh sách segments.');
     return;
   }
 
@@ -482,6 +489,7 @@ onMounted(() => {
       @seek="handleSeek"
       @export-json="handleExportJSON"
       @import-json="handleImportJSON"
+      @import-error="handleImportError"
     />
 
     <!-- Joint Controls & Presets Panel (Right) -->
@@ -497,5 +505,7 @@ onMounted(() => {
       @update-joint="handleJointUpdate"
       @select-preset="handlePresetSelect"
     />
+
+    <Toast position="top-right" />
   </div>
 </template>

@@ -1,5 +1,10 @@
 <script setup>
 import { ref, computed, reactive } from 'vue';
+import Button from 'primevue/button';
+import ToggleButton from 'primevue/togglebutton';
+import Slider from 'primevue/slider';
+import InputText from 'primevue/inputtext';
+import InputNumber from 'primevue/inputnumber';
 
 const props = defineProps({
   segments: { type: Array, required: true },
@@ -23,7 +28,13 @@ const emit = defineEmits([
   'seek',
   'export-json',
   'import-json',
+  'import-error',
 ]);
+
+const loopModel = computed({
+  get: () => props.isLooping,
+  set: () => emit('toggle-loop'),
+});
 
 const fileInputRef = ref(null);
 
@@ -36,7 +47,7 @@ function handleFileChange(event) {
       const data = JSON.parse(e.target.result);
       emit('import-json', data);
     } catch (err) {
-      alert('File JSON không hợp lệ: ' + err.message);
+      emit('import-error', 'File JSON không hợp lệ: ' + err.message);
     }
   };
   reader.readAsText(file);
@@ -225,22 +236,8 @@ function onPointerUp() {
       </p>
 
       <div class="flex gap-2">
-        <button
-          type="button"
-          :disabled="isPlaying"
-          class="appearance-none bg-[#282b30] border border-line text-panel-fg rounded-md py-1.5 px-3.5 text-[11.5px] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#32363c] hover:border-[#55595f] disabled:opacity-40 disabled:cursor-not-allowed"
-          @click="emit('export-json')"
-        >
-          Xuất JSON
-        </button>
-        <button
-          type="button"
-          :disabled="isPlaying"
-          class="appearance-none bg-[#282b30] border border-line text-panel-fg rounded-md py-1.5 px-3.5 text-[11.5px] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#32363c] hover:border-[#55595f] disabled:opacity-40 disabled:cursor-not-allowed"
-          @click="triggerImport"
-        >
-          Nhập JSON
-        </button>
+        <Button label="Xuất JSON" severity="secondary" size="small" :disabled="isPlaying" @click="emit('export-json')" />
+        <Button label="Nhập JSON" severity="secondary" size="small" :disabled="isPlaying" @click="triggerImport" />
         <input
           ref="fileInputRef"
           type="file"
@@ -257,62 +254,23 @@ function onPointerUp() {
       <div class="text-[10.5px] text-muted font-medium tabular-nums">
         <span>{{ Math.round(currentTimeMs) }} ms / {{ Math.round(totalTimeMs) }} ms</span>
       </div>
-      <input
-        type="range"
-        min="0"
-        :max="totalTimeMs || 100"
-        :value="currentTimeMs"
-        @input="e => emit('seek', parseFloat(e.target.value))"
-        class="w-full accent-gold cursor-pointer"
+      <Slider
+        :model-value="currentTimeMs"
+        :min="0" :max="totalTimeMs || 100"
+        @update:model-value="v => emit('seek', v)"
       />
     </div>
 
     <!-- Controls toolbar -->
     <div class="flex gap-1.5 items-center flex-wrap">
-      <button
-        type="button"
-        :disabled="isPlaying"
-        class="appearance-none bg-[#282b30] border border-[#484c54] text-panel-fg rounded-md py-1.5 px-2.5 text-[11.5px] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#343840] hover:border-gold disabled:opacity-40 disabled:cursor-not-allowed"
-        @click="emit('add-waypoint')"
-      >
-        + Thêm waypoint
-      </button>
+      <Button label="+ Thêm waypoint" severity="secondary" size="small" :disabled="isPlaying" @click="emit('add-waypoint')" />
 
-      <button
-        v-if="!isPlaying"
-        type="button"
-        class="appearance-none bg-[#24272b] border border-line text-panel-fg rounded-md py-1.5 px-2.5 text-[11.5px] font-semibold cursor-pointer hover:bg-[#2f3338]"
-        @click="emit('play')"
-      >
-        ► Phát
-      </button>
-      <button
-        v-else
-        type="button"
-        class="appearance-none bg-gold border border-gold text-panel rounded-md py-1.5 px-2.5 text-[11.5px] font-semibold cursor-pointer"
-        @click="emit('pause')"
-      >
-        ⏸ Tạm dừng
-      </button>
+      <Button v-if="!isPlaying" label="► Phát" severity="secondary" size="small" @click="emit('play')" />
+      <Button v-else label="⏸ Tạm dừng" size="small" @click="emit('pause')" />
 
-      <button
-        type="button"
-        class="appearance-none bg-[#24272b] border border-line text-panel-fg rounded-md py-1.5 px-2.5 text-[11.5px] font-semibold cursor-pointer hover:bg-[#2f3338]"
-        @click="emit('stop')"
-      >
-        ■ Dừng
-      </button>
+      <Button label="■ Dừng" severity="secondary" size="small" @click="emit('stop')" />
 
-      <button
-        type="button"
-        class="appearance-none rounded-md py-1.5 px-2.5 text-[11.5px] font-semibold cursor-pointer"
-        :class="isLooping
-          ? 'bg-gold border border-gold text-panel'
-          : 'bg-[#24272b] border border-line text-panel-fg hover:bg-[#2f3338]'"
-        @click="emit('toggle-loop')"
-      >
-        ↻ Lặp
-      </button>
+      <ToggleButton v-model="loopModel" on-label="↻ Lặp" off-label="↻ Lặp" size="small" />
     </div>
 
     <!-- Segments Table / List Header -->
@@ -361,58 +319,48 @@ function onPointerUp() {
               title="Nhấn giữ và kéo thả để đổi thứ tự"
               @pointerdown="e => startPointerDrag(item.origIndex, e)"
             >⋮⋮</span>
-            <input
-              type="text"
+            <InputText
+              size="small"
               :disabled="isPlaying"
-              class="w-[58px] bg-[#191b1d] border border-[#373b42] rounded py-[3px] px-[5px] text-[11px] font-bold outline-none focus:border-gold focus:bg-[#23262b] disabled:opacity-40 disabled:cursor-not-allowed"
-              :class="selectedWaypointIndex === item.origIndex ? 'text-gold' : 'text-panel-fg'"
-              :value="item.name"
+              class="w-[58px] !text-[11px] !font-bold"
+              :class="selectedWaypointIndex === item.origIndex ? '!text-gold' : ''"
+              :model-value="item.name"
               :placeholder="`WP ${item.origIndex + 1}`"
               title="Nhấp vào để chỉnh sửa tên Waypoint"
               @click.stop
-              @input="e => onNameChange(item.origIndex, e.target.value)"
+              @update:model-value="v => onNameChange(item.origIndex, v)"
             />
           </div>
 
           <!-- Duration input -->
           <div class="flex justify-center">
-            <input
-              type="number"
-              min="0"
-              step="100"
-              :disabled="isPlaying"
-              class="w-[56px] bg-[#191b1d] border border-[#373b42] text-panel-fg rounded py-[3px] px-1 text-[11px] text-center outline-none focus:border-gold disabled:opacity-40 disabled:cursor-not-allowed"
-              :value="item.duration_ms"
+            <InputNumber
+              size="small" :disabled="isPlaying" :min="0" :step="100" :format="false"
+              class="w-[56px]" input-class="!text-center !text-[11px]"
+              :model-value="item.duration_ms"
               @click.stop
-              @input="e => onDurationChange(item.origIndex, e.target.value)"
+              @update:model-value="v => onDurationChange(item.origIndex, v)"
             />
           </div>
 
           <!-- Dwell input -->
           <div class="flex justify-center">
-            <input
-              type="number"
-              min="0"
-              step="100"
-              :disabled="isPlaying"
-              class="w-[56px] bg-[#191b1d] border border-[#373b42] text-panel-fg rounded py-[3px] px-1 text-[11px] text-center outline-none focus:border-gold disabled:opacity-40 disabled:cursor-not-allowed"
-              :value="item.dwell_ms"
+            <InputNumber
+              size="small" :disabled="isPlaying" :min="0" :step="100" :format="false"
+              class="w-[56px]" input-class="!text-center !text-[11px]"
+              :model-value="item.dwell_ms"
               @click.stop
-              @input="e => onDwellChange(item.origIndex, e.target.value)"
+              @update:model-value="v => onDwellChange(item.origIndex, v)"
             />
           </div>
 
           <!-- Row actions: Delete -->
           <div class="flex items-center justify-end gap-[3px]">
-            <button
-              type="button"
-              :disabled="isPlaying"
-              class="appearance-none bg-transparent border-none text-dim cursor-pointer text-xs py-0.5 px-1 leading-none hover:text-red-500 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-dim"
+            <Button
+              icon="pi pi-trash" text severity="danger" size="small" :disabled="isPlaying"
               @click.stop="emit('delete-waypoint', item.origIndex)"
               title="Xóa waypoint"
-            >
-              ✕
-            </button>
+            />
           </div>
         </template>
       </div>
