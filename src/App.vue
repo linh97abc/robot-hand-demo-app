@@ -418,13 +418,13 @@ async function handleExportJSON() {
 }
 
 function handleImportError(message) {
-  toast.add({ severity: 'error', summary: 'Lỗi nhập JSON', detail: message, life: 4000 });
+  toast.add({ severity: 'error', summary: 'JSON Import Error', detail: message, life: 4000 });
 }
 
 function handleImportJSON(data) {
   if (isPlaying.value) return;
   if (!data || !Array.isArray(data.segments)) {
-    handleImportError('File JSON không hợp lệ: Thiếu danh sách segments.');
+    handleImportError('Invalid JSON file: Missing segments array.');
     return;
   }
 

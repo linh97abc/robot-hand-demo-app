@@ -29,7 +29,7 @@ function onSliderInput(key, value) {
   >
     <!-- Header -->
     <div>
-      <h1 id="panelTitle" class="text-[14.5px] tracking-[.08em] uppercase m-0 font-bold">TƯ THẾ HIỆN TẠI</h1>
+      <h1 id="panelTitle" class="text-[14.5px] tracking-[.08em] uppercase m-0 font-bold">CURRENT POSE</h1>
     </div>
 
     <!-- Status Banner -->
@@ -43,15 +43,15 @@ function onSliderInput(key, value) {
     >
       <template v-if="isPlaying">
         <span class="font-bold text-xs flex-shrink-0">▶</span>
-        <span>Đang phát chuyển động — dừng phát để chỉnh sửa</span>
+        <span>Playing motion sequence — stop playback to edit</span>
       </template>
       <template v-else-if="selectedWaypointName">
         <span class="font-bold text-xs flex-shrink-0">✎</span>
-        <span>Đang sửa <strong>{{ selectedWaypointName }}</strong> — bấm lại WP để hoàn tất</span>
+        <span>Editing <strong>{{ selectedWaypointName }}</strong> — click WP again to complete</span>
       </template>
       <template v-else>
         <span class="font-bold text-xs flex-shrink-0">+</span>
-        <span>Đang tạo tư thế mới — bấm <strong>"+ Thêm waypoint"</strong> để lưu</span>
+        <span>Creating new pose — click <strong>"+ Add Waypoint"</strong> to save</span>
       </template>
     </div>
 
@@ -73,7 +73,7 @@ function onSliderInput(key, value) {
     <div id="controls" class="flex flex-col gap-3">
       <div v-if="loading" class="flex items-center gap-2 text-[11.5px] text-muted italic">
         <ProgressSpinner style="width: 14px; height: 14px" stroke-width="6" />
-        <span>Đang tải mô hình 3D...</span>
+        <span>Loading 3D model...</span>
       </div>
 
       <template v-else>

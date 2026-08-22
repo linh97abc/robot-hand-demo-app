@@ -41,7 +41,7 @@ function handleFileChange(event) {
       const data = JSON.parse(e.target.result);
       emit('import-json', data);
     } catch (err) {
-      emit('import-error', 'File JSON không hợp lệ: ' + err.message);
+      emit('import-error', 'Invalid JSON file: ' + err.message);
     }
   };
   reader.readAsText(file);
@@ -226,14 +226,14 @@ function onPointerUp() {
   >
     <!-- Header -->
     <div>
-      <h1 class="text-[14.5px] tracking-[.08em] uppercase m-0 mb-1.5 font-bold text-panel-fg">KỊCH BẢN CHUYỂN ĐỘNG</h1>
+      <h1 class="text-[14.5px] tracking-[.08em] uppercase m-0 mb-1.5 font-bold text-panel-fg">MOTION SEQUENCE</h1>
       <p class="text-[11px] leading-[1.45] text-muted m-0 mb-3">
-        Ghi lại tư thế hiện tại thành các waypoint. Bấm vào 1 waypoint để chọn — chỉnh sửa tư thế bằng các thanh trượt ở cột bên phải. Xuất/nhập file JSON để dùng lại.
+        Record current pose into waypoints. Select a waypoint to edit its pose using joint sliders. Export or import JSON files to reuse sequences.
       </p>
 
       <div class="flex gap-2">
-        <Button label="Xuất JSON" severity="secondary" size="small" :disabled="isPlaying" @click="emit('export-json')" />
-        <Button label="Nhập JSON" severity="secondary" size="small" :disabled="isPlaying" @click="triggerImport" />
+        <Button label="Export JSON" severity="secondary" size="small" :disabled="isPlaying" @click="emit('export-json')" />
+        <Button label="Import JSON" severity="secondary" size="small" :disabled="isPlaying" @click="triggerImport" />
         <input
           ref="fileInputRef"
           type="file"
@@ -259,28 +259,28 @@ function onPointerUp() {
 
     <!-- Controls toolbar -->
     <div class="flex gap-1 items-center flex-nowrap w-full justify-between">
-      <Button label="+ Thêm waypoint" severity="primary" size="small" :disabled="isPlaying" @click="emit('add-waypoint')" />
+      <Button label="+ Add Waypoint" severity="primary" size="small" :disabled="isPlaying" @click="emit('add-waypoint')" />
 
-      <Button v-if="!isPlaying" label="► Phát" severity="success" size="small" @click="emit('play')" />
-      <Button v-else label="⏸ Tạm dừng" severity="warn" size="small" class="animate-pulse shadow-[0_0_12px_rgba(245,158,11,0.4)]" @click="emit('pause')" />
+      <Button v-if="!isPlaying" label="► Play" severity="success" size="small" @click="emit('play')" />
+      <Button v-else label="⏸ Pause" severity="warn" size="small" class="animate-pulse shadow-[0_0_12px_rgba(245,158,11,0.4)]" @click="emit('pause')" />
 
-      <Button label="■ Dừng" :disabled="!isPlaying" severity="danger" size="small" :class="isPlaying ? 'animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]' : ''" @click="emit('stop')" />
+      <Button label="■ Stop" :disabled="!isPlaying" severity="danger" size="small" :class="isPlaying ? 'animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]' : ''" @click="emit('stop')" />
 
-      <Button label="↻ Lặp" :severity="isLooping ? 'primary' : 'secondary'" size="small" @click="emit('toggle-loop')" />
+      <Button label="↻ Loop" :severity="isLooping ? 'primary' : 'secondary'" size="small" @click="emit('toggle-loop')" />
     </div>
 
     <!-- Segments Table / List Header -->
     <div class="grid grid-cols-[130px_76px_72px_1fr] items-center text-[8.5px] tracking-[.01em] text-dim font-bold pb-1 border-b border-[#2a2d32] mt-1 whitespace-nowrap">
       <span>WAYPOINT</span>
-      <span class="text-center whitespace-nowrap">C.ĐỘNG (ms)</span>
-      <span class="text-center whitespace-nowrap">DỪNG (ms)</span>
+      <span class="text-center whitespace-nowrap">DURATION (ms)</span>
+      <span class="text-center whitespace-nowrap">DWELL (ms)</span>
       <span></span>
     </div>
 
     <!-- Segments List -->
     <div v-if="segments.length === 0" class="flex flex-col gap-1.5 flex-1 min-h-[100px] overflow-y-auto overflow-x-hidden">
       <div class="text-[11px] text-dim italic py-4 text-center">
-        Chưa có waypoint nào. Bấm "+ Thêm waypoint" để bắt đầu tạo kịch bản.
+        No waypoints yet. Click "+ Add Waypoint" to create a motion sequence.
       </div>
     </div>
 
@@ -302,7 +302,7 @@ function onPointerUp() {
         <template v-if="item.isPlaceholder">
           <div class="flex items-center justify-center gap-2 text-gold text-[11px] font-bold tracking-[.02em] w-full">
             <span class="text-xs font-bold animate-[bounce-slot_0.7s_infinite_alternate]">↓</span>
-            <span>Thả vào đây (chèn {{ item.name || `WP ${item.origIndex + 1}` }})</span>
+            <span>Drop here (insert {{ item.name || `WP ${item.origIndex + 1}` }})</span>
           </div>
         </template>
 
@@ -312,7 +312,7 @@ function onPointerUp() {
             <span
               class="text-[11px] select-none [touch-action:none] py-1 px-0.5 flex-shrink-0"
               :class="isPlaying ? 'text-dim cursor-not-allowed opacity-40' : 'text-dim cursor-grab active:cursor-grabbing active:text-gold'"
-              title="Nhấn giữ và kéo thả để đổi thứ tự"
+              title="Drag to reorder"
               @pointerdown="e => startPointerDrag(item.origIndex, e)"
             >⋮⋮</span>
             <InputText
@@ -322,7 +322,7 @@ function onPointerUp() {
               :class="selectedWaypointIndex === item.origIndex ? '!text-gold' : ''"
               :model-value="item.name"
               :placeholder="`WP ${item.origIndex + 1}`"
-              title="Nhấp vào để chỉnh sửa tên Waypoint"
+              title="Click to edit Waypoint name"
               @click.stop
               @update:model-value="v => onNameChange(item.origIndex, v)"
             />
@@ -365,7 +365,7 @@ function onPointerUp() {
             <Button
               icon="pi pi-trash" text size="small" class="btn-trash !w-6 !h-6 !p-0" :disabled="isPlaying"
               @click.stop="emit('delete-waypoint', item.origIndex)"
-              title="Xóa waypoint"
+              title="Delete waypoint"
             />
           </div>
         </template>
@@ -374,7 +374,7 @@ function onPointerUp() {
 
     <!-- Footer JSON Spec Hint -->
     <div class="text-[10px] text-dim leading-[1.4] border-t border-[#2c3035] pt-2.5 mt-auto">
-      Định dạng file: {"segments": [ {"waypoint": {"thumb.0": 10, ...}, "duration_ms": 800, "dwell_ms": 0}, ... ]}. duration_ms là thời gian chuyển động, dwell_ms là thời gian dừng nghỉ tại waypoint đó.
+      File format: {"segments": [ {"waypoint": {"thumb.0": 10, ...}, "duration_ms": 800, "dwell_ms": 0}, ... ]}. duration_ms is motion duration, dwell_ms is hold time at waypoint.
     </div>
 
     <!-- Floating Drag Preview Avatar following mouse -->

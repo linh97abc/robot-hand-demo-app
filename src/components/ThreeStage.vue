@@ -272,7 +272,7 @@ onBeforeUnmount(() => {
       class="absolute top-4 left-4 z-10 bg-[#1c1e21d6] backdrop-blur-md border border-[#32363b] rounded-[10px] py-3 px-3.5 flex flex-col gap-2.5 max-w-[320px] shadow-[0_8px_24px_rgba(0,0,0,0.4)] text-panel-fg font-ui select-none"
     >
       <div class="flex flex-col gap-[5px]">
-        <label class="text-[10px] tracking-[.08em] uppercase text-gold font-bold">MÔ HÌNH ROBOT</label>
+        <label class="text-[10px] tracking-[.08em] uppercase text-gold font-bold">ROBOT MODEL</label>
         <Select
           size="small"
           :model-value="currentProfileKey"
