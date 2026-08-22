@@ -9,7 +9,7 @@ import './style.css';
 
 /**
  * PrimeVue 4 Single Source of Truth Preset Definition
- * Defines 100% of colors, typography (font-size, font-weight), semantic states, and component rules.
+ * Defines 100% of colors (Claude Ivory Light & Studio Dark schemes), typography, semantic states, and component rules.
  */
 const HRHandPreset = definePreset(Aura, {
   primitive: {
@@ -22,7 +22,6 @@ const HRHandPreset = definePreset(Aura, {
     },
   },
   semantic: {
-    /* PrimeVue 4 Standard Typography Scale Tokens */
     fontSize: {
       xs: '9px',       /* Level 1: Micro labels, table headers */
       sm: '10px',      /* Level 2: Sub-labels, hints, footer specs, timestamps */
@@ -32,7 +31,7 @@ const HRHandPreset = definePreset(Aura, {
     },
     fontWeight: {
       normal: '400',   /* Regular body text */
-      medium: '500',   /* Medium buttons, timeline numbers */
+      medium: '500',   /* Medium buttons */
       bold: '700',     /* Headers, active labels */
     },
     primary: {
@@ -49,7 +48,63 @@ const HRHandPreset = definePreset(Aura, {
       950: '#2c210f',
     },
     colorScheme: {
+      light: {
+        /* Claude Code Warm Ivory Light Theme Palette */
+        surface: {
+          0: '#ffffff',
+          50: '#24211e',   /* Primary Panel FG - Warm Charcoal */
+          100: '#3d3834',
+          200: '#6e675f',  /* Muted Secondary Text */
+          300: '#948c82',  /* Dimmed Tertiary Text */
+          400: '#e0d9cd',  /* Primary Border Line */
+          500: '#e8e2d7',  /* Subtle Inner Border Line */
+          600: '#e2dccf',  /* Surface Active / Drag / Selected */
+          700: '#f3efe6',  /* Surface Row / Item Background */
+          800: '#faf7f0',  /* Sidebar Panel Background */
+          900: '#f2eee5',  /* 3D Stage Background (Warm Cream Ivory) */
+          950: '#ffffff',
+        },
+        info: {
+          background: 'rgba(56, 189, 248, 0.12)',
+          borderColor: 'rgba(56, 189, 248, 0.4)',
+          color: '#0284c7',
+        },
+        warn: {
+          background: 'rgba(217, 119, 6, 0.12)',
+          borderColor: 'rgba(217, 119, 6, 0.4)',
+          color: '#b45309',
+        },
+        success: {
+          background: 'rgba(34, 197, 94, 0.12)',
+          borderColor: 'rgba(34, 197, 94, 0.4)',
+          color: '#15803d',
+        },
+        danger: {
+          background: 'rgba(220, 38, 38, 0.12)',
+          borderColor: 'rgba(220, 38, 38, 0.4)',
+          color: '#b91c1c',
+        },
+        content: {
+          background: 'rgba(250, 247, 240, 0.78)', /* Translucent Frosted Glass */
+          color: '#24211e',
+        },
+        highlight: {
+          background: 'rgba(201, 163, 92, 0.15)',
+          color: '#c9a35c',
+        },
+        formField: {
+          background: 'rgba(255, 255, 255, 0.85)',
+          color: '#24211e',
+          borderColor: '#d8d1c3',
+          hoverBorderColor: '#b8b0a2',
+          focusBorderColor: '#c9a35c',
+          placeholderColor: '#948c82',
+          disabledBackground: '#f3efe6',
+          disabledColor: '#948c82',
+        },
+      },
       dark: {
+        /* Studio Dark Theme Palette */
         surface: {
           0: '#ffffff',
           50: '#e9e7e2',   /* Primary Panel FG */
@@ -85,7 +140,7 @@ const HRHandPreset = definePreset(Aura, {
           color: '#f87171',
         },
         content: {
-          background: '#1c1e21',
+          background: 'rgba(28, 30, 33, 0.78)', /* Translucent Frosted Glass */
           color: '#e9e7e2',
         },
         highlight: {
@@ -93,7 +148,7 @@ const HRHandPreset = definePreset(Aura, {
           color: '#c9a35c',
         },
         formField: {
-          background: '#1f2226',
+          background: 'rgba(31, 34, 38, 0.85)',
           color: '#e9e7e2',
           borderColor: '#383c42',
           hoverBorderColor: '#484c54',
@@ -123,16 +178,12 @@ const HRHandPreset = definePreset(Aura, {
           hoverBackground: '{primary.color}',
         },
       },
-      colorScheme: {
-        dark: {
-          handle: {
-            content: { background: '{primary.color}' },
-          },
-        },
-      },
     },
   },
 });
+
+// Enable Dark Mode by default
+document.documentElement.classList.add('app-dark');
 
 const app = createApp(App);
 app.use(PrimeVue, {

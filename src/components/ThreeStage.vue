@@ -28,10 +28,33 @@ const profileOptions = computed(() =>
   }))
 );
 
+const isDark = ref(typeof document !== 'undefined' && document.documentElement.classList.contains('app-dark'));
+
+function toggleTheme() {
+  isDark.value = !isDark.value;
+  if (typeof document !== 'undefined') {
+    document.documentElement.classList.toggle('app-dark', isDark.value);
+  }
+}
+
+function handleModelSwitch(val) {
+  if (!val || val === props.currentProfileKey) return;
+  // Defer heavy 3D model rebuild to next event loop frame so dropdown overlay closes instantly with 60 FPS
+  setTimeout(() => {
+    emit('switch-profile', val);
+  }, 10);
+}
+
 const containerRef = ref(null);
 let scene, camera, renderer, controls, animationId = null;
 let keyLight, shadowGround;
 let renderRequested = false;
+
+watch(isDark, (val) => {
+  const bgHex = val ? '#141619' : '#f2eee5';
+  if (scene) scene.background = new THREE.Color(bgHex);
+  requestRender();
+});
 
 function initThree() {
   const container = containerRef.value;
@@ -40,13 +63,14 @@ function initThree() {
   const w = container.clientWidth || 800;
   const h = container.clientHeight || 600;
 
+  const initialBg = isDark.value ? '#141619' : '#f2eee5';
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(props.background);
+  scene.background = new THREE.Color(initialBg);
 
   camera = new THREE.PerspectiveCamera(45, w / h, 0.01, 500);
   camera.position.set(3, 2.2, 4);
 
-  // Studio lighting tuned for dark background
+  // Studio lighting tuned for stage
   const hemi = new THREE.HemisphereLight(0xffffff, 0x22262d, 1.2);
   scene.add(hemi);
 
@@ -145,24 +169,24 @@ watch(
 
       scene.add(newModel);
 
-        // Auto frame model using bounding sphere
-        const box = new THREE.Box3().setFromObject(newModel);
-        if (!box.isEmpty()) {
-          shadowGround.position.y = box.min.y;
-          const sphere = box.getBoundingSphere(new THREE.Sphere());
+      // Auto frame model using bounding sphere
+      const box = new THREE.Box3().setFromObject(newModel);
+      if (!box.isEmpty()) {
+        shadowGround.position.y = box.min.y;
+        const sphere = box.getBoundingSphere(new THREE.Sphere());
 
-          // Subtle framing offset (half of previous offset) to lower model slightly on screen
-          const framedCenter = sphere.center.clone();
-          framedCenter.y += sphere.radius * 0.10;
+        // Subtle framing offset to lower model slightly on screen
+        const framedCenter = sphere.center.clone();
+        framedCenter.y += sphere.radius * 0.10;
 
-          const dist = (sphere.radius / Math.tan((camera.fov * Math.PI) / 360)) * 1.37;
-          const dir = new THREE.Vector3(1, 0.55, 1.25).normalize();
-          camera.position.copy(framedCenter).add(dir.multiplyScalar(dist));
-          camera.near = Math.max(dist / 100, 0.01);
-          camera.far = dist * 100;
-          camera.updateProjectionMatrix();
-          controls.target.copy(framedCenter);
-          controls.update();
+        const dist = (sphere.radius / Math.tan((camera.fov * Math.PI) / 360)) * 1.37;
+        const dir = new THREE.Vector3(1, 0.55, 1.25).normalize();
+        camera.position.copy(framedCenter).add(dir.multiplyScalar(dist));
+        camera.near = Math.max(dist / 100, 0.01);
+        camera.far = dist * 100;
+        camera.updateProjectionMatrix();
+        controls.target.copy(framedCenter);
+        controls.update();
 
         const span = sphere.radius * 3;
         keyLight.shadow.camera.left = -span;
@@ -175,14 +199,6 @@ watch(
     }
   },
   { immediate: true }
-);
-
-watch(
-  () => props.background,
-  (newBg) => {
-    if (scene) scene.background = new THREE.Color(newBg);
-    requestRender();
-  }
 );
 
 function download(blob, filename) {
@@ -269,9 +285,19 @@ onBeforeUnmount(() => {
     <div ref="containerRef" class="w-full h-full overflow-hidden canvas-wrapper"></div>
 
     <!-- Top-Left Model Switcher Overlay -->
-    <Card v-if="profiles && currentProfileKey" class="absolute top-4 left-4 z-10 max-w-[320px] select-none">
+    <Card v-if="profiles && currentProfileKey" class="absolute top-4 left-4 z-10 min-w-[240px] max-w-[320px] select-none">
       <template #content>
-        <label class="text-gold font-bold block mb-1">ROBOT MODEL</label>
+        <div class="flex items-center justify-between mb-1">
+          <label class="text-gold font-bold">ROBOT MODEL</label>
+          <Button
+            :icon="isDark ? 'pi pi-sun' : 'pi pi-moon'"
+            severity="secondary"
+            size="small"
+            rounded
+            :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+            @click="toggleTheme"
+          />
+        </div>
         <Select
           size="small"
           :model-value="currentProfileKey"
@@ -279,7 +305,7 @@ onBeforeUnmount(() => {
           option-label="label"
           option-value="key"
           class="w-full"
-          @update:model-value="v => emit('switch-profile', v)"
+          @update:model-value="handleModelSwitch"
         />
 
         <template v-if="currentProfile.title">

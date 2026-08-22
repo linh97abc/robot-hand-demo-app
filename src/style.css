@@ -9,7 +9,7 @@
   --color-dim: var(--p-surface-300);                   /* Tertiary Text */
   --color-line: var(--p-surface-400);                  /* Primary Border Line */
   --color-line-subtle: var(--p-surface-500);           /* Subtle Inner Border Line */
-  --color-gold: var(--p-primary-color);                /* PrimeVue Primary Gold */
+  --color-gold: var(--p-primary-color);                /* PrimeVue Primary Gold (#c9a35c) */
 
   /* Surface Elevation Tokens bound to PrimeVue Preset */
   --color-surface-input: var(--p-form-field-background);          /* Recessed Input/Message Surface */
@@ -50,7 +50,7 @@
   --fs-xs: var(--p-font-size-xs);       /* Level 1: Micro labels, table headers */
   --fs-sm: var(--p-font-size-sm);       /* Level 2: Sub-labels, hints, footer specs, timestamps */
   --fs-base: var(--p-font-size-base);   /* Level 3: Standard UI text (sliders, buttons, inputs, messages) */
-  --fs-md: var(--p-font-size-md);       /* Level 4: Section subheadings, card titles */
+  --fs-md: var(--p-font-size-md);       /* Level 4: Section subheadings, card titles, dropdowns */
   --fs-lg: var(--p-font-size-lg);       /* Level 5: Main Panel Headers */
 
   /* PrimeVue 4 Font Weight Tokens bound directly to main.js HRHandPreset */
@@ -129,7 +129,7 @@ p {
   align-items: center;
   gap: var(--space-md);
   font-size: var(--fs-base);
-  color: #b8bcc2;
+  color: var(--color-panel-fg);
 }
 
 .segment-grid {
@@ -358,13 +358,17 @@ p {
   background-color: var(--color-dim);
 }
 
-/* Global PrimeVue component theme rules for unified Dark Studio design */
+/* Global PrimeVue component theme rules for unified Dark/Light Studio design */
 .p-inputtext,
 .p-inputnumber-input,
 .p-select {
   background-color: var(--color-surface-input) !important;
   color: var(--color-panel-fg) !important;
   border-color: var(--color-line) !important;
+}
+
+.p-select .p-select-label {
+  font-size: var(--fs-md) !important;
 }
 
 .p-inputtext:hover,
@@ -378,6 +382,65 @@ p {
 .p-select:focus-within {
   border-color: var(--color-gold) !important;
   box-shadow: 0 0 0 1px rgba(201, 163, 92, 0.3) !important;
+}
+
+/* PrimeVue Select & Dropdown Overlay Theme Rules - 100% Solid Opaque Background */
+.p-select-overlay {
+  background-color: var(--color-panel) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid var(--color-line) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-card) !important;
+  opacity: 1 !important;
+}
+
+.p-select-option {
+  color: var(--color-panel-fg) !important;
+  background-color: transparent !important;
+  font-size: var(--fs-md) !important;
+  padding: 6px 10px !important;
+}
+
+.p-select-option:hover,
+.p-select-option.p-focus {
+  background-color: var(--color-surface-hover) !important;
+  color: var(--color-gold) !important;
+}
+
+.p-select-option.p-select-option-selected,
+.p-select-option.p-selected {
+  background-color: var(--color-surface-active) !important;
+  color: var(--color-gold) !important;
+  font-weight: var(--fw-bold) !important;
+}
+
+/* Global PrimeVue Slider Theme Overrides - Gold Accent Knob */
+.p-slider {
+  background-color: var(--color-line-subtle) !important;
+}
+
+.p-slider .p-slider-range {
+  background-color: var(--color-gold) !important;
+}
+
+.p-slider .p-slider-handle {
+  background-color: var(--color-gold) !important;
+  border: 2px solid var(--color-gold) !important;
+  box-shadow: 0 0 6px rgba(201, 163, 92, 0.5) !important;
+  width: 13px !important;
+  height: 13px !important;
+}
+
+.p-slider .p-slider-handle::before,
+.p-slider .p-slider-handle::after {
+  background-color: var(--color-gold) !important;
+}
+
+.p-slider .p-slider-handle:hover,
+.p-slider .p-slider-handle:focus-visible {
+  background-color: var(--color-gold) !important;
+  box-shadow: 0 0 10px rgba(201, 163, 92, 0.8) !important;
 }
 
 /* Global PrimeVue Button Severity Theme Rules */
@@ -557,6 +620,7 @@ p {
 .p-card {
   background-color: var(--color-surface-card) !important;
   backdrop-filter: var(--blur-glass) !important;
+  -webkit-backdrop-filter: var(--blur-glass) !important;
   border: 1px solid var(--color-line-subtle) !important;
   border-radius: var(--radius-lg) !important;
   box-shadow: var(--shadow-card) !important;
