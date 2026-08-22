@@ -43,12 +43,10 @@ function onSliderInput(key, value) {
     class="w-[340px] flex-none border-l border-[#2a2d32] bg-panel text-panel-fg overflow-y-auto pt-4 px-[18px] pb-5 flex flex-col gap-3.5 box-border font-ui select-none"
   >
     <!-- Header -->
-    <div>
-      <h1 id="panelTitle">CURRENT POSE</h1>
-    </div>
+    <h1 id="panelTitle">CURRENT POSE</h1>
 
     <!-- Status Banner (Single persistent element, instant content swap, zero layout shift) -->
-    <Message :severity="statusSeverity" size="small" :icon="statusIcon" class="min-h-[38px] transition-colors duration-150">
+    <Message :severity="statusSeverity" size="small" :icon="statusIcon" class="status-message">
       <template v-if="isPlaying">
         Playing motion sequence — stop playback to edit
       </template>
@@ -61,7 +59,7 @@ function onSliderInput(key, value) {
     </Message>
 
     <!-- Presets Bar -->
-    <ButtonGroup id="presets" class="flex flex-wrap gap-[5px]">
+    <ButtonGroup id="presets">
       <Button
         v-for="(pose, name) in currentProfile.poses"
         :key="name"
@@ -69,7 +67,7 @@ function onSliderInput(key, value) {
         size="small"
         :disabled="isPlaying"
         :severity="activePreset === name ? 'primary' : 'secondary'"
-        class="!text-[11px]"
+        class="btn-preset"
         @click="emit('select-preset', name)"
       />
     </ButtonGroup>

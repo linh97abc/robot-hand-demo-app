@@ -271,7 +271,7 @@ onBeforeUnmount(() => {
     <!-- Top-Left Model Switcher Overlay -->
     <Card v-if="profiles && currentProfileKey" class="absolute top-4 left-4 z-10 max-w-[320px] select-none">
       <template #content>
-        <label class="text-[10px] tracking-[.08em] uppercase text-gold font-bold block mb-1">ROBOT MODEL</label>
+        <label class="text-gold font-bold block mb-1">ROBOT MODEL</label>
         <Select
           size="small"
           :model-value="currentProfileKey"
@@ -283,17 +283,17 @@ onBeforeUnmount(() => {
         />
 
         <template v-if="currentProfile.title">
-          <h2 class="text-xs tracking-[.06em] uppercase mt-2.5 mb-1 font-bold text-panel-fg border-t border-[#2d3137] pt-2">{{ currentProfile.title }}</h2>
-          <p v-if="currentProfile.subtitle" class="text-[10.5px] leading-[1.4] text-muted m-0">{{ currentProfile.subtitle }}</p>
+          <h2 class="card-title">{{ currentProfile.title }}</h2>
+          <p v-if="currentProfile.subtitle">{{ currentProfile.subtitle }}</p>
         </template>
       </template>
     </Card>
 
-    <p class="absolute left-4 bottom-4 max-w-[60%] text-[11.5px] leading-[1.5] text-dim select-none pointer-events-none font-ui m-0">
+    <p class="stage-hint">
       Drag to orbit · scroll to zoom · right-drag to pan
     </p>
 
-    <ButtonGroup class="absolute right-4 bottom-4 flex gap-2 z-10 font-ui">
+    <ButtonGroup class="absolute right-4 bottom-4 flex gap-2 z-10">
       <Button label="Download OBJ + MTL" severity="secondary" size="small" @click="exportOBJ" />
       <Button label="Download GLB" severity="secondary" size="small" @click="exportGLTF" />
     </ButtonGroup>

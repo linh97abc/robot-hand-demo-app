@@ -249,9 +249,9 @@ function onPointerUp() {
 
     <!-- Timeline Scrub section -->
     <div class="flex flex-col gap-1.5">
-      <div class="text-[10.5px] text-muted font-medium tabular-nums">
+      <p class="timeline-label">
         <span>{{ Math.round(currentTimeMs) }} ms / {{ Math.round(totalTimeMs) }} ms</span>
-      </div>
+      </p>
       <Slider
         :model-value="currentTimeMs"
         :min="0" :max="totalTimeMs || 100"
@@ -272,15 +272,15 @@ function onPointerUp() {
     </ButtonGroup>
 
     <!-- Segments Table / List Header -->
-    <header class="segment-grid text-[8.5px] tracking-[.01em] text-dim font-bold pb-1 border-b border-[#2a2d32] mt-1 whitespace-nowrap">
+    <header class="segment-grid table-header">
       <span>WAYPOINT</span>
-      <span class="text-center whitespace-nowrap">DURATION (ms)</span>
-      <span class="text-center whitespace-nowrap">DWELL (ms)</span>
+      <span class="text-center">DURATION (ms)</span>
+      <span class="text-center">DWELL (ms)</span>
       <span></span>
     </header>
 
     <!-- Segments List -->
-    <Message v-if="segments.length === 0" severity="secondary" size="small" icon="pi pi-info-circle" class="justify-center my-4 !text-[11px]">
+    <Message v-if="segments.length === 0" severity="secondary" size="small" icon="pi pi-info-circle" class="justify-center my-4">
       No waypoints yet. Click "+ Add Waypoint" to create a motion sequence.
     </Message>
 
@@ -288,20 +288,18 @@ function onPointerUp() {
       <div
         v-for="item in displaySegments"
         :key="item.id || item.origIndex"
-        class="segment-row rounded-md"
         :data-index="item.origIndex"
         :class="item.isPlaceholder
-          ? 'flex items-center justify-center bg-gold/[0.12] border-[1.5px] border-dashed border-gold shadow-[inset_0_0_12px_rgba(201,163,92,0.2)] h-[38px] px-2 pointer-events-none w-full box-border'
-          : (activeWaypointIndex === item.origIndex
-              ? 'segment-grid bg-[#2a2d32] border-2 border-gold py-[4px] px-1.5 cursor-pointer animate-[playing-glow_1s_ease-in-out_infinite]'
-              : (selectedWaypointIndex === item.origIndex
-                  ? 'segment-grid bg-[#2a2d32] border border-gold py-[5px] px-1.5 cursor-pointer shadow-[0_0_8px_rgba(201,163,92,0.2)]'
-                  : 'segment-grid bg-[#23262a] border border-[#32363b] py-[5px] px-1.5 cursor-pointer transition-colors duration-150 hover:border-[#484c54] hover:bg-[#272a2e]'))"
+          ? 'drag-placeholder'
+          : ['segment-row', 'segment-grid', {
+              playing: activeWaypointIndex === item.origIndex,
+              selected: selectedWaypointIndex === item.origIndex
+            }]"
         @click="!item.isPlaceholder && emit('select-waypoint', item.origIndex)"
       >
         <template v-if="item.isPlaceholder">
-          <div class="flex items-center justify-center gap-2 text-gold text-[11px] font-bold tracking-[.02em] w-full">
-            <span class="text-xs font-bold animate-[bounce-slot_0.7s_infinite_alternate]">↓</span>
+          <div class="drag-slot-hint">
+            <span class="arrow-bounce">↓</span>
             <span>Drop here (insert {{ item.name || `WP ${item.origIndex + 1}` }})</span>
           </div>
         </template>
@@ -310,16 +308,16 @@ function onPointerUp() {
           <!-- Reorder Handle & Waypoint Name Textbox -->
           <div class="flex items-center gap-1 min-w-0 pr-1">
             <span
-              class="text-[11px] select-none [touch-action:none] py-1 px-0.5 flex-shrink-0"
-              :class="isPlaying ? 'text-dim cursor-not-allowed opacity-40' : 'text-dim cursor-grab active:cursor-grabbing active:text-gold'"
+              class="drag-handle"
+              :class="{ disabled: isPlaying }"
               title="Drag to reorder"
               @pointerdown="e => startPointerDrag(item.origIndex, e)"
             >⋮⋮</span>
             <InputText
               size="small"
               :disabled="isPlaying"
-              class="w-full min-w-0 !text-[11px] !font-bold !h-6 !px-1.5"
-              :class="selectedWaypointIndex === item.origIndex ? '!text-gold' : ''"
+              class="input-waypoint-name"
+              :class="{ '!text-gold': selectedWaypointIndex === item.origIndex }"
               :model-value="item.name"
               :placeholder="`WP ${item.origIndex + 1}`"
               title="Click to edit Waypoint name"
@@ -336,8 +334,7 @@ function onPointerUp() {
               :min="0"
               :step="100"
               :format="false"
-              class="!w-[50px] !min-w-0"
-              input-class="!w-[50px] !min-w-0 !text-center !text-[11px] !h-6 !px-1"
+              class="input-compact-number"
               :model-value="item.duration_ms"
               @click.stop
               @update:model-value="v => onDurationChange(item.origIndex, v)"
@@ -352,8 +349,7 @@ function onPointerUp() {
               :min="0"
               :step="100"
               :format="false"
-              class="!w-[50px] !min-w-0"
-              input-class="!w-[50px] !min-w-0 !text-center !text-[11px] !h-6 !px-1"
+              class="input-compact-number"
               :model-value="item.dwell_ms"
               @click.stop
               @update:model-value="v => onDwellChange(item.origIndex, v)"
@@ -381,15 +377,15 @@ function onPointerUp() {
     <Teleport to="body">
       <div
         v-if="isPointerDragging && draggingIndex !== null && segments[draggingIndex]"
-        class="fixed -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[99999] bg-[#2a2d32] border border-gold rounded-md py-1.5 px-3.5 text-panel-fg text-[11px] font-bold flex items-center gap-2 shadow-[0_10px_25px_rgba(0,0,0,0.5),0_0_14px_rgba(201,163,92,0.4)] select-none"
+        class="drag-avatar"
         :style="{
           left: dragPosition.x + 'px',
           top: dragPosition.y + 'px',
         }"
       >
         <span class="text-gold font-bold">⋮⋮</span>
-        <span class="text-panel-fg">{{ segments[draggingIndex].name || `WP ${draggingIndex + 1}` }}</span>
-        <span class="text-[10px] text-muted font-medium">{{ segments[draggingIndex].duration_ms }} ms</span>
+        <span>{{ segments[draggingIndex].name || `WP ${draggingIndex + 1}` }}</span>
+        <span class="avatar-duration">{{ segments[draggingIndex].duration_ms }} ms</span>
       </div>
     </Teleport>
   </aside>
