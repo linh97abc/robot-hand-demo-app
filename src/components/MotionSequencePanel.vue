@@ -4,6 +4,7 @@ import Button from 'primevue/button';
 import Slider from 'primevue/slider';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
+import Message from 'primevue/message';
 
 const props = defineProps({
   segments: { type: Array, required: true },
@@ -278,11 +279,9 @@ function onPointerUp() {
     </div>
 
     <!-- Segments List -->
-    <div v-if="segments.length === 0" class="flex flex-col gap-1.5 flex-1 min-h-[100px] overflow-y-auto overflow-x-hidden">
-      <div class="text-[11px] text-dim italic py-4 text-center">
-        No waypoints yet. Click "+ Add Waypoint" to create a motion sequence.
-      </div>
-    </div>
+    <Message v-if="segments.length === 0" severity="secondary" size="small" icon="pi pi-info-circle" class="justify-center my-4 !text-[11px]">
+      No waypoints yet. Click "+ Add Waypoint" to create a motion sequence.
+    </Message>
 
     <TransitionGroup v-else name="flip-list" tag="div" class="segments-list flex flex-col gap-1.5 flex-1 min-h-[100px] overflow-y-auto overflow-x-hidden">
       <div

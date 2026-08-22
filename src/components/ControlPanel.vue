@@ -2,6 +2,8 @@
 import { computed } from 'vue';
 import Slider from 'primevue/slider';
 import Button from 'primevue/button';
+import Message from 'primevue/message';
+import Fieldset from 'primevue/fieldset';
 import ProgressSpinner from 'primevue/progressspinner';
 
 const props = defineProps({
@@ -18,6 +20,18 @@ const emit = defineEmits(['switch-profile', 'update-joint', 'select-preset']);
 
 const currentProfile = computed(() => props.profiles[props.currentProfileKey] || {});
 
+const statusSeverity = computed(() => {
+  if (props.isPlaying) return 'info';
+  if (props.selectedWaypointName) return 'warn';
+  return 'success';
+});
+
+const statusIcon = computed(() => {
+  if (props.isPlaying) return 'pi pi-play';
+  if (props.selectedWaypointName) return 'pi pi-pencil';
+  return 'pi pi-plus';
+});
+
 function onSliderInput(key, value) {
   emit('update-joint', key, value);
 }
@@ -32,28 +46,18 @@ function onSliderInput(key, value) {
       <h1 id="panelTitle">CURRENT POSE</h1>
     </div>
 
-    <!-- Status Banner -->
-    <div
-      class="flex items-center gap-2 py-2 px-2.5 rounded-md text-[11px] leading-[1.35]"
-      :class="isPlaying
-        ? 'bg-sky-400/12 border border-sky-400/60 text-sky-300'
-        : (selectedWaypointName
-            ? 'bg-gold/12 border border-gold/60 text-[#fde047]'
-            : 'bg-[#22c55e14] border border-dashed border-[#22c55e66] text-[#4ade80]')"
-    >
+    <!-- Status Banner (Single persistent element, instant content swap, zero layout shift) -->
+    <Message :severity="statusSeverity" size="small" :icon="statusIcon" class="min-h-[38px] transition-colors duration-150">
       <template v-if="isPlaying">
-        <span class="font-bold text-xs flex-shrink-0">▶</span>
-        <span>Playing motion sequence — stop playback to edit</span>
+        Playing motion sequence — stop playback to edit
       </template>
       <template v-else-if="selectedWaypointName">
-        <span class="font-bold text-xs flex-shrink-0">✎</span>
-        <span>Editing <strong>{{ selectedWaypointName }}</strong> — click WP again to complete</span>
+        Editing <strong>{{ selectedWaypointName }}</strong> — click WP again to complete
       </template>
       <template v-else>
-        <span class="font-bold text-xs flex-shrink-0">+</span>
-        <span>Creating new pose — click <strong>"+ Add Waypoint"</strong> to save</span>
+        Creating new pose — click <strong>"+ Add Waypoint"</strong> to save
       </template>
-    </div>
+    </Message>
 
     <!-- Presets Bar -->
     <div class="flex flex-wrap gap-[5px]" id="presets">
@@ -78,9 +82,7 @@ function onSliderInput(key, value) {
 
       <template v-else>
         <!-- Finger Groups -->
-        <div v-for="finger in currentProfile.fingers" :key="finger.key" class="flex flex-col gap-1.5">
-          <h2>{{ finger.label }}</h2>
-
+        <Fieldset v-for="finger in currentProfile.fingers" :key="finger.key" :legend="finger.label">
           <label
             v-for="(jointLabel, index) in finger.joints"
             :key="index"
@@ -95,8 +97,7 @@ function onSliderInput(key, value) {
             />
             <output class="text-right tabular-nums text-panel-fg">{{ Math.round(state[`${finger.key}.${index}`] || 0) }}</output>
           </label>
-
-        </div>
+        </Fieldset>
       </template>
     </div>
 

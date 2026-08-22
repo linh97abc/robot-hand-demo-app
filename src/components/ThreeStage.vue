@@ -6,6 +6,7 @@ import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import Select from 'primevue/select';
 import Button from 'primevue/button';
+import Card from 'primevue/card';
 
 const props = defineProps({
   model: { type: Object, default: null },
@@ -267,28 +268,29 @@ onBeforeUnmount(() => {
     <div ref="containerRef" class="w-full h-full overflow-hidden canvas-wrapper"></div>
 
     <!-- Top-Left Model Switcher Overlay -->
-    <div
-      v-if="profiles && currentProfileKey"
-      class="absolute top-4 left-4 z-10 bg-[#1c1e21d6] backdrop-blur-md border border-[#32363b] rounded-[10px] py-3 px-3.5 flex flex-col gap-2.5 max-w-[320px] shadow-[0_8px_24px_rgba(0,0,0,0.4)] text-panel-fg font-ui select-none"
-    >
-      <div class="flex flex-col gap-[5px]">
-        <label class="text-[10px] tracking-[.08em] uppercase text-gold font-bold">ROBOT MODEL</label>
-        <Select
-          size="small"
-          :model-value="currentProfileKey"
-          :options="profileOptions"
-          option-label="label"
-          option-value="key"
-          class="w-full"
-          @update:model-value="v => emit('switch-profile', v)"
-        />
-      </div>
+    <Card v-if="profiles && currentProfileKey" class="absolute top-4 left-4 z-10 max-w-[320px] select-none">
+      <template #content>
+        <div class="flex flex-col gap-2.5">
+          <div class="flex flex-col gap-[5px]">
+            <label class="text-[10px] tracking-[.08em] uppercase text-gold font-bold">ROBOT MODEL</label>
+            <Select
+              size="small"
+              :model-value="currentProfileKey"
+              :options="profileOptions"
+              option-label="label"
+              option-value="key"
+              class="w-full"
+              @update:model-value="v => emit('switch-profile', v)"
+            />
+          </div>
 
-      <div v-if="currentProfile.title" class="border-t border-[#2d3137] pt-2 flex flex-col gap-1">
-        <h2 class="text-xs tracking-[.06em] uppercase m-0 font-bold text-panel-fg">{{ currentProfile.title }}</h2>
-        <p v-if="currentProfile.subtitle" class="text-[10.5px] leading-[1.4] text-muted m-0">{{ currentProfile.subtitle }}</p>
-      </div>
-    </div>
+          <div v-if="currentProfile.title" class="border-t border-[#2d3137] pt-2 flex flex-col gap-1">
+            <h2 class="text-xs tracking-[.06em] uppercase m-0 font-bold text-panel-fg">{{ currentProfile.title }}</h2>
+            <p v-if="currentProfile.subtitle" class="text-[10.5px] leading-[1.4] text-muted m-0">{{ currentProfile.subtitle }}</p>
+          </div>
+        </div>
+      </template>
+    </Card>
 
     <div class="absolute left-4 bottom-4 max-w-[60%] text-[11.5px] leading-[1.5] text-dim select-none pointer-events-none font-ui">Drag to orbit · scroll to zoom · right-drag to pan</div>
     <div class="absolute right-4 bottom-4 flex gap-2 z-10 font-ui">
