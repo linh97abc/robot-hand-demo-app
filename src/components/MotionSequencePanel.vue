@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, reactive } from 'vue';
 import Button from 'primevue/button';
-import ToggleButton from 'primevue/togglebutton';
 import Slider from 'primevue/slider';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
@@ -31,12 +30,75 @@ const emit = defineEmits([
   'import-error',
 ]);
 
-const loopModel = computed({
-  get: () => props.isLooping,
-  set: () => emit('toggle-loop'),
-});
-
 const fileInputRef = ref(null);
+
+// Styling pass-through definitions for buttons
+const secBtnPt = computed(() => ({
+  root: {
+    class: [
+      '!rounded-lg !text-[11.5px] !py-1.5 !px-3 transition-all font-medium !border select-none',
+      props.isPlaying
+        ? '!bg-[#1a1c1e] !text-[#5c5f66] !border-[#2a2d32] opacity-40 cursor-not-allowed pointer-events-none'
+        : '!bg-[#23262a] !text-[#e9e7e2] !border-[#3a3e44] hover:!bg-[#2e3238] hover:!border-[#c9a35c] active:!translate-y-px'
+    ].join(' ')
+  }
+}));
+
+const addWpBtnPt = computed(() => ({
+  root: {
+    class: [
+      '!rounded-lg !text-[11px] !font-bold !py-1.5 !px-2.5 transition-all flex-shrink-0 !border select-none',
+      props.isPlaying
+        ? '!bg-[#1e2023] !text-[#5c5f66] !border-[#2c3036] opacity-40 cursor-not-allowed pointer-events-none'
+        : '!bg-gold/15 !text-[#fde047] !border-gold/60 hover:!bg-gold/25 hover:!border-gold active:!translate-y-px'
+    ].join(' ')
+  }
+}));
+
+const playBtnPt = {
+  root: {
+    class: '!bg-[#22c55e1c] !text-[#4ade80] !border !border-[#22c55e60] hover:!bg-[#22c55e30] hover:!border-[#4ade80] active:!translate-y-px !rounded-lg !text-[11px] !font-bold !py-1.5 !px-2 transition-all flex-shrink-0',
+  },
+};
+
+const pauseBtnPt = {
+  root: {
+    class: '!bg-[#f59e0b25] !text-[#fbbf24] !border !border-[#f59e0b80] hover:!bg-[#f59e0b35] active:!translate-y-px !rounded-lg !text-[11px] !font-bold !py-1.5 !px-2 shadow-[0_0_12px_rgba(245,158,11,0.4)] transition-all flex-shrink-0 animate-pulse',
+  },
+};
+
+const stopBtnPt = computed(() => ({
+  root: {
+    class: [
+      '!rounded-lg !text-[11px] !py-1.5 !px-2 transition-all flex-shrink-0 !border select-none',
+      props.isPlaying
+        ? '!bg-[#ef444425] !text-[#f87171] !border-[#ef444480] hover:!bg-[#ef444438] shadow-[0_0_10px_rgba(239,68,68,0.3)] animate-pulse'
+        : '!bg-[#23262a] !text-[#9a9ea4] !border-[#3a3e44] hover:!text-[#f87171] hover:!border-[#ef444460]'
+    ].join(' ')
+  }
+}));
+
+const toggleLoopPt = computed(() => ({
+  root: {
+    class: [
+      '!rounded-lg !text-[11px] !py-1.5 !px-2 !border transition-all font-medium select-none flex-shrink-0',
+      props.isLooping
+        ? '!bg-gold/20 !text-[#fde047] !border-gold/60'
+        : '!bg-[#23262a] !text-[#9a9ea4] !border-[#3a3e44] hover:!text-[#e9e7e2] hover:!border-[#484c54]'
+    ].join(' ')
+  }
+}));
+
+const deleteBtnPt = computed(() => ({
+  root: {
+    class: [
+      '!p-1 !w-6 !h-6 !rounded-md transition-colors',
+      props.isPlaying
+        ? '!text-[#484c54] opacity-30 cursor-not-allowed pointer-events-none'
+        : '!text-dim hover:!text-[#f87171] hover:!bg-[#ef44441a]'
+    ].join(' ')
+  }
+}));
 
 function handleFileChange(event) {
   const file = event.target.files?.[0];
@@ -227,7 +289,9 @@ function onPointerUp() {
 </script>
 
 <template>
-  <aside class="w-[360px] flex-none bg-panel text-panel-fg border-r border-[#2a2d32] flex flex-col pt-4 px-3.5 pb-5 gap-3.5 box-border font-ui select-none overflow-y-auto overflow-x-hidden">
+  <aside
+    class="w-[360px] flex-none bg-panel text-panel-fg border-r border-[#2a2d32] flex flex-col pt-4 px-3.5 pb-5 gap-3.5 box-border font-ui select-none overflow-y-auto overflow-x-hidden"
+  >
     <!-- Header -->
     <div>
       <h1 class="text-[14.5px] tracking-[.08em] uppercase m-0 mb-1.5 font-bold text-panel-fg">KỊCH BẢN CHUYỂN ĐỘNG</h1>
@@ -236,8 +300,8 @@ function onPointerUp() {
       </p>
 
       <div class="flex gap-2">
-        <Button label="Xuất JSON" severity="secondary" size="small" :disabled="isPlaying" @click="emit('export-json')" />
-        <Button label="Nhập JSON" severity="secondary" size="small" :disabled="isPlaying" @click="triggerImport" />
+        <Button label="Xuất JSON" :pt="secBtnPt" :disabled="isPlaying" @click="emit('export-json')" />
+        <Button label="Nhập JSON" :pt="secBtnPt" :disabled="isPlaying" @click="triggerImport" />
         <input
           ref="fileInputRef"
           type="file"
@@ -262,21 +326,21 @@ function onPointerUp() {
     </div>
 
     <!-- Controls toolbar -->
-    <div class="flex gap-1.5 items-center flex-wrap">
-      <Button label="+ Thêm waypoint" severity="secondary" size="small" :disabled="isPlaying" @click="emit('add-waypoint')" />
+    <div class="flex gap-1 items-center flex-nowrap w-full justify-between">
+      <Button label="+ Thêm waypoint" :pt="addWpBtnPt" :disabled="isPlaying" @click="emit('add-waypoint')" />
 
-      <Button v-if="!isPlaying" label="► Phát" severity="secondary" size="small" @click="emit('play')" />
-      <Button v-else label="⏸ Tạm dừng" size="small" @click="emit('pause')" />
+      <Button v-if="!isPlaying" label="► Phát" :pt="playBtnPt" @click="emit('play')" />
+      <Button v-else label="⏸ Tạm dừng" :pt="pauseBtnPt" @click="emit('pause')" />
 
-      <Button label="■ Dừng" severity="secondary" size="small" @click="emit('stop')" />
+      <Button label="■ Dừng" :pt="stopBtnPt" @click="emit('stop')" />
 
-      <ToggleButton v-model="loopModel" on-label="↻ Lặp" off-label="↻ Lặp" size="small" />
+      <Button label="↻ Lặp" :pt="toggleLoopPt" @click="emit('toggle-loop')" />
     </div>
 
     <!-- Segments Table / List Header -->
-    <div class="grid grid-cols-[84px_114px_74px_1fr] items-center text-[8.5px] tracking-[.01em] text-dim font-bold pb-1 border-b border-[#2a2d32] mt-1 whitespace-nowrap">
+    <div class="grid grid-cols-[130px_76px_72px_1fr] items-center text-[8.5px] tracking-[.01em] text-dim font-bold pb-1 border-b border-[#2a2d32] mt-1 whitespace-nowrap">
       <span>WAYPOINT</span>
-      <span class="text-center whitespace-nowrap">CHUYỂN ĐỘNG (ms)</span>
+      <span class="text-center whitespace-nowrap">C.ĐỘNG (ms)</span>
       <span class="text-center whitespace-nowrap">DỪNG (ms)</span>
       <span></span>
     </div>
@@ -297,10 +361,10 @@ function onPointerUp() {
         :class="item.isPlaceholder
           ? 'flex items-center justify-center bg-gold/[0.12] border-[1.5px] border-dashed border-gold shadow-[inset_0_0_12px_rgba(201,163,92,0.2)] h-[38px] px-2 pointer-events-none w-full box-border'
           : (activeWaypointIndex === item.origIndex
-              ? 'grid grid-cols-[84px_114px_74px_1fr] items-center bg-[#2a2d32] border-2 border-gold py-[4px] px-1.5 cursor-pointer animate-[playing-glow_1s_ease-in-out_infinite]'
+              ? 'grid grid-cols-[130px_76px_72px_1fr] items-center bg-[#2a2d32] border-2 border-gold py-[4px] px-1.5 cursor-pointer animate-[playing-glow_1s_ease-in-out_infinite]'
               : (selectedWaypointIndex === item.origIndex
-                  ? 'grid grid-cols-[84px_114px_74px_1fr] items-center bg-[#2a2d32] border border-gold py-[5px] px-1.5 cursor-pointer shadow-[0_0_8px_rgba(201,163,92,0.2)]'
-                  : 'grid grid-cols-[84px_114px_74px_1fr] items-center bg-[#23262a] border border-[#32363b] py-[5px] px-1.5 cursor-pointer transition-colors duration-150 hover:border-[#484c54] hover:bg-[#272a2e]'))"
+                  ? 'grid grid-cols-[130px_76px_72px_1fr] items-center bg-[#2a2d32] border border-gold py-[5px] px-1.5 cursor-pointer shadow-[0_0_8px_rgba(201,163,92,0.2)]'
+                  : 'grid grid-cols-[130px_76px_72px_1fr] items-center bg-[#23262a] border border-[#32363b] py-[5px] px-1.5 cursor-pointer transition-colors duration-150 hover:border-[#484c54] hover:bg-[#272a2e]'))"
         @click="!item.isPlaceholder && emit('select-waypoint', item.origIndex)"
       >
         <template v-if="item.isPlaceholder">
@@ -312,9 +376,9 @@ function onPointerUp() {
 
         <template v-else>
           <!-- Reorder Handle & Waypoint Name Textbox -->
-          <div class="flex items-center gap-1">
+          <div class="flex items-center gap-1 min-w-0 pr-1">
             <span
-              class="text-[11px] select-none [touch-action:none] py-1 px-0.5"
+              class="text-[11px] select-none [touch-action:none] py-1 px-0.5 flex-shrink-0"
               :class="isPlaying ? 'text-dim cursor-not-allowed opacity-40' : 'text-dim cursor-grab active:cursor-grabbing active:text-gold'"
               title="Nhấn giữ và kéo thả để đổi thứ tự"
               @pointerdown="e => startPointerDrag(item.origIndex, e)"
@@ -322,7 +386,7 @@ function onPointerUp() {
             <InputText
               size="small"
               :disabled="isPlaying"
-              class="w-[58px] !text-[11px] !font-bold"
+              class="w-full min-w-0 !text-[11px] !font-bold !px-1.5 !py-0.5 !h-6 !bg-[#1f2226] !text-[#e9e7e2] !border-[#383c42] focus:!border-[#c9a35c]"
               :class="selectedWaypointIndex === item.origIndex ? '!text-gold' : ''"
               :model-value="item.name"
               :placeholder="`WP ${item.origIndex + 1}`"
@@ -335,8 +399,13 @@ function onPointerUp() {
           <!-- Duration input -->
           <div class="flex justify-center">
             <InputNumber
-              size="small" :disabled="isPlaying" :min="0" :step="100" :format="false"
-              class="w-[56px]" input-class="!text-center !text-[11px]"
+              size="small"
+              :disabled="isPlaying"
+              :min="0"
+              :step="100"
+              :format="false"
+              class="!w-[50px] !min-w-0"
+              input-class="!w-[50px] !min-w-0 !text-center !text-[11px] !px-1 !py-0.5 !h-6 !box-border !bg-[#1f2226] !text-[#e9e7e2] !border-[#383c42] focus:!border-[#c9a35c]"
               :model-value="item.duration_ms"
               @click.stop
               @update:model-value="v => onDurationChange(item.origIndex, v)"
@@ -346,8 +415,13 @@ function onPointerUp() {
           <!-- Dwell input -->
           <div class="flex justify-center">
             <InputNumber
-              size="small" :disabled="isPlaying" :min="0" :step="100" :format="false"
-              class="w-[56px]" input-class="!text-center !text-[11px]"
+              size="small"
+              :disabled="isPlaying"
+              :min="0"
+              :step="100"
+              :format="false"
+              class="!w-[50px] !min-w-0"
+              input-class="!w-[50px] !min-w-0 !text-center !text-[11px] !px-1 !py-0.5 !h-6 !box-border !bg-[#1f2226] !text-[#e9e7e2] !border-[#383c42] focus:!border-[#c9a35c]"
               :model-value="item.dwell_ms"
               @click.stop
               @update:model-value="v => onDwellChange(item.origIndex, v)"
@@ -357,7 +431,7 @@ function onPointerUp() {
           <!-- Row actions: Delete -->
           <div class="flex items-center justify-end gap-[3px]">
             <Button
-              icon="pi pi-trash" text severity="danger" size="small" :disabled="isPlaying"
+              icon="pi pi-trash" text :pt="deleteBtnPt" :disabled="isPlaying"
               @click.stop="emit('delete-waypoint', item.origIndex)"
               title="Xóa waypoint"
             />

@@ -455,13 +455,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex w-screen h-screen overflow-hidden bg-[#efece6]">
+  <div class="flex w-screen h-screen overflow-hidden bg-[#121315]">
     <!-- 3D Stage Viewport (Left) -->
     <main class="flex-1 min-w-0 min-h-0 h-full relative">
       <ThreeStage
         ref="stageRef"
         :model="activeModel"
-        background="#efece6"
+        background="#141619"
         :model-name="PROFILES[currentProfileKey]?.name || currentProfileKey"
         :profiles="PROFILES"
         :current-profile-key="currentProfileKey"

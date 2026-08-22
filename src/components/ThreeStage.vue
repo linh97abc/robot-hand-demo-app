@@ -9,7 +9,7 @@ import Button from 'primevue/button';
 
 const props = defineProps({
   model: { type: Object, default: null },
-  background: { type: String, default: '#efece6' },
+  background: { type: String, default: '#141619' },
   modelName: { type: String, default: 'robot-hand' },
   profiles: { type: Object, default: null },
   currentProfileKey: { type: String, default: '' },
@@ -28,8 +28,33 @@ const profileOptions = computed(() =>
 
 const downloadButtonPt = {
   root: {
-    class: '!bg-[#ffffffeb] !text-[#1a1915] !border-[#1414132e] !rounded-lg !shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:!bg-white active:!translate-y-px !font-medium !text-[12.5px] !py-2.5 !px-3',
+    class: '!bg-[#23262a] !text-[#e9e7e2] !border !border-[#3a3e44] hover:!bg-[#2e3238] hover:!border-[#c9a35c] active:!translate-y-px !rounded-lg !shadow-[0_2px_8px_rgba(0,0,0,0.3)] !font-medium !text-[12px] !py-2 !px-3 transition-colors',
   },
+};
+
+const selectPt = {
+  root: {
+    class: '!bg-[#1f2226] !text-[#e9e7e2] !border !border-[#383c42] hover:!border-[#c9a35c] !rounded-lg !py-1 !px-2.5 !text-xs !shadow-none'
+  },
+  label: {
+    class: '!text-[#e9e7e2] !font-medium !text-xs'
+  },
+  dropdown: {
+    class: '!text-[#9a9ea4]'
+  },
+  overlay: {
+    class: '!bg-[#1c1e21] !border !border-[#383c42] !shadow-[0_8px_24px_rgba(0,0,0,0.5)] !rounded-lg'
+  },
+  list: {
+    class: '!py-1'
+  },
+  option: (options) => ({
+    class: [
+      '!text-xs !py-2 !px-3 !rounded-md transition-colors',
+      options.context?.focused ? '!bg-[#2a2d32] !text-[#fde047]' : '',
+      options.context?.selected ? '!bg-[#282b30] !text-[#fde047] !font-bold' : '!text-[#e9e7e2] hover:!bg-[#26292e]'
+    ].join(' ')
+  })
 };
 
 const containerRef = ref(null);
@@ -50,8 +75,8 @@ function initThree() {
   camera = new THREE.PerspectiveCamera(45, w / h, 0.01, 500);
   camera.position.set(3, 2.2, 4);
 
-  // Neutral studio lighting from original three-d-stage
-  const hemi = new THREE.HemisphereLight(0xffffff, 0xd8d2c4, 1.0);
+  // Studio lighting tuned for dark background
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x22262d, 1.2);
   scene.add(hemi);
 
   keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
@@ -68,7 +93,7 @@ function initThree() {
   // Soft ground shadow plane
   shadowGround = new THREE.Mesh(
     new THREE.PlaneGeometry(200, 200),
-    new THREE.ShadowMaterial({ opacity: 0.18 })
+    new THREE.ShadowMaterial({ opacity: 0.45 })
   );
   shadowGround.rotation.x = -Math.PI / 2;
   shadowGround.receiveShadow = true;
@@ -275,7 +300,7 @@ onBeforeUnmount(() => {
     <!-- Top-Left Model Switcher Overlay -->
     <div
       v-if="profiles && currentProfileKey"
-      class="absolute top-4 left-4 z-10 bg-[#1c1e21eb] backdrop-blur-md border border-line rounded-[10px] py-3 px-3.5 flex flex-col gap-2.5 max-w-[320px] shadow-[0_6px_20px_rgba(0,0,0,0.25)] text-panel-fg font-ui select-none"
+      class="absolute top-4 left-4 z-10 bg-[#1c1e21d6] backdrop-blur-md border border-[#32363b] rounded-[10px] py-3 px-3.5 flex flex-col gap-2.5 max-w-[320px] shadow-[0_8px_24px_rgba(0,0,0,0.4)] text-panel-fg font-ui select-none"
     >
       <div class="flex flex-col gap-[5px]">
         <label class="text-[10px] tracking-[.08em] uppercase text-gold font-bold">MÔ HÌNH ROBOT</label>
@@ -284,6 +309,7 @@ onBeforeUnmount(() => {
           :options="profileOptions"
           option-label="label"
           option-value="key"
+          :pt="selectPt"
           class="w-full !text-xs"
           @update:model-value="v => emit('switch-profile', v)"
         />
@@ -295,7 +321,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <div class="absolute left-4 bottom-4 max-w-[60%] text-[12px] leading-[1.5] text-[#1a19158c] select-none pointer-events-none font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,sans-serif]">Drag to orbit · scroll to zoom · right-drag to pan</div>
+    <div class="absolute left-4 bottom-4 max-w-[60%] text-[11.5px] leading-[1.5] text-dim select-none pointer-events-none font-ui">Drag to orbit · scroll to zoom · right-drag to pan</div>
     <div class="absolute right-4 bottom-4 flex gap-2 z-10 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,sans-serif]">
       <Button label="Download OBJ + MTL" :pt="downloadButtonPt" @click="exportOBJ" />
       <Button label="Download GLB" :pt="downloadButtonPt" @click="exportGLTF" />
