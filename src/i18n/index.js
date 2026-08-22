@@ -4,6 +4,12 @@ const defaultLang = typeof localStorage !== 'undefined'
   ? localStorage.getItem('app_lang') || 'vi'
   : 'vi';
 
+export const supportedLangs = [
+  { code: 'vi', label: 'VI' },
+  { code: 'en', label: 'EN' },
+  { code: 'zh', label: 'ZH' },
+];
+
 const messages = {
   vi: {
     // Model Switcher & Header
@@ -64,6 +70,36 @@ const messages = {
     colDwell: 'DWELL (ms)',
     noWaypoints: 'No waypoints yet. Click "+ Add Waypoint" to create a motion sequence.',
     jsonHint: 'JSON file format: segments -> waypoint (joint: value), duration_ms (motion duration), dwell_ms (hold time).',
+  },
+  zh: {
+    // Model Switcher & Header
+    robotModelLabel: '机器人模型',
+    stageHint: '拖动旋转 · 滚动缩放 · 右键平移',
+    downloadObj: '下载 OBJ + MTL',
+    downloadGlb: '下载 GLB',
+    
+    // Current Pose / Joint Control Panel Chrome
+    currentPose: '当前姿态',
+    statusPlaying: '正在播放动作序列 — 停止播放以编辑',
+    statusEditing: '正在编辑 {name} — 再次点击 WP 完成编辑',
+    statusCreating: '创建新姿态 — 点击 "+ 添加航点" 保存',
+    loadingModel: '正在加载 3D 模型...',
+
+    // Motion Sequence Panel Chrome
+    motionSequence: '动作序列',
+    motionSeqDesc: '将当前姿态记录为航点。选择航点以编辑其关节角度。导出或导入 JSON 文件以复用序列。',
+    exportJson: '导出 JSON',
+    importJson: '导入 JSON',
+    addWaypoint: '+ 添加航点',
+    play: '► 播放',
+    pause: '⏸ 暂停',
+    stop: '■ 停止',
+    loop: '↻ 循环',
+    colWaypoint: '航点',
+    colDuration: '时长 (ms)',
+    colDwell: '停顿 (ms)',
+    noWaypoints: '暂无航点。点击 "+ 添加航点" 创建动作序列。',
+    jsonHint: 'JSON 文件格式: segments -> waypoint (关节: 数值), duration_ms (动作时长), dwell_ms (停顿时间)。',
   }
 };
 
@@ -76,7 +112,9 @@ export const i18n = createI18n({
 });
 
 export function toggleLang() {
-  const nextLang = i18n.global.locale.value === 'vi' ? 'en' : 'vi';
+  const current = i18n.global.locale.value;
+  const idx = supportedLangs.findIndex(l => l.code === current);
+  const nextLang = supportedLangs[(idx + 1) % supportedLangs.length].code;
   i18n.global.locale.value = nextLang;
   if (typeof localStorage !== 'undefined') {
     localStorage.setItem('app_lang', nextLang);

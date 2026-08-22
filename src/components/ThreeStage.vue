@@ -9,16 +9,25 @@ import Select from 'primevue/select';
 import Button from 'primevue/button';
 import ButtonGroup from 'primevue/buttongroup';
 import Card from 'primevue/card';
+import { supportedLangs } from '../i18n/index.js';
 
 const { t, locale } = useI18n();
 
 function handleToggleLang() {
-  const nextLang = locale.value === 'vi' ? 'en' : 'vi';
+  const current = locale.value;
+  const idx = supportedLangs.findIndex(l => l.code === current);
+  const nextLang = supportedLangs[(idx + 1) % supportedLangs.length].code;
   locale.value = nextLang;
   if (typeof localStorage !== 'undefined') {
     localStorage.setItem('app_lang', nextLang);
   }
 }
+
+const langButtonTitle = computed(() => {
+  if (locale.value === 'vi') return 'Chuyển sang Tiếng Anh';
+  if (locale.value === 'en') return 'Switch to Chinese';
+  return 'Chuyển sang Tiếng Việt';
+});
 
 const props = defineProps({
   model: { type: Object, default: null },
@@ -65,6 +74,56 @@ watch(isDark, (val) => {
   if (scene) scene.background = new THREE.Color(bgHex);
   requestRender();
 });
+
+function updateModelInScene(newModel, oldModel) {
+  if (!scene) return;
+  if (oldModel && oldModel !== newModel) scene.remove(oldModel);
+  if (newModel) {
+    newModel.traverse((o) => {
+      if (o.isMesh) {
+        o.castShadow = true;
+        o.receiveShadow = true;
+      }
+    });
+
+    scene.add(newModel);
+
+    // Auto frame model using bounding sphere
+    const box = new THREE.Box3().setFromObject(newModel);
+    if (!box.isEmpty()) {
+      shadowGround.position.y = box.min.y;
+      const sphere = box.getBoundingSphere(new THREE.Sphere());
+
+      // Subtle framing offset to lower model slightly on screen
+      const framedCenter = sphere.center.clone();
+      framedCenter.y += sphere.radius * 0.10;
+
+      const dist = (sphere.radius / Math.tan((camera.fov * Math.PI) / 360)) * 1.37;
+      const dir = new THREE.Vector3(1, 0.55, 1.25).normalize();
+      camera.position.copy(framedCenter).add(dir.multiplyScalar(dist));
+      camera.near = Math.max(dist / 100, 0.01);
+      camera.far = dist * 100;
+      camera.updateProjectionMatrix();
+      controls.target.copy(framedCenter);
+      controls.update();
+
+      const span = sphere.radius * 3;
+      keyLight.shadow.camera.left = -span;
+      keyLight.shadow.camera.right = span;
+      keyLight.shadow.camera.top = span;
+      keyLight.shadow.camera.bottom = -span;
+      keyLight.shadow.camera.updateProjectionMatrix();
+    }
+    requestRender();
+  }
+}
+
+watch(
+  () => props.model,
+  (newModel, oldModel) => {
+    updateModelInScene(newModel, oldModel);
+  }
+);
 
 function initThree() {
   const container = containerRef.value;
@@ -126,6 +185,10 @@ function initThree() {
   const resizeObserver = new ResizeObserver(() => onResize());
   resizeObserver.observe(container);
 
+  if (props.model) {
+    updateModelInScene(props.model, null);
+  }
+
   requestRender();
 }
 
@@ -164,52 +227,6 @@ function requestRender() {
     animationId = requestAnimationFrame(animateLoop);
   }
 }
-
-watch(
-  () => props.model,
-  (newModel, oldModel) => {
-    if (oldModel && scene) scene.remove(oldModel);
-    if (newModel && scene) {
-      newModel.traverse((o) => {
-        if (o.isMesh) {
-          o.castShadow = true;
-          o.receiveShadow = true;
-        }
-      });
-
-      scene.add(newModel);
-
-      // Auto frame model using bounding sphere
-      const box = new THREE.Box3().setFromObject(newModel);
-      if (!box.isEmpty()) {
-        shadowGround.position.y = box.min.y;
-        const sphere = box.getBoundingSphere(new THREE.Sphere());
-
-        // Subtle framing offset to lower model slightly on screen
-        const framedCenter = sphere.center.clone();
-        framedCenter.y += sphere.radius * 0.10;
-
-        const dist = (sphere.radius / Math.tan((camera.fov * Math.PI) / 360)) * 1.37;
-        const dir = new THREE.Vector3(1, 0.55, 1.25).normalize();
-        camera.position.copy(framedCenter).add(dir.multiplyScalar(dist));
-        camera.near = Math.max(dist / 100, 0.01);
-        camera.far = dist * 100;
-        camera.updateProjectionMatrix();
-        controls.target.copy(framedCenter);
-        controls.update();
-
-        const span = sphere.radius * 3;
-        keyLight.shadow.camera.left = -span;
-        keyLight.shadow.camera.right = span;
-        keyLight.shadow.camera.top = span;
-        keyLight.shadow.camera.bottom = -span;
-        keyLight.shadow.camera.updateProjectionMatrix();
-      }
-      requestRender();
-    }
-  },
-  { immediate: true }
-);
 
 function download(blob, filename) {
   const url = URL.createObjectURL(blob);
@@ -306,7 +323,7 @@ onBeforeUnmount(() => {
               size="small"
               rounded
               class="!px-2 !py-0.5 !text-[10px] !font-bold"
-              :title="locale === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'"
+              :title="langButtonTitle"
               @click="handleToggleLang"
             />
             <Button
