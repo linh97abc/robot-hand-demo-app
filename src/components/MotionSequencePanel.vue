@@ -1,12 +1,14 @@
 <script setup>
 import { ref, computed, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import ButtonGroup from 'primevue/buttongroup';
 import Slider from 'primevue/slider';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Message from 'primevue/message';
-import { currentLang, t } from '../i18n/index.js';
+
+const { t } = useI18n();
 
 const props = defineProps({
   segments: { type: Array, required: true },

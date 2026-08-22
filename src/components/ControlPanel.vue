@@ -1,11 +1,13 @@
 <script setup>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import Slider from 'primevue/slider';
 import Button from 'primevue/button';
 import ButtonGroup from 'primevue/buttongroup';
 import Message from 'primevue/message';
 import Fieldset from 'primevue/fieldset';
-import { t } from '../i18n/index.js';
+
+const { t } = useI18n();
 
 const props = defineProps({
   profiles: { type: Object, required: true },

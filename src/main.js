@@ -4,6 +4,7 @@ import ToastService from 'primevue/toastservice';
 import { definePreset } from '@primevue/themes';
 import Aura from '@primevue/themes/aura';
 import App from './App.vue';
+import { i18n } from './i18n/index.js';
 import 'primeicons/primeicons.css';
 import './style.css';
 
@@ -186,6 +187,7 @@ const HRHandPreset = definePreset(Aura, {
 document.documentElement.classList.add('app-dark');
 
 const app = createApp(App);
+app.use(i18n);
 app.use(PrimeVue, {
   theme: {
     preset: HRHandPreset,

@@ -1,25 +1,12 @@
-import { ref } from 'vue';
+import { createI18n } from 'vue-i18n';
 
-export const currentLang = ref(
-  typeof localStorage !== 'undefined'
-    ? localStorage.getItem('app_lang') || 'vi'
-    : 'vi'
-);
+const defaultLang = typeof localStorage !== 'undefined'
+  ? localStorage.getItem('app_lang') || 'vi'
+  : 'vi';
 
-export function setLang(lang) {
-  currentLang.value = lang;
-  if (typeof localStorage !== 'undefined') {
-    localStorage.setItem('app_lang', lang);
-  }
-}
-
-export function toggleLang() {
-  setLang(currentLang.value === 'vi' ? 'en' : 'vi');
-}
-
-const translations = {
+const messages = {
   vi: {
-    // App Chrome & Headers
+    // Model Switcher & Header
     robotModelLabel: 'MÔ HÌNH ROBOT',
     stageHint: 'Kéo chuột để quay · cuộn để phóng to/thu nhỏ · chuột phải để trượt',
     downloadObj: 'Tải OBJ + MTL',
@@ -46,10 +33,10 @@ const translations = {
     colDuration: 'THỜI LƯỢNG (ms)',
     colDwell: 'TẠM DỪNG (ms)',
     noWaypoints: 'Chưa có waypoint nào. Bấm "+ Thêm Waypoint" để tạo chuỗi.',
-    jsonHint: 'Định dạng file: {"segments": [ {"waypoint": {"thumb.0": 10, ...}, "duration_ms": 800, "dwell_ms": 0}, ... ]}. duration_ms là thời gian chuyển động, dwell_ms là thời gian giữ tư thế.',
+    jsonHint: 'Định dạng file JSON: segments -> waypoint (khớp: giá_trị), duration_ms (thời gian chuyển động), dwell_ms (thời gian tạm dừng).',
   },
   en: {
-    // App Chrome & Headers
+    // Model Switcher & Header
     robotModelLabel: 'ROBOT MODEL',
     stageHint: 'Drag to orbit · scroll to zoom · right-drag to pan',
     downloadObj: 'Download OBJ + MTL',
@@ -76,15 +63,22 @@ const translations = {
     colDuration: 'DURATION (ms)',
     colDwell: 'DWELL (ms)',
     noWaypoints: 'No waypoints yet. Click "+ Add Waypoint" to create a motion sequence.',
-    jsonHint: 'File format: {"segments": [ {"waypoint": {"thumb.0": 10, ...}, "duration_ms": 800, "dwell_ms": 0}, ... ]}. duration_ms is motion duration, dwell_ms is hold time at waypoint.',
+    jsonHint: 'JSON file format: segments -> waypoint (joint: value), duration_ms (motion duration), dwell_ms (hold time).',
   }
 };
 
-export function t(key, params = {}) {
-  const lang = currentLang.value;
-  let text = translations[lang]?.[key] || translations['vi']?.[key] || key;
-  for (const p in params) {
-    text = text.replace(`{${p}}`, params[p]);
+export const i18n = createI18n({
+  legacy: false,
+  globalInjection: true,
+  locale: defaultLang,
+  fallbackLocale: 'en',
+  messages,
+});
+
+export function toggleLang() {
+  const nextLang = i18n.global.locale.value === 'vi' ? 'en' : 'vi';
+  i18n.global.locale.value = nextLang;
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('app_lang', nextLang);
   }
-  return text;
 }

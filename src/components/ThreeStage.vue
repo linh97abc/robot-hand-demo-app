@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter.js';
@@ -8,7 +9,16 @@ import Select from 'primevue/select';
 import Button from 'primevue/button';
 import ButtonGroup from 'primevue/buttongroup';
 import Card from 'primevue/card';
-import { currentLang, toggleLang, t } from '../i18n/index.js';
+
+const { t, locale } = useI18n();
+
+function handleToggleLang() {
+  const nextLang = locale.value === 'vi' ? 'en' : 'vi';
+  locale.value = nextLang;
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('app_lang', nextLang);
+  }
+}
 
 const props = defineProps({
   model: { type: Object, default: null },
@@ -291,13 +301,13 @@ onBeforeUnmount(() => {
           <label class="text-gold font-bold">{{ t('robotModelLabel') }}</label>
           <div class="flex items-center gap-1.5">
             <Button
-              :label="currentLang.toUpperCase()"
+              :label="locale.toUpperCase()"
               severity="secondary"
               size="small"
               rounded
               class="!px-2 !py-0.5 !text-[10px] !font-bold"
-              :title="currentLang === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'"
-              @click="toggleLang"
+              :title="locale === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'"
+              @click="handleToggleLang"
             />
             <Button
               :icon="isDark ? 'pi pi-sun' : 'pi pi-moon'"
