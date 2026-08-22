@@ -56,6 +56,12 @@ p {
   color: #b8bcc2;
 }
 
+.segment-grid {
+  display: grid;
+  grid-template-columns: 130px 76px 72px 1fr;
+  align-items: center;
+}
+
 .panel-hint {
   font-size: 10px;
   line-height: 1.4;

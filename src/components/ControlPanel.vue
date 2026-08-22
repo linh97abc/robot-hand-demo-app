@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import Slider from 'primevue/slider';
 import Button from 'primevue/button';
+import ButtonGroup from 'primevue/buttongroup';
 import Message from 'primevue/message';
 import Fieldset from 'primevue/fieldset';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -60,7 +61,7 @@ function onSliderInput(key, value) {
     </Message>
 
     <!-- Presets Bar -->
-    <div class="flex flex-wrap gap-[5px]" id="presets">
+    <ButtonGroup id="presets" class="flex flex-wrap gap-[5px]">
       <Button
         v-for="(pose, name) in currentProfile.poses"
         :key="name"
@@ -68,38 +69,34 @@ function onSliderInput(key, value) {
         size="small"
         :disabled="isPlaying"
         :severity="activePreset === name ? 'primary' : 'secondary'"
-        class="!rounded-full !text-[11px]"
+        class="!text-[11px]"
         @click="emit('select-preset', name)"
       />
-    </div>
+    </ButtonGroup>
 
-    <!-- Controls Container -->
-    <div id="controls" class="flex flex-col gap-3">
-      <div v-if="loading" class="flex items-center gap-2 text-[11.5px] text-muted italic">
-        <ProgressSpinner style="width: 14px; height: 14px" stroke-width="6" />
-        <span>Loading 3D model...</span>
-      </div>
+    <!-- Controls / Finger Groups -->
+    <Message v-if="loading" severity="secondary" size="small" icon="pi pi-spin pi-spinner" class="italic">
+      Loading 3D model...
+    </Message>
 
-      <template v-else>
-        <!-- Finger Groups -->
-        <Fieldset v-for="finger in currentProfile.fingers" :key="finger.key" :legend="finger.label">
-          <label
-            v-for="(jointLabel, index) in finger.joints"
-            :key="index"
-            class="joint-row"
-          >
-            <span>{{ typeof jointLabel === 'object' ? jointLabel.label : (finger.jointLabels ? finger.jointLabels[index]
-              : jointLabel) }}</span>
-            <Slider
-              :model-value="Math.round(state[`${finger.key}.${index}`] || 0)"
-              :min="0" :max="1000" :disabled="isPlaying"
-              @update:model-value="v => onSliderInput(`${finger.key}.${index}`, v)"
-            />
-            <output class="text-right tabular-nums text-panel-fg">{{ Math.round(state[`${finger.key}.${index}`] || 0) }}</output>
-          </label>
-        </Fieldset>
-      </template>
-    </div>
+    <template v-else>
+      <Fieldset v-for="finger in currentProfile.fingers" :key="finger.key" :legend="finger.label">
+        <label
+          v-for="(jointLabel, index) in finger.joints"
+          :key="index"
+          class="joint-row"
+        >
+          <span>{{ typeof jointLabel === 'object' ? jointLabel.label : (finger.jointLabels ? finger.jointLabels[index]
+            : jointLabel) }}</span>
+          <Slider
+            :model-value="Math.round(state[`${finger.key}.${index}`] || 0)"
+            :min="0" :max="1000" :disabled="isPlaying"
+            @update:model-value="v => onSliderInput(`${finger.key}.${index}`, v)"
+          />
+          <output class="text-right tabular-nums text-panel-fg">{{ Math.round(state[`${finger.key}.${index}`] || 0) }}</output>
+        </label>
+      </Fieldset>
+    </template>
 
     <!-- Hint Footer -->
     <p id="panelHint" class="panel-hint">{{ currentProfile.hint }}</p>

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, reactive } from 'vue';
 import Button from 'primevue/button';
+import ButtonGroup from 'primevue/buttongroup';
 import Slider from 'primevue/slider';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
@@ -232,7 +233,7 @@ function onPointerUp() {
         Record current pose into waypoints. Select a waypoint to edit its pose using joint sliders. Export or import JSON files to reuse sequences.
       </p>
 
-      <div class="flex gap-2">
+      <ButtonGroup class="flex gap-2">
         <Button label="Export JSON" severity="secondary" size="small" :disabled="isPlaying" @click="emit('export-json')" />
         <Button label="Import JSON" severity="secondary" size="small" :disabled="isPlaying" @click="triggerImport" />
         <input
@@ -243,7 +244,7 @@ function onPointerUp() {
           :disabled="isPlaying"
           @change="handleFileChange"
         />
-      </div>
+      </ButtonGroup>
     </div>
 
     <!-- Timeline Scrub section -->
@@ -259,7 +260,7 @@ function onPointerUp() {
     </div>
 
     <!-- Controls toolbar -->
-    <div class="flex gap-1 items-center flex-nowrap w-full justify-between">
+    <ButtonGroup class="flex gap-1 items-center flex-nowrap w-full justify-between">
       <Button label="+ Add Waypoint" severity="primary" size="small" :disabled="isPlaying" @click="emit('add-waypoint')" />
 
       <Button v-if="!isPlaying" label="► Play" severity="success" size="small" @click="emit('play')" />
@@ -268,15 +269,15 @@ function onPointerUp() {
       <Button label="■ Stop" :disabled="!isPlaying" severity="danger" size="small" :class="isPlaying ? 'animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]' : ''" @click="emit('stop')" />
 
       <Button label="↻ Loop" :severity="isLooping ? 'primary' : 'secondary'" size="small" @click="emit('toggle-loop')" />
-    </div>
+    </ButtonGroup>
 
     <!-- Segments Table / List Header -->
-    <div class="grid grid-cols-[130px_76px_72px_1fr] items-center text-[8.5px] tracking-[.01em] text-dim font-bold pb-1 border-b border-[#2a2d32] mt-1 whitespace-nowrap">
+    <header class="segment-grid text-[8.5px] tracking-[.01em] text-dim font-bold pb-1 border-b border-[#2a2d32] mt-1 whitespace-nowrap">
       <span>WAYPOINT</span>
       <span class="text-center whitespace-nowrap">DURATION (ms)</span>
       <span class="text-center whitespace-nowrap">DWELL (ms)</span>
       <span></span>
-    </div>
+    </header>
 
     <!-- Segments List -->
     <Message v-if="segments.length === 0" severity="secondary" size="small" icon="pi pi-info-circle" class="justify-center my-4 !text-[11px]">
@@ -292,10 +293,10 @@ function onPointerUp() {
         :class="item.isPlaceholder
           ? 'flex items-center justify-center bg-gold/[0.12] border-[1.5px] border-dashed border-gold shadow-[inset_0_0_12px_rgba(201,163,92,0.2)] h-[38px] px-2 pointer-events-none w-full box-border'
           : (activeWaypointIndex === item.origIndex
-              ? 'grid grid-cols-[130px_76px_72px_1fr] items-center bg-[#2a2d32] border-2 border-gold py-[4px] px-1.5 cursor-pointer animate-[playing-glow_1s_ease-in-out_infinite]'
+              ? 'segment-grid bg-[#2a2d32] border-2 border-gold py-[4px] px-1.5 cursor-pointer animate-[playing-glow_1s_ease-in-out_infinite]'
               : (selectedWaypointIndex === item.origIndex
-                  ? 'grid grid-cols-[130px_76px_72px_1fr] items-center bg-[#2a2d32] border border-gold py-[5px] px-1.5 cursor-pointer shadow-[0_0_8px_rgba(201,163,92,0.2)]'
-                  : 'grid grid-cols-[130px_76px_72px_1fr] items-center bg-[#23262a] border border-[#32363b] py-[5px] px-1.5 cursor-pointer transition-colors duration-150 hover:border-[#484c54] hover:bg-[#272a2e]'))"
+                  ? 'segment-grid bg-[#2a2d32] border border-gold py-[5px] px-1.5 cursor-pointer shadow-[0_0_8px_rgba(201,163,92,0.2)]'
+                  : 'segment-grid bg-[#23262a] border border-[#32363b] py-[5px] px-1.5 cursor-pointer transition-colors duration-150 hover:border-[#484c54] hover:bg-[#272a2e]'))"
         @click="!item.isPlaceholder && emit('select-waypoint', item.origIndex)"
       >
         <template v-if="item.isPlaceholder">
