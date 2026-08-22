@@ -26,37 +26,6 @@ const profileOptions = computed(() =>
   }))
 );
 
-const downloadButtonPt = {
-  root: {
-    class: '!bg-[#23262a] !text-[#e9e7e2] !border !border-[#3a3e44] hover:!bg-[#2e3238] hover:!border-[#c9a35c] active:!translate-y-px !rounded-lg !shadow-[0_2px_8px_rgba(0,0,0,0.3)] !font-medium !text-[12px] !py-2 !px-3 transition-colors',
-  },
-};
-
-const selectPt = {
-  root: {
-    class: '!bg-[#1f2226] !text-[#e9e7e2] !border !border-[#383c42] hover:!border-[#c9a35c] !rounded-lg !py-1 !px-2.5 !text-xs !shadow-none'
-  },
-  label: {
-    class: '!text-[#e9e7e2] !font-medium !text-xs'
-  },
-  dropdown: {
-    class: '!text-[#9a9ea4]'
-  },
-  overlay: {
-    class: '!bg-[#1c1e21] !border !border-[#383c42] !shadow-[0_8px_24px_rgba(0,0,0,0.5)] !rounded-lg'
-  },
-  list: {
-    class: '!py-1'
-  },
-  option: (options) => ({
-    class: [
-      '!text-xs !py-2 !px-3 !rounded-md transition-colors',
-      options.context?.focused ? '!bg-[#2a2d32] !text-[#fde047]' : '',
-      options.context?.selected ? '!bg-[#282b30] !text-[#fde047] !font-bold' : '!text-[#e9e7e2] hover:!bg-[#26292e]'
-    ].join(' ')
-  })
-};
-
 const containerRef = ref(null);
 let scene, camera, renderer, controls, animationId = null;
 let keyLight, shadowGround;
@@ -305,12 +274,12 @@ onBeforeUnmount(() => {
       <div class="flex flex-col gap-[5px]">
         <label class="text-[10px] tracking-[.08em] uppercase text-gold font-bold">MÔ HÌNH ROBOT</label>
         <Select
+          size="small"
           :model-value="currentProfileKey"
           :options="profileOptions"
           option-label="label"
           option-value="key"
-          :pt="selectPt"
-          class="w-full !text-xs"
+          class="w-full"
           @update:model-value="v => emit('switch-profile', v)"
         />
       </div>
@@ -322,9 +291,9 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="absolute left-4 bottom-4 max-w-[60%] text-[11.5px] leading-[1.5] text-dim select-none pointer-events-none font-ui">Drag to orbit · scroll to zoom · right-drag to pan</div>
-    <div class="absolute right-4 bottom-4 flex gap-2 z-10 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,sans-serif]">
-      <Button label="Download OBJ + MTL" :pt="downloadButtonPt" @click="exportOBJ" />
-      <Button label="Download GLB" :pt="downloadButtonPt" @click="exportGLTF" />
+    <div class="absolute right-4 bottom-4 flex gap-2 z-10 font-ui">
+      <Button label="Download OBJ + MTL" severity="secondary" size="small" @click="exportOBJ" />
+      <Button label="Download GLB" severity="secondary" size="small" @click="exportGLTF" />
     </div>
   </div>
 </template>

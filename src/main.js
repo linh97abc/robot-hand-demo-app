@@ -40,10 +40,23 @@ const HRHandPreset = definePreset(Aura, {
         },
         content: { background: '#1c1e21', color: '#e9e7e2' },
         highlight: { background: 'rgba(201,163,92,0.16)', color: '#c9a35c' },
+        formField: {
+          background: '#1f2226',
+          color: '#e9e7e2',
+          borderColor: '#383c42',
+          hoverBorderColor: '#484c54',
+          focusBorderColor: '#c9a35c',
+          placeholderColor: '#71767c',
+          disabledBackground: '#1a1c1e',
+          disabledColor: '#5c5f66',
+        },
       },
     },
   },
   components: {
+    button: {
+      borderRadius: '8px',
+    },
     slider: {
       track: { background: '#3a3e44' },
       handle: {

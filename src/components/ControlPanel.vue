@@ -63,8 +63,8 @@ function onSliderInput(key, value) {
         :label="name"
         size="small"
         :disabled="isPlaying"
-        :severity="activePreset === name ? undefined : 'secondary'"
-        :pt="{ root: { class: '!rounded-full !text-[11px] !tracking-[.03em] !py-[5px] !px-2.5' } }"
+        :severity="activePreset === name ? 'primary' : 'secondary'"
+        class="!rounded-full !text-[11px]"
         @click="emit('select-preset', name)"
       />
     </div>
